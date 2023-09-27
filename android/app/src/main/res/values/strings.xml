@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- facebook -->
+    <string name="facebook_app_id">877165603990895</string>
+    <string name="fb_login_protocol_scheme">fb877165603990895</string>
+    <string name="facebook_client_token">6f11ded9049bf10fca6a7d471bf82a07</string>
+    <string name="app_name">JAFA</string>
+    <!-- zalo -->
+    <string name="zalo_app_id">2530966497545502256</string>
+    <string name="zalo_login_protocol_scheme">zalo-2530966497545502256</string>
+</resources>

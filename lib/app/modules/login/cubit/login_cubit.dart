@@ -1,0 +1,206 @@
+import 'dart:io';
+import 'dart:math';
+import 'package:android_id/android_id.dart';
+
+import 'package:audioplayers/audioplayers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:in_app_review/in_app_review.dart';
+import 'package:millionaire_mobile/app/data/model/user.dart';
+import '../../../core/analytics/analytics_manager.dart';
+import '../../../network/exceptions/bad_request_exception.dart';
+import '../../../core/services/question_box.dart';
+import '../../../data/local_saver/sound_manager.dart';
+import '../repository/login_repository.dart';
+import 'login_state.dart';
+
+class LoginCubit extends Cubit<LoginState> {
+  LoginCubit(this._loginRepository) : super(const LoginState());
+
+  final LoginRepository _loginRepository;
+
+  void setIsMute(bool isMute) {
+    emit(state.copyWith(isMute: isMute));
+  }
+
+  void setIsMuteCheckAgain(bool isMuteCheckAgain) {
+    emit(state.copyWith(isMuteCheckAgain: isMuteCheckAgain));
+  }
+
+  void setUser(User user) {
+    emit(state.copyWith(user: user));
+  }
+
+  void setChooseMC(int chooseMC) {
+    emit(state.copyWith(chooseMC: chooseMC));
+    playAudioStartMc(chooseMC);
+  }
+
+  void setHasDataLocal() {
+    final question = QuestionBox.getQuestions();
+    emit(state.copyWith(hasDataLocal: question.isNotEmpty));
+  }
+
+  void reviewApp() async {
+    try {
+      final InAppReview inAppReview = InAppReview.instance;
+
+      if (await inAppReview.isAvailable()) {
+        inAppReview.openStoreListing(appStoreId: "com.congthiep.millionaire");
+      }
+    } catch (e) {
+      return;
+    }
+  }
+
+  void login() async {
+    try {
+      emit(state.copyWith(player: AudioPlayer(), player2: AudioPlayer()));
+      playAudio();
+      setHasDataLocal();
+      // if (accessToken != null) return;
+      final deviceId = await getId();
+      final user = await _loginRepository.getUser(deviceId: deviceId ?? '');
+
+      emit(state.copyWith(
+        hasUser: true,
+        user: user,
+      ));
+
+      // print(response);
+    } catch (e) {
+      if (e is BadRequestException) {
+        emit(state.copyWith(hasUser: false));
+        return;
+      }
+      rethrow;
+    }
+  }
+
+  void updateUser(String username) async {
+    try {
+      emit(state.copyWith(message: null));
+      final userState = state.user;
+
+      final deviceId = await getId();
+      final x = User(
+          name: username,
+          point: userState?.point ?? 0,
+          deviceId: deviceId,
+          playDate: userState?.playDate ?? Timestamp.now());
+          emit(state.copyWith(hasUser: true, user: x));
+      await _loginRepository.updateUser(user: x);
+
+      
+    } catch (e) {
+      if (e is BadRequestException) {
+        emit(state.copyWith(hasUser: false, message: e.message));
+        return;
+      }
+      rethrow;
+    }
+  }
+
+  void updatePoint(String point) async {
+    try {
+      final score = int.parse(point.replaceAll('.', ''));
+      final userState = state.user;
+      if (userState != null) {
+        await _loginRepository.updateUser(
+            user: User(
+                name: userState.name,
+                point: userState.point + score,
+                deviceId: userState.deviceId,
+                playDate: Timestamp.now()));
+        AnalyticsManager.postScore(score, null);
+        clearQuestionLocal();
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<String?> getId() async {
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) {
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      return iosDeviceInfo.identifierForVendor;
+    } else if (Platform.isAndroid) {
+      // var androidDeviceInfo = await deviceInfo.androidInfo;
+      const androidId = AndroidId();
+      return androidId.getId();
+    }
+    return null;
+  }
+
+  void stopAudio() {
+    try {
+      final player = state.player;
+      if (player != null) player.stop();
+      final player2 = state.player2;
+      if (player2 != null) player2.stop();
+    } catch (e) {
+      if (e is StateError) {
+        return;
+      }
+      rethrow;
+    }
+  }
+
+  void playAudio() async {
+    try {
+      // await player.play(AssetSource(soundPath('bg15')));
+      final player = state.player;
+      if (player != null) {
+        final source =
+            AssetSource(soundPath(SoundManager.bg[Random().nextInt(3)]));
+        await player.setSource(source);
+        await player.setReleaseMode(ReleaseMode.loop);
+        await player.play(source);
+      }
+    } catch (e) {
+      if (e is StateError) {
+        stopAudio();
+        return;
+      }
+      if (e is PlatformException) return;
+      rethrow;
+    }
+  }
+
+  // void setPlayGame(bool playGame) {
+  //   emit(state.copyWith(playGame: playGame));
+  // }
+
+  // void setWatchRanking(bool watchRanking) {
+  //   emit(state.copyWith(watchRanking: watchRanking));
+  // }
+
+  void playAudioStartMc(int mc) async {
+    await playAudioo(SoundManager.startGame(mc));
+  }
+
+  Future<void> playAudioo(String name) async {
+    try {
+      final player = state.player2;
+      if (player != null) {
+        final assetSource =
+            soundPath(state.isMute ? SoundManager.muteSound : name);
+        final source = AssetSource(assetSource);
+        await player.play(source);
+        await player.onPlayerComplete.first;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  void clearQuestionLocal() async {
+    await QuestionBox.deleteAll();
+    setHasDataLocal();
+  }
+
+  String soundPath(String name) => 'audios/$name.mp3';
+}

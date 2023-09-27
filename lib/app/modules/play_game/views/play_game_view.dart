@@ -1,0 +1,657 @@
+import 'dart:math';
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../../../core/analytics/analytics_manager.dart';
+import '../../../core/analytics/route_aware_analytics.dart';
+import '../../../core/extension/integer_extension.dart';
+import '../../../core/services/ads_manager.dart';
+import '../../../core/values/app_colors.dart';
+import '../../../core/values/text_styles.dart';
+import '../../../core/widgets/popup/popup_notice.dart';
+import '../../../core/widgets/popup/popup_play_again.dart';
+import '../../../data/local_saver/question_level.dart';
+import '../../../data/model/questions_model_hive.dart';
+import '../../../data/model/user.dart';
+import '../../../main_router.dart';
+import '../../login/cubit/login_cubit.dart';
+import '../../login/cubit/login_state.dart';
+import '../cubit/play_game_cubit.dart';
+import '../cubit/play_game_state.dart';
+import '../repository/play_game_repository.dart';
+import '../widget/answer_item.dart';
+import '../widget/app_bar_item.dart';
+import '../widget/chart_help.dart';
+import '../widget/help_item.dart';
+import '../widget/game_point.dart';
+import '../widget/point_item.dart';
+import '../widget/question.dart';
+import '../widget/time_count.dart';
+
+class PlayGameView extends StatefulWidget {
+  const PlayGameView(
+      {super.key,
+      required this.mc,
+      required this.isMute,
+      this.questionModelHive,
+      required this.cubit,
+      required this.user});
+
+  final int mc;
+  final bool isMute;
+  final User user;
+  final QuestionModelHive? questionModelHive;
+  final LoginCubit cubit;
+
+  @override
+  State<PlayGameView> createState() => _PlayGameViewState();
+}
+
+class _PlayGameViewState extends State<PlayGameView> with RouteAwareAnalytics {
+  @override
+  TrackingScreenViewType get route => TrackingScreenViewType.playGame;
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => PlayGameCubit(
+            context.read<PlayGameRepository>(),
+            widget.mc,
+            widget.isMute,
+            widget.user,
+          )..init(widget.questionModelHive),
+        ),
+        BlocProvider.value(value: widget.cubit),
+      ],
+      child: PlayGamePage(
+        mc: widget.mc,
+        isMute: widget.isMute,
+        cubit: widget.cubit,
+        user: widget.user,
+      ),
+    );
+  }
+}
+
+class PlayGamePage extends StatefulWidget {
+  const PlayGamePage(
+      {super.key,
+      required this.mc,
+      required this.isMute,
+      this.questionModelHive,
+      required this.cubit,
+      required this.user});
+
+  final int mc;
+  final bool isMute;
+  final QuestionModelHive? questionModelHive;
+  final LoginCubit cubit;
+  final User user;
+
+  @override
+  State<PlayGamePage> createState() => _PlayGamePageState();
+}
+
+class _PlayGamePageState extends State<PlayGamePage>
+    with WidgetsBindingObserver {
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
+  BannerAd? _bannerAd;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    createBannerAd();
+    super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final cubit = context.read<LoginCubit>();
+    final cubit1 = context.read<PlayGameCubit>();
+    if (!cubit.state.isMuteCheckAgain) {
+      cubit1.setIsMute(isMute: state != AppLifecycleState.resumed);
+      cubit.setIsMute(state != AppLifecycleState.resumed);
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _bannerAd?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context1) {
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<PlayGameCubit, PlayGameState>(
+          listenWhen: (previous, current) => previous.user != current.user,
+          listener: (context, state) {
+            context.read<LoginCubit>().setUser(state.user!);
+          },
+        ),
+        BlocListener<LoginCubit, LoginState>(
+          listenWhen: (previous, current) => previous.isMute != current.isMute,
+          listener: (context, state) {
+            if (state.isMute) {
+              context.read<LoginCubit>().stopAudio();
+            } else {
+              context.read<LoginCubit>().playAudio();
+            }
+          },
+        ),
+        BlocListener<PlayGameCubit, PlayGameState>(
+          listenWhen: (previous, current) =>
+              current.timeCounter < 3 &&
+              previous.timeCounter != current.timeCounter,
+          listener: (context, state) {
+            final cubit = context.read<PlayGameCubit>();
+            if (state.timeCounter == 0) {
+              cubit.outTime();
+              context1.read<LoginCubit>().clearQuestionLocal();
+              final point = getQuestionByLevel(state.level - 1);
+              context.router.replace(PlayAgainViewRoute(
+                caseResult: 0,
+                point: point,
+                isMute: widget.isMute,
+                mc: widget.mc,
+                cubit: widget.cubit,
+                user: state.user!,
+              ));
+            }
+            //_showPlayAgain(context, 0);
+          },
+        ),
+        BlocListener<PlayGameCubit, PlayGameState>(
+          listener: (context, state) {
+            if (state.isShowGameResult) {
+              _key.currentState!.openEndDrawer();
+            } else {
+              _key.currentState!.closeEndDrawer();
+            }
+          },
+        ),
+        BlocListener<PlayGameCubit, PlayGameState>(
+          listenWhen: (previous, current) =>
+              previous.isFalse != current.isFalse,
+          listener: (context, state) {
+            if (state.isFalse) {
+              final point = getQuestionByLevel(state.level - 1);
+              context1.read<LoginCubit>().clearQuestionLocal();
+              Future.delayed(const Duration(milliseconds: 1500), () async {
+                await context.router.replace(PlayAgainViewRoute(
+                    caseResult: 1,
+                    point: point,
+                    isMute: widget.isMute,
+                    mc: widget.mc,
+                    cubit: widget.cubit,
+                    user: state.user!));
+              });
+            }
+          },
+        ),
+        BlocListener<PlayGameCubit, PlayGameState>(
+          listenWhen: (previous, current) => previous.isWin != current.isWin,
+          listener: (context, state) async {
+            if (state.isWin) {
+              context.read<PlayGameCubit>().win();
+              context1.read<LoginCubit>().clearQuestionLocal();
+              final point = getQuestionByLevel(state.level);
+              await context.router.replace(PlayAgainViewRoute(
+                caseResult: 2,
+                point: point,
+                isMute: widget.isMute,
+                mc: widget.mc,
+                user: state.user!,
+                cubit: widget.cubit,
+              ));
+            }
+          },
+        ),
+        BlocListener<PlayGameCubit, PlayGameState>(
+          listenWhen: (previous, current) => previous.isCall != current.isCall,
+          listener: (context, state) {
+            if (!state.isCall) {
+              Future.delayed(const Duration(seconds: 7), () async {
+                final rightAnswer =
+                    state.questions[state.level - 1].rightAnswer ?? 1;
+                await _showCallHelp(
+                    context, rightAnswer, context.read<PlayGameCubit>());
+              });
+            }
+          },
+        ),
+        BlocListener<PlayGameCubit, PlayGameState>(
+          listenWhen: (previous, current) =>
+              previous.isChart != current.isChart,
+          listener: (context, state) {
+            if (!state.isChart) {
+              Future.delayed(const Duration(seconds: 10), () async {
+                await _showAudienceHelp(
+                    context,
+                    state.questions[state.level - 1].rightAnswer ?? 1,
+                    context.read<PlayGameCubit>());
+              });
+            }
+          },
+        ),
+        BlocListener<PlayGameCubit, PlayGameState>(
+          listenWhen: (previous, current) =>
+              previous.isConsultant != current.isConsultant,
+          listener: (context, state) {
+            if (!state.isConsultant) {
+              Future.delayed(const Duration(seconds: 3), () async {
+                await _showConsultantHelp(
+                    context,
+                    state.questions[state.level - 1].rightAnswer ?? 1,
+                    context.read<PlayGameCubit>());
+              });
+            }
+          },
+        ),
+      ],
+      child:
+          BlocBuilder<PlayGameCubit, PlayGameState>(builder: (context, state) {
+        final cubit = context.read<PlayGameCubit>();
+        final checkExpireAnswer = !state.isChooseA &&
+            !state.isChooseB &&
+            !state.isChooseC &&
+            !state.isChooseD &&
+            !state.isTrueA &&
+            !state.isTrueB &&
+            !state.isTrueC &&
+            !state.isTrueD &&
+            state.isAccessAnswer;
+        return WillPopScope(
+          onWillPop: () async {
+            context.read<PlayGameCubit>().quesionStop();
+            await _showPlaycConfirm(
+                context, getQuestionByLevel(state.level - 1), cubit);
+            return false;
+          },
+          child: Scaffold(
+            key: _key,
+            endDrawer: GamePoint(level: state.level),
+            onEndDrawerChanged: (isOpened) {
+              if (state.isShowGameResult != isOpened) {
+                cubit.openGameResult(isOpened);
+              }
+            },
+            body: Builder(builder: (context) {
+              return Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/background.jpg'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          AppBarItem(
+                            onTap: () => context.router.pop(),
+                            isCheck: false,
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: const Icon(
+                              Icons.assignment_return_outlined,
+                              size: 32,
+                              color: AppColors.colorFFFFFFFF,
+                            ),
+                          ),
+                          BlocSelector<LoginCubit, LoginState, bool>(
+                              selector: (state) => state.isMute,
+                              builder: (contextLogin, isMute) {
+                                return InkWell(
+                                  onTap: () {
+                                    contextLogin
+                                        .read<LoginCubit>()
+                                        .setIsMute(!isMute);
+                                    contextLogin
+                                        .read<LoginCubit>()
+                                        .setIsMuteCheckAgain(!isMute);
+                                    cubit.setIsMute();
+                                  },
+                                  child: Container(
+                                      margin: const EdgeInsets.only(top: 8),
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: AppColors.colorFF77dbe5,
+                                            width: 2),
+                                        shape: BoxShape.circle,
+                                        gradient: const LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            AppColors.colorFF57B9FB,
+                                            AppColors.colorFF03456e,
+                                            AppColors.colorFF57B9FB,
+                                          ],
+                                        ),
+                                      ),
+                                      child: Icon(
+                                        !state.isMute
+                                            ? Icons.volume_up_rounded
+                                            : Icons.volume_off,
+                                        color: AppColors.colorFFFFFFFF,
+                                      )),
+                                );
+                              }),
+                          AppBarItem(
+                            onTap: () => cubit.openGameResult(true),
+                            isCheck: true,
+                            child: Text(
+                              "${state.level} / 15",
+                              style: TextStyles.mediumMWhiteS20,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              color: AppColors.colorFFd1b037,
+                              height: 2,
+                            ),
+                          ),
+                          PointItem(
+                            text: '${getQuestionByLevel(state.level)} đ',
+                          ),
+                          Expanded(
+                            child: Container(
+                              color: AppColors.colorFFd1b037,
+                              height: 2,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TimeCount(
+                        text: state.timeCounter.toString(),
+                        isLoading: state.isLoading,
+                      ),
+                      Column(
+                        children: [
+                          Question(
+                            text: !state.isLoading
+                                ? state.questions[state.level - 1].question ??
+                                    ''
+                                : state.startCounter?.toString() ?? '',
+                          ),
+                          AnswerItem(
+                            checkExpire: checkExpireAnswer,
+                            isHide: state.isHideA || state.isLoading,
+                            isChoose: state.isChooseA,
+                            isTrue: state.isTrueA,
+                            onTap: () => cubit.chooseAnswer(
+                                'A',
+                                state.questions[state.level - 1].rightAnswer ??
+                                    1),
+                            text: !state.isLoading
+                                ? (state.questions[state.level - 1]
+                                        .answers?[0] ??
+                                    '')
+                                : '',
+                            type: 'A',
+                          ),
+                          AnswerItem(
+                            checkExpire: checkExpireAnswer,
+                            isHide: state.isHideB || state.isLoading,
+                            isChoose: state.isChooseB,
+                            isTrue: state.isTrueB,
+                            onTap: () => cubit.chooseAnswer(
+                                'B',
+                                state.questions[state.level - 1].rightAnswer ??
+                                    1),
+                            text: !state.isLoading
+                                ? (state.questions[state.level - 1]
+                                        .answers?[1] ??
+                                    '')
+                                : '',
+                            type: 'B',
+                          ),
+                          AnswerItem(
+                            checkExpire: checkExpireAnswer,
+                            isHide: state.isHideC || state.isLoading,
+                            isChoose: state.isChooseC,
+                            isTrue: state.isTrueC,
+                            onTap: () => cubit.chooseAnswer(
+                                'C',
+                                state.questions[state.level - 1].rightAnswer ??
+                                    1),
+                            text: !state.isLoading
+                                ? (state.questions[state.level - 1]
+                                        .answers?[2] ??
+                                    '')
+                                : '',
+                            type: 'C',
+                          ),
+                          AnswerItem(
+                            checkExpire: checkExpireAnswer,
+                            isHide: state.isHideD || state.isLoading,
+                            isChoose: state.isChooseD,
+                            isTrue: state.isTrueD,
+                            onTap: () => cubit.chooseAnswer(
+                                'D',
+                                state.questions[state.level - 1].rightAnswer ??
+                                    1),
+                            text: !state.isLoading
+                                ? (state.questions[state.level - 1]
+                                        .answers?[3] ??
+                                    '')
+                                : '',
+                            type: 'D',
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          HelpItem(
+                            checkExpire:
+                                state.isDelete2Answers && state.isAccessAnswer,
+                            isHide: state.isDelete2Answers,
+                            onTap: () => cubit.delete2Answers(
+                                state.questions[state.level - 1].rightAnswer ??
+                                    1),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 10),
+                            child: const Text(
+                              "50 : 50",
+                              style: TextStyles.mediumWhiteS16,
+                            ),
+                          ),
+                          HelpItem(
+                            checkExpire: state.isCall && state.isAccessAnswer,
+                            isHide: state.isCall,
+                            onTap: () => cubit.call(
+                                state.questions[state.level - 1].rightAnswer ??
+                                    1),
+                            child: const Icon(
+                              Icons.phone_in_talk_outlined,
+                              color: AppColors.colorFFFFFFFF,
+                            ),
+                          ),
+                          HelpItem(
+                            checkExpire:
+                                state.isConsultant && state.isAccessAnswer,
+                            isHide: state.isConsultant,
+                            onTap: () => cubit.consultant(),
+                            padding: const EdgeInsets.all(4),
+                            child: SizedBox(
+                                width: 32,
+                                child: Image.asset(
+                                  'assets/images/ic_team_person.png',
+                                  color: AppColors.colorFFFFFFFF,
+                                )),
+                          ),
+                          HelpItem(
+                            checkExpire: state.isChart && state.isAccessAnswer,
+                            isHide: state.isChart,
+                            onTap: () => cubit.chart(),
+                            child: const Icon(
+                              Icons.bar_chart_outlined,
+                              color: AppColors.colorFFFFFFFF,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ));
+            }),
+            bottomNavigationBar: _bannerAd == null
+                ? null
+                : Container(
+                    height: 52,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: AdWidget(ad: _bannerAd!),
+                  ),
+          ),
+        );
+      }),
+    );
+  }
+
+  Future<void> _showAudienceHelp(
+      BuildContext context, int answer, PlayGameCubit cubit) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext _) {
+        return BlocProvider.value(
+          value: cubit,
+          child: PopupNotice(
+            textButton: 'ĐÓNG',
+            title: 'HỎI Ý KIẾN\nKHÁN GIẢ',
+            content: ChartHelp(rightAnswer: answer),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showConsultantHelp(
+      BuildContext context, int answer, PlayGameCubit cubit) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext _) {
+        List<int> answers = [
+          answer,
+          answer,
+          answer,
+          answer,
+          answer > 2 ? answer - 1 : answer + 1
+        ];
+        return BlocProvider.value(
+          value: cubit,
+          child: PopupNotice(
+            textButton: 'ĐÓNG',
+            title: cubit.state.chooseMC == 0
+                ? 'TỔ TƯ VẪN TẠI CHỖ'
+                : 'CÁC NHÀ THÔNG THÁI',
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ConsultantItem(
+                  answer: answers[Random().nextInt(5)],
+                  asset: 'superman',
+                ),
+                ConsultantItem(
+                  answer: answers[Random().nextInt(5)],
+                  asset: 'deadpool',
+                ),
+                ConsultantItem(
+                  answer: answers[Random().nextInt(5)],
+                  asset: 'spiderman',
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showCallHelp(
+      BuildContext context, int answer, PlayGameCubit cubit) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext _) {
+        final rd = Random().nextInt(2);
+        return BlocProvider.value(
+          value: cubit,
+          child: PopupNotice(
+            textButton: 'ĐÓNG',
+            titleWidget: Image.asset(rd == 0
+                ? 'assets/images/man_help.png'
+                : 'assets/images/woman_help.png'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Tôi chắc chắn đáp án chính xác cuối cùng là:',
+                  style: TextStyles.regularWhiteS20,
+                ),
+                Text(
+                  answer.intToAnswer(),
+                  style: TextStyles.boldRedS40,
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showPlaycConfirm(
+      BuildContext context, String point, PlayGameCubit cubit) async {
+    await showDialog(
+        context: context,
+        builder: (_) {
+          return PopupPlayConfirm(
+            onTap: () async {
+              cubit.updatePoint(point);
+              await context.router.replace(PlayAgainViewRoute(
+                caseResult: 1,
+                point: point,
+                isMute: widget.isMute,
+                mc: widget.mc,
+                user: cubit.state.user!,
+                cubit: widget.cubit,
+              ));
+            },
+            title: 'Bạn chắc chắn muốn thoát?',
+            titleButton1: 'Tiếp tục',
+          );
+        });
+  }
+
+  void createBannerAd() {
+    // _bannerAd = null;
+    _bannerAd = BannerAd(
+      size: AdSize.fullBanner,
+      adUnitId: AdsManager.bannerAdUnitId!,
+      listener: AdsManager.bannerListenner,
+      request: const AdRequest(),
+    )..load();
+  }
+}
+
+String getQuestionByLevel(int level) {
+  final list = List.from(QuestionLevel.questionPoints);
+  for (final item in list) {
+    if (item.level == level) return item.point;
+  }
+  return '0';
+}

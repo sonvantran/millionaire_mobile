@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "158761949285",
+    "project_id": "ai-la-trieu-phu-b9937",
+    "storage_bucket": "ai-la-trieu-phu-b9937.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158761949285:android:f90a107388743649fcce8c",
+        "android_client_info": {
+          "package_name": "com.congthiep.millionaire"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD42QdRGgi4vz2DJ2oHH-JEHG4_zqPtFAw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
