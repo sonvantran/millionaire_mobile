@@ -14,12 +14,14 @@ class PopupNotice extends StatelessWidget {
       required this.textButton,
       this.content,
       this.titleWidget,
-      this.isCountDown = true});
+      this.isCountDown = true,
+      this.closePopup = true});
   final String? title;
   final Widget? titleWidget;
   final String textButton;
   final Widget? content;
   final bool isCountDown;
+  final bool closePopup;
 
   @override
   Widget build(BuildContext context) {
@@ -71,13 +73,13 @@ class PopupNotice extends StatelessWidget {
       actions: [
         InkWell(
           onTap: () {
-            Navigator.of(context).pop();
+            if (closePopup) Navigator.of(context).pop();
           },
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.colorFFFFFFFF, width: 2),
+              border: Border.all(color: AppColors.colorFF77dbe5, width: 2),
               borderRadius: const BorderRadius.all(Radius.circular(8)),
               color: AppColors.colorFF03456e,
             ),
@@ -94,10 +96,16 @@ class PopupNotice extends StatelessWidget {
 }
 
 class ConsultantItem extends StatelessWidget {
-  const ConsultantItem({super.key, required this.asset, required this.answer});
+  const ConsultantItem({
+    super.key,
+    required this.asset,
+    required this.answer,
+    this.check = false,
+  });
 
   final String asset;
   final int answer;
+  final bool check;
 
   @override
   Widget build(BuildContext context) {
@@ -110,12 +118,26 @@ class ConsultantItem extends StatelessWidget {
       child: Row(
         children: [
           Container(
-              width: 40,
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                  color: AppColors.colorFF375193,
-                  borderRadius: BorderRadius.all(Radius.circular(8))),
-              child: Image.asset('assets/images/$asset.png')),
+            width: 40,
+            height: check ? 40 : null,
+            padding: check ? const EdgeInsets.all(8) : null,
+            decoration: BoxDecoration(
+                // shape: check ? BoxShape.circle : BoxShape.rectangle,
+                color: AppColors.colorFF375193,
+                image: check
+                    ? DecorationImage(
+                        image: AssetImage("assets/images/ndh/$asset.jpg"),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+                borderRadius: const BorderRadius.all(Radius.circular(8))),
+            child: check
+                ? null
+                : Image.asset(
+                    'assets/images/$asset.png',
+                    fit: BoxFit.fitWidth,
+                  ),
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -136,12 +158,12 @@ class RoleItem extends StatelessWidget {
       this.iconData,
       required this.text,
       this.textIcon,
-      this.isAsset = false});
+      this.isAsset});
 
   final IconData? iconData;
   final String text;
   final String? textIcon;
-  final bool isAsset;
+  final bool? isAsset;
 
   @override
   Widget build(BuildContext context) {
@@ -169,17 +191,24 @@ class RoleItem extends StatelessWidget {
                   decoration: const BoxDecoration(
                       color: AppColors.colorFF375193,
                       borderRadius: BorderRadius.all(Radius.circular(8))),
-                  child: isAsset
+                  child: isAsset == true
                       ? SizedBox(
                           width: 32,
                           child: Image.asset(
                             'assets/images/ic_team_person.png',
                             color: AppColors.colorFFFFFFFF,
                           ))
-                      : Icon(
-                          iconData,
-                          color: AppColors.colorFFFFFFFF,
-                        )),
+                      : isAsset == false
+                          ? SizedBox(
+                              width: 32,
+                              child: Image.asset(
+                                'assets/images/dh.png',
+                                color: AppColors.colorFFFFFFFF,
+                              ))
+                          : Icon(
+                              iconData,
+                              color: AppColors.colorFFFFFFFF,
+                            )),
           const SizedBox(width: 8),
           Expanded(
             child: Text(

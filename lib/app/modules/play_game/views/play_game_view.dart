@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
@@ -214,14 +215,15 @@ class _PlayGamePageState extends State<PlayGamePage>
         ),
         BlocListener<PlayGameCubit, PlayGameState>(
           listenWhen: (previous, current) => previous.isCall != current.isCall,
-          listener: (context, state) {
+          listener: (context, state) async {
             if (!state.isCall) {
-              Future.delayed(const Duration(seconds: 7), () async {
-                final rightAnswer =
-                    state.questions[state.level - 1].rightAnswer ?? 1;
-                await _showCallHelp(
-                    context, rightAnswer, context.read<PlayGameCubit>());
-              });
+              final rightAnswer =
+                  state.questions[state.level - 1].rightAnswer ?? 1;
+              await _showCallHelp(
+                  context, rightAnswer, context.read<PlayGameCubit>());
+              // Future.delayed(const Duration(seconds: 7), () async {
+
+              // });
             }
           },
         ),
@@ -478,8 +480,10 @@ class _PlayGamePageState extends State<PlayGamePage>
                             onTap: () => cubit.call(
                                 state.questions[state.level - 1].rightAnswer ??
                                     1),
-                            child: const Icon(
-                              Icons.phone_in_talk_outlined,
+                            child: Icon(
+                              state.chooseMC == 0
+                                  ? Icons.phone_in_talk_outlined
+                                  : Icons.person_add,
                               color: AppColors.colorFFFFFFFF,
                             ),
                           ),
@@ -492,7 +496,9 @@ class _PlayGamePageState extends State<PlayGamePage>
                             child: SizedBox(
                                 width: 32,
                                 child: Image.asset(
-                                  'assets/images/ic_team_person.png',
+                                  state.chooseMC == 0
+                                      ? 'assets/images/ic_team_person.png'
+                                      : 'assets/images/dh.png',
                                   color: AppColors.colorFFFFFFFF,
                                 )),
                           ),
@@ -550,8 +556,11 @@ class _PlayGamePageState extends State<PlayGamePage>
           answer,
           answer,
           answer,
+          answer,
           answer > 2 ? answer - 1 : answer + 1
         ];
+        List<int> ntt = [1, 2, 3, 4, 5, 6];
+        ntt.shuffle();
         return BlocProvider.value(
           value: cubit,
           child: PopupNotice(
@@ -562,18 +571,31 @@ class _PlayGamePageState extends State<PlayGamePage>
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ConsultantItem(
-                  answer: answers[Random().nextInt(5)],
-                  asset: 'superman',
-                ),
-                ConsultantItem(
-                  answer: answers[Random().nextInt(5)],
-                  asset: 'deadpool',
-                ),
-                ConsultantItem(
-                  answer: answers[Random().nextInt(5)],
-                  asset: 'spiderman',
-                ),
+                cubit.state.chooseMC == 0
+                    ? ConsultantItem(
+                        answer: answers[Random().nextInt(6)],
+                        asset: 'superman',
+                      )
+                    : ConsultantItem(
+                        answer: answers[Random().nextInt(6)],
+                        asset: ntt[0].toString(),
+                        check: true,
+                      ),
+                cubit.state.chooseMC == 0
+                    ? ConsultantItem(
+                        answer: answers[Random().nextInt(6)],
+                        asset: 'deadpool',
+                      )
+                    : ConsultantItem(
+                        answer: answers[Random().nextInt(6)],
+                        asset: ntt[1].toString(),
+                        check: true,
+                      ),
+                if (cubit.state.chooseMC == 0)
+                  ConsultantItem(
+                    answer: answers[Random().nextInt(6)],
+                    asset: 'spiderman',
+                  ),
               ],
             ),
           ),
@@ -587,27 +609,68 @@ class _PlayGamePageState extends State<PlayGamePage>
     await showDialog(
       context: context,
       builder: (BuildContext _) {
-        final rd = Random().nextInt(2);
+        final rd = Random().nextInt(6) + 1;
+        double len = MediaQuery.of(context).size.width * 0.5;
         return BlocProvider.value(
           value: cubit,
           child: PopupNotice(
             textButton: 'ĐÓNG',
-            titleWidget: Image.asset(rd == 0
-                ? 'assets/images/man_help.png'
-                : 'assets/images/woman_help.png'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Tôi chắc chắn đáp án chính xác cuối cùng là:',
-                  style: TextStyles.regularWhiteS20,
-                ),
-                Text(
-                  answer.intToAnswer(),
-                  style: TextStyles.boldRedS40,
-                )
-              ],
-            ),
+            titleWidget: BlocSelector<PlayGameCubit, PlayGameState, bool>(
+                selector: (state) => state.isShowCall,
+                builder: (context, showCall) {
+                  return Container(
+                    width: showCall ? len : null,
+                    height: showCall ? len : null,
+                    margin: const EdgeInsets.only(top: 18),
+                    padding: showCall ? null : const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.colorFF5A8AAA,
+                      image: showCall
+                          ? DecorationImage(
+                              fit: BoxFit.contain,
+                              image:
+                                  AssetImage('assets/images/call_help/$rd.png'),
+                            )
+                          : null,
+                    ),
+                    child: showCall
+                        ? null
+                        : const Icon(
+                            Icons.call,
+                            color: AppColors.colorFFFFFFFF,
+                            size: 80,
+                          ),
+                  );
+                }),
+            content: BlocSelector<PlayGameCubit, PlayGameState, bool>(
+                selector: (state) => state.isShowCall,
+                builder: (context, showCall) {
+                  return showCall
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              'Tôi chắc chắn đáp án chính xác cuối cùng là:',
+                              style: TextStyles.regularWhiteS20,
+                            ),
+                            Text(
+                              answer.intToAnswer(),
+                              style: TextStyles.boldRedS40,
+                            )
+                          ],
+                        )
+                      : const Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SpinKitThreeBounce(
+                              color: AppColors.colorFF5A8AAA,
+                              duration: Duration(milliseconds: 2000),
+                              size: 70,
+                            ),
+                          ],
+                        );
+                }),
           ),
         );
       },

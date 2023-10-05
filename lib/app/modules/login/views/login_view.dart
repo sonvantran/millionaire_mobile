@@ -412,7 +412,7 @@ Người chơi được cung cấp bốn lựa chọn trợ giúp: "50:50", khá
               ),
               RoleItem(
                 text: 'Hỏi ý kiến những nhà thông thái',
-                iconData: Icons.phone_in_talk_outlined,
+                isAsset: false,
               ),
             ],
           ),

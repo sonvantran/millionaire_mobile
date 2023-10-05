@@ -224,9 +224,10 @@ class PlayGameCubit extends Cubit<PlayGameState> {
 
   void call(int right) async {
     try {
-      emit(state.copyWith(isCall: false));
+      emit(state.copyWith(isCall: false, isShowCall: false));
       // cancelCountDown();
       await playAudio(SoundManager.callHelp(mc));
+      emit(state.copyWith(isShowCall: true));
       // countDown();
       trogiup(right);
     } catch (e) {

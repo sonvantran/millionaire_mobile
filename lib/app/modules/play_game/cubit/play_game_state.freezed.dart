@@ -19,6 +19,7 @@ mixin _$PlayGameState {
   List<Question> get questions => throw _privateConstructorUsedError;
   bool get isDelete2Answers => throw _privateConstructorUsedError;
   bool get isCall => throw _privateConstructorUsedError;
+  bool get isShowCall => throw _privateConstructorUsedError;
   bool get isConsultant => throw _privateConstructorUsedError;
   bool get isChart => throw _privateConstructorUsedError;
   bool get isFalse => throw _privateConstructorUsedError;
@@ -64,6 +65,7 @@ abstract class $PlayGameStateCopyWith<$Res> {
       {List<Question> questions,
       bool isDelete2Answers,
       bool isCall,
+      bool isShowCall,
       bool isConsultant,
       bool isChart,
       bool isFalse,
@@ -111,6 +113,7 @@ class _$PlayGameStateCopyWithImpl<$Res, $Val extends PlayGameState>
     Object? questions = null,
     Object? isDelete2Answers = null,
     Object? isCall = null,
+    Object? isShowCall = null,
     Object? isConsultant = null,
     Object? isChart = null,
     Object? isFalse = null,
@@ -153,6 +156,10 @@ class _$PlayGameStateCopyWithImpl<$Res, $Val extends PlayGameState>
       isCall: null == isCall
           ? _value.isCall
           : isCall // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isShowCall: null == isShowCall
+          ? _value.isShowCall
+          : isShowCall // ignore: cast_nullable_to_non_nullable
               as bool,
       isConsultant: null == isConsultant
           ? _value.isConsultant
@@ -286,6 +293,7 @@ abstract class _$$_PlayGameStateCopyWith<$Res>
       {List<Question> questions,
       bool isDelete2Answers,
       bool isCall,
+      bool isShowCall,
       bool isConsultant,
       bool isChart,
       bool isFalse,
@@ -331,6 +339,7 @@ class __$$_PlayGameStateCopyWithImpl<$Res>
     Object? questions = null,
     Object? isDelete2Answers = null,
     Object? isCall = null,
+    Object? isShowCall = null,
     Object? isConsultant = null,
     Object? isChart = null,
     Object? isFalse = null,
@@ -373,6 +382,10 @@ class __$$_PlayGameStateCopyWithImpl<$Res>
       isCall: null == isCall
           ? _value.isCall
           : isCall // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isShowCall: null == isShowCall
+          ? _value.isShowCall
+          : isShowCall // ignore: cast_nullable_to_non_nullable
               as bool,
       isConsultant: null == isConsultant
           ? _value.isConsultant
@@ -501,6 +514,7 @@ class _$_PlayGameState extends _PlayGameState {
       {final List<Question> questions = const [],
       this.isDelete2Answers = true,
       this.isCall = true,
+      this.isShowCall = false,
       this.isConsultant = true,
       this.isChart = true,
       this.isFalse = false,
@@ -548,6 +562,9 @@ class _$_PlayGameState extends _PlayGameState {
   @override
   @JsonKey()
   final bool isCall;
+  @override
+  @JsonKey()
+  final bool isShowCall;
   @override
   @JsonKey()
   final bool isConsultant;
@@ -632,7 +649,7 @@ class _$_PlayGameState extends _PlayGameState {
 
   @override
   String toString() {
-    return 'PlayGameState(questions: $questions, isDelete2Answers: $isDelete2Answers, isCall: $isCall, isConsultant: $isConsultant, isChart: $isChart, isFalse: $isFalse, isWin: $isWin, isChooseA: $isChooseA, isTrueA: $isTrueA, isChooseB: $isChooseB, isTrueB: $isTrueB, isChooseC: $isChooseC, isTrueC: $isTrueC, isChooseD: $isChooseD, isTrueD: $isTrueD, isHideA: $isHideA, isHideB: $isHideB, isHideC: $isHideC, isHideD: $isHideD, isShowGameResult: $isShowGameResult, isMute: $isMute, isLoading: $isLoading, isAccessAnswer: $isAccessAnswer, chooseMC: $chooseMC, level: $level, timeCounter: $timeCounter, startCounter: $startCounter, timer: $timer, point: $point, player: $player, user: $user, error: $error)';
+    return 'PlayGameState(questions: $questions, isDelete2Answers: $isDelete2Answers, isCall: $isCall, isShowCall: $isShowCall, isConsultant: $isConsultant, isChart: $isChart, isFalse: $isFalse, isWin: $isWin, isChooseA: $isChooseA, isTrueA: $isTrueA, isChooseB: $isChooseB, isTrueB: $isTrueB, isChooseC: $isChooseC, isTrueC: $isTrueC, isChooseD: $isChooseD, isTrueD: $isTrueD, isHideA: $isHideA, isHideB: $isHideB, isHideC: $isHideC, isHideD: $isHideD, isShowGameResult: $isShowGameResult, isMute: $isMute, isLoading: $isLoading, isAccessAnswer: $isAccessAnswer, chooseMC: $chooseMC, level: $level, timeCounter: $timeCounter, startCounter: $startCounter, timer: $timer, point: $point, player: $player, user: $user, error: $error)';
   }
 
   @override
@@ -645,6 +662,8 @@ class _$_PlayGameState extends _PlayGameState {
             (identical(other.isDelete2Answers, isDelete2Answers) ||
                 other.isDelete2Answers == isDelete2Answers) &&
             (identical(other.isCall, isCall) || other.isCall == isCall) &&
+            (identical(other.isShowCall, isShowCall) ||
+                other.isShowCall == isShowCall) &&
             (identical(other.isConsultant, isConsultant) ||
                 other.isConsultant == isConsultant) &&
             (identical(other.isChart, isChart) || other.isChart == isChart) &&
@@ -693,6 +712,7 @@ class _$_PlayGameState extends _PlayGameState {
         const DeepCollectionEquality().hash(_questions),
         isDelete2Answers,
         isCall,
+        isShowCall,
         isConsultant,
         isChart,
         isFalse,
@@ -736,6 +756,7 @@ abstract class _PlayGameState extends PlayGameState {
       {final List<Question> questions,
       final bool isDelete2Answers,
       final bool isCall,
+      final bool isShowCall,
       final bool isConsultant,
       final bool isChart,
       final bool isFalse,
@@ -773,6 +794,8 @@ abstract class _PlayGameState extends PlayGameState {
   bool get isDelete2Answers;
   @override
   bool get isCall;
+  @override
+  bool get isShowCall;
   @override
   bool get isConsultant;
   @override

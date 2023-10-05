@@ -14,6 +14,7 @@ class PlayGameState with _$PlayGameState {
     @Default([]) List<Question> questions,
     @Default(true) bool isDelete2Answers,
     @Default(true) bool isCall,
+    @Default(false) bool isShowCall,
     @Default(true) bool isConsultant,
     @Default(true) bool isChart,
     @Default(false) bool isFalse,
