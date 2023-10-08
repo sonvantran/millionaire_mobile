@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 abstract class AppColors {
   static const Color colorFF03456e = Color(0xFF03456e);
 
+  static const Color colorFF0B2D42 = Color(0xFF0B2D42);
+
   static const Color transparent = Colors.transparent;
 
   static const Color colorFF57B9FB = Color(0xFF57B9FB);
+
+  static const Color colorFF326D94 = Color(0xFF326D94);
 
   static const Color colorFF77dbe5 = Color(0xFF77dbe5);
 

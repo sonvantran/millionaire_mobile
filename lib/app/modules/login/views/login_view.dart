@@ -468,7 +468,7 @@ Trò chơi này dựa trên "Ai là Triệu Phú" và nhằm mang đến giây p
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      'Phạm Công Thiệp\nthiepcong12@gmail.com',
+                      'PCTechWizard\nthiepcong12@gmail.com',
                       style: TextStyles.mediumWhiteS14,
                       textAlign: TextAlign.center,
                     ),

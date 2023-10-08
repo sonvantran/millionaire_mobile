@@ -5,6 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:volume_controller/volume_controller.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/extension/integer_extension.dart';
 import '../../../core/extension/string_extention.dart';
@@ -429,8 +430,10 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       final player = state.player;
       if (player != null) {
         setIsAccessAnswer(false);
-        final assetSource =
-            soundPath(state.isMute ? SoundManager.muteSound : name);
+        final systemSound = await VolumeController().getVolume();
+        // debugPrint(systemSound.toString());
+        final assetSource = soundPath(
+            state.isMute || systemSound <= 0.3 ? SoundManager.muteSound : name);
         final source = AssetSource(assetSource);
         await player.play(source);
         await player.onPlayerComplete.first; //đảm bảo âm thanh đã chơi hết

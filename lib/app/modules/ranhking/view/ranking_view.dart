@@ -14,6 +14,7 @@ import '../cubit/ranking_state.dart';
 import '../repository/ranking_repository.dart';
 import '../widget/cup_item.dart';
 import '../widget/date_button.dart';
+import '../widget/title_ranking.dart';
 import '../widget/user_ranking_item.dart';
 
 class RankingView extends StatefulWidget {
@@ -134,10 +135,10 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                     ),
               users != null
                   ? Container(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      height: MediaQuery.of(context).size.height * 0.4,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 18, vertical: 12),
+                      width: MediaQuery.of(context).size.width * 0.96,
+                      height: MediaQuery.of(context).size.height * 0.42,
+                      // padding: const EdgeInsets.symmetric(
+                      //     horizontal: 18, vertical: 12),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           begin: Alignment.topCenter,
@@ -154,18 +155,26 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                             const BorderRadius.all(Radius.circular(24)),
                       ),
                       child: users.isNotEmpty
-                          ? SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  for (int i = 0; i < users.length; i++)
-                                    UserRankingItem(
-                                      name: users[i].name,
-                                      number: (i + 1).toString(),
-                                      point:
-                                          '${formatNumber(users[i].point)} đ',
-                                    )
-                                ],
-                              ),
+                          ? Column(
+                              children: [
+                                const TitleRanking(),
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        for (int i = 0; i < users.length; i++)
+                                          UserRankingItem(
+                                            name: users[i].name,
+                                            number: i + 1,
+                                            point:
+                                                '${formatNumber(users[i].point)} đ',
+                                          )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const TitleRanking(check: false),
+                              ],
                             )
                           : const Center(
                               child: Text(
