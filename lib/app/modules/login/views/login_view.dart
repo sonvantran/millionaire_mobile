@@ -372,7 +372,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
   void _showRole(BuildContext context) async {
     const String text = '''
-Người chơi được cung cấp bốn lựa chọn trợ giúp: "50:50", khán giả, điện thoại cho người thân và tư vấn từ MC Văn Sâm; cũng như ý kiến từ bạn đồng hành và các chuyên gia khi đối diện với MC Phan Đăng và MC Giáo Sư Xoay.
+Người chơi được cung cấp bốn lựa chọn trợ giúp: "50:50", điện thoại cho người thân, khán giả trường quay và tổ tư vấn từ MC Văn Sâm; cũng như ý kiến từ bạn đồng hành và các chuyên gia khi đối diện với MC Phan Đăng và MC Giáo Sư Xoay.
 ''';
     await showDialog(
       context: context,

@@ -1,5 +1,4 @@
 extension IntegerX on int {
-
   String intToAnswer() {
     switch (this) {
       case 1:
@@ -10,6 +9,23 @@ extension IntegerX on int {
         return 'C';
       default:
         return 'D';
+    }
+  }
+
+  String intToNdh() {
+    switch (this) {
+      case 1:
+        return "Doraemon";
+      case 2:
+        return "Mickey Mouse";
+      case 3:
+        return "Bill Gates";
+      case 4:
+        return "Homer Simpson";
+      case 5:
+        return "Stephen Hawking";
+      default:
+        return "Elon Musk";
     }
   }
 

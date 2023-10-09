@@ -87,6 +87,8 @@ class SoundManager {
 
   static String muteSound = 'tinh';
 
+  static String dhSound = 'ping';
+
   static String intToMc(int i) {
     switch (i) {
       case 0:

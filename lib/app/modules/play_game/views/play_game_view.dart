@@ -24,6 +24,7 @@ import '../repository/play_game_repository.dart';
 import '../widget/answer_item.dart';
 import '../widget/app_bar_item.dart';
 import '../widget/chart_help.dart';
+import '../widget/donghanh.dart';
 import '../widget/help_item.dart';
 import '../widget/game_point.dart';
 import '../widget/point_item.dart';
@@ -147,15 +148,12 @@ class _PlayGamePageState extends State<PlayGamePage>
         ),
         BlocListener<PlayGameCubit, PlayGameState>(
           listenWhen: (previous, current) =>
-              current.timeCounter < 3 &&
-              previous.timeCounter != current.timeCounter,
-          listener: (context, state) {
-            final cubit = context.read<PlayGameCubit>();
+              previous.saveDone != current.saveDone && current.saveDone,
+          listener: (context, state) async {
+            // final cubit = context.read<PlayGameCubit>();
             if (state.timeCounter == 0) {
-              cubit.outTime();
-              context1.read<LoginCubit>().clearQuestionLocal();
               final point = getQuestionByLevel(state.level - 1);
-              context.router.replace(PlayAgainViewRoute(
+              await context.router.replace(PlayAgainViewRoute(
                 caseResult: 0,
                 point: point,
                 isMute: widget.isMute,
@@ -163,6 +161,39 @@ class _PlayGamePageState extends State<PlayGamePage>
                 cubit: widget.cubit,
                 user: state.user!,
               ));
+            } else if (state.isFalse) {
+              final point = getQuestionByLevel(state.level - 1);
+              Future.delayed(const Duration(milliseconds: 1500), () async {
+                await context.router.replace(PlayAgainViewRoute(
+                    caseResult: 1,
+                    point: point,
+                    isMute: widget.isMute,
+                    mc: widget.mc,
+                    cubit: widget.cubit,
+                    user: state.user!));
+              });
+            } else if (state.isWin) {
+              final point = getQuestionByLevel(state.level);
+              await context.router.replace(PlayAgainViewRoute(
+                caseResult: 2,
+                point: point,
+                isMute: widget.isMute,
+                mc: widget.mc,
+                user: state.user!,
+                cubit: widget.cubit,
+              ));
+            }
+          },
+        ),
+        BlocListener<PlayGameCubit, PlayGameState>(
+          listenWhen: (previous, current) =>
+              current.timeCounter < 3 &&
+              previous.timeCounter != current.timeCounter,
+          listener: (context, state) {
+            final cubit = context.read<PlayGameCubit>();
+            if (state.timeCounter == 0) {
+              cubit.outTime();
+              context1.read<LoginCubit>().clearQuestionLocal();
             }
             //_showPlayAgain(context, 0);
           },
@@ -181,17 +212,11 @@ class _PlayGamePageState extends State<PlayGamePage>
               previous.isFalse != current.isFalse,
           listener: (context, state) {
             if (state.isFalse) {
-              final point = getQuestionByLevel(state.level - 1);
+              // final point = getQuestionByLevel(state.level - 1);
               context1.read<LoginCubit>().clearQuestionLocal();
-              Future.delayed(const Duration(milliseconds: 1500), () async {
-                await context.router.replace(PlayAgainViewRoute(
-                    caseResult: 1,
-                    point: point,
-                    isMute: widget.isMute,
-                    mc: widget.mc,
-                    cubit: widget.cubit,
-                    user: state.user!));
-              });
+              // Future.delayed(const Duration(milliseconds: 2000), () async {
+
+              // });
             }
           },
         ),
@@ -201,15 +226,6 @@ class _PlayGamePageState extends State<PlayGamePage>
             if (state.isWin) {
               context.read<PlayGameCubit>().win();
               context1.read<LoginCubit>().clearQuestionLocal();
-              final point = getQuestionByLevel(state.level);
-              await context.router.replace(PlayAgainViewRoute(
-                caseResult: 2,
-                point: point,
-                isMute: widget.isMute,
-                mc: widget.mc,
-                user: state.user!,
-                cubit: widget.cubit,
-              ));
             }
           },
         ),
@@ -230,14 +246,23 @@ class _PlayGamePageState extends State<PlayGamePage>
         BlocListener<PlayGameCubit, PlayGameState>(
           listenWhen: (previous, current) =>
               previous.isChart != current.isChart,
-          listener: (context, state) {
+          listener: (context, state) async {
             if (!state.isChart) {
-              Future.delayed(const Duration(seconds: 10), () async {
+              if (state.chooseMC == 0) {
+                Future.delayed(const Duration(seconds: 10), () async {
+                  await _showAudienceHelp(
+                      context,
+                      state.questions[state.level - 1].rightAnswer ?? 1,
+                      context.read<PlayGameCubit>(),
+                      0);
+                });
+              } else {
                 await _showAudienceHelp(
                     context,
                     state.questions[state.level - 1].rightAnswer ?? 1,
-                    context.read<PlayGameCubit>());
-              });
+                    context.read<PlayGameCubit>(),
+                    state.chooseMC);
+              }
             }
           },
         ),
@@ -480,10 +505,8 @@ class _PlayGamePageState extends State<PlayGamePage>
                             onTap: () => cubit.call(
                                 state.questions[state.level - 1].rightAnswer ??
                                     1),
-                            child: Icon(
-                              state.chooseMC == 0
-                                  ? Icons.phone_in_talk_outlined
-                                  : Icons.person_add,
+                            child: const Icon(
+                              Icons.phone_in_talk_outlined,
                               color: AppColors.colorFFFFFFFF,
                             ),
                           ),
@@ -506,8 +529,11 @@ class _PlayGamePageState extends State<PlayGamePage>
                             checkExpire: state.isChart && state.isAccessAnswer,
                             isHide: state.isChart,
                             onTap: () => cubit.chart(),
-                            child: const Icon(
-                              Icons.bar_chart_outlined,
+                            child: Icon(
+                              // Icons.bar_chart_outlined,
+                              state.chooseMC == 0
+                                  ? Icons.bar_chart_outlined
+                                  : Icons.person_add,
                               color: AppColors.colorFFFFFFFF,
                             ),
                           ),
@@ -530,7 +556,7 @@ class _PlayGamePageState extends State<PlayGamePage>
   }
 
   Future<void> _showAudienceHelp(
-      BuildContext context, int answer, PlayGameCubit cubit) async {
+      BuildContext context, int answer, PlayGameCubit cubit, int mc) async {
     await showDialog(
       context: context,
       builder: (BuildContext _) {
@@ -538,8 +564,11 @@ class _PlayGamePageState extends State<PlayGamePage>
           value: cubit,
           child: PopupNotice(
             textButton: 'ĐÓNG',
-            title: 'HỎI Ý KIẾN\nKHÁN GIẢ',
-            content: ChartHelp(rightAnswer: answer),
+            title:
+                mc == 0 ? 'HỎI Ý KIẾN\nKHÁN GIẢ' : 'HỎI Ý KIẾN\nBẠN ĐỒNG HÀNH',
+            content: mc == 0
+                ? ChartHelp(rightAnswer: answer)
+                : DongHanh(rightAnswer: answer),
           ),
         );
       },

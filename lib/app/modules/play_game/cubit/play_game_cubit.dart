@@ -257,7 +257,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     try {
       emit(state.copyWith(isChart: false));
       // cancelCountDown();
-      await playAudio(SoundManager.audianceHelp(mc));
+      if (mc == 0) await playAudio(SoundManager.audianceHelp(mc));
       // countDown();
     } catch (e) {
       rethrow;
@@ -309,6 +309,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
 
   void updatePoint(String point) async {
     try {
+      emit(state.copyWith(saveDone: false));
       final score = int.parse(point.replaceAll('.', ''));
       final x = User(
           name: state.user?.name ?? "",
@@ -318,6 +319,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       emit(state.copyWith(user: x));
       await _playGameRepository.updateUser(user: x);
       AnalyticsManager.postScore(score, state.level);
+      emit(state.copyWith(saveDone: true));
     } catch (e) {
       if (e is StateError) return;
       rethrow;
@@ -618,6 +620,18 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       ));
     }
     return questions;
+  }
+
+  void chooseDh(int chooDH) async {
+    emit(state.copyWith(
+      chooseDh: chooDH,
+      loadingDh: true,
+    ));
+    await playAudio(SoundManager.dhSound);
+    Future.delayed(const Duration(milliseconds: 2000), () async {
+      emit(state.copyWith(loadingDh: false));
+      await playAudio(SoundManager.dhSound);
+    });
   }
 
   String soundPath(String name) => 'audios/$name.mp3';

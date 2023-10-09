@@ -40,6 +40,9 @@ mixin _$PlayGameState {
   bool get isMute => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
   bool get isAccessAnswer => throw _privateConstructorUsedError;
+  bool get saveDone => throw _privateConstructorUsedError;
+  bool get loadingDh => throw _privateConstructorUsedError;
+  int? get chooseDh => throw _privateConstructorUsedError;
   int get chooseMC => throw _privateConstructorUsedError;
   int get level => throw _privateConstructorUsedError;
   int get timeCounter => throw _privateConstructorUsedError;
@@ -86,6 +89,9 @@ abstract class $PlayGameStateCopyWith<$Res> {
       bool isMute,
       bool isLoading,
       bool isAccessAnswer,
+      bool saveDone,
+      bool loadingDh,
+      int? chooseDh,
       int chooseMC,
       int level,
       int timeCounter,
@@ -134,6 +140,9 @@ class _$PlayGameStateCopyWithImpl<$Res, $Val extends PlayGameState>
     Object? isMute = null,
     Object? isLoading = null,
     Object? isAccessAnswer = null,
+    Object? saveDone = null,
+    Object? loadingDh = null,
+    Object? chooseDh = freezed,
     Object? chooseMC = null,
     Object? level = null,
     Object? timeCounter = null,
@@ -241,6 +250,18 @@ class _$PlayGameStateCopyWithImpl<$Res, $Val extends PlayGameState>
           ? _value.isAccessAnswer
           : isAccessAnswer // ignore: cast_nullable_to_non_nullable
               as bool,
+      saveDone: null == saveDone
+          ? _value.saveDone
+          : saveDone // ignore: cast_nullable_to_non_nullable
+              as bool,
+      loadingDh: null == loadingDh
+          ? _value.loadingDh
+          : loadingDh // ignore: cast_nullable_to_non_nullable
+              as bool,
+      chooseDh: freezed == chooseDh
+          ? _value.chooseDh
+          : chooseDh // ignore: cast_nullable_to_non_nullable
+              as int?,
       chooseMC: null == chooseMC
           ? _value.chooseMC
           : chooseMC // ignore: cast_nullable_to_non_nullable
@@ -314,6 +335,9 @@ abstract class _$$_PlayGameStateCopyWith<$Res>
       bool isMute,
       bool isLoading,
       bool isAccessAnswer,
+      bool saveDone,
+      bool loadingDh,
+      int? chooseDh,
       int chooseMC,
       int level,
       int timeCounter,
@@ -360,6 +384,9 @@ class __$$_PlayGameStateCopyWithImpl<$Res>
     Object? isMute = null,
     Object? isLoading = null,
     Object? isAccessAnswer = null,
+    Object? saveDone = null,
+    Object? loadingDh = null,
+    Object? chooseDh = freezed,
     Object? chooseMC = null,
     Object? level = null,
     Object? timeCounter = null,
@@ -467,6 +494,18 @@ class __$$_PlayGameStateCopyWithImpl<$Res>
           ? _value.isAccessAnswer
           : isAccessAnswer // ignore: cast_nullable_to_non_nullable
               as bool,
+      saveDone: null == saveDone
+          ? _value.saveDone
+          : saveDone // ignore: cast_nullable_to_non_nullable
+              as bool,
+      loadingDh: null == loadingDh
+          ? _value.loadingDh
+          : loadingDh // ignore: cast_nullable_to_non_nullable
+              as bool,
+      chooseDh: freezed == chooseDh
+          ? _value.chooseDh
+          : chooseDh // ignore: cast_nullable_to_non_nullable
+              as int?,
       chooseMC: null == chooseMC
           ? _value.chooseMC
           : chooseMC // ignore: cast_nullable_to_non_nullable
@@ -535,6 +574,9 @@ class _$_PlayGameState extends _PlayGameState {
       this.isMute = false,
       this.isLoading = false,
       this.isAccessAnswer = false,
+      this.saveDone = false,
+      this.loadingDh = false,
+      this.chooseDh,
       this.chooseMC = 0,
       this.level = 1,
       this.timeCounter = 60,
@@ -627,6 +669,14 @@ class _$_PlayGameState extends _PlayGameState {
   final bool isAccessAnswer;
   @override
   @JsonKey()
+  final bool saveDone;
+  @override
+  @JsonKey()
+  final bool loadingDh;
+  @override
+  final int? chooseDh;
+  @override
+  @JsonKey()
   final int chooseMC;
   @override
   @JsonKey()
@@ -649,7 +699,7 @@ class _$_PlayGameState extends _PlayGameState {
 
   @override
   String toString() {
-    return 'PlayGameState(questions: $questions, isDelete2Answers: $isDelete2Answers, isCall: $isCall, isShowCall: $isShowCall, isConsultant: $isConsultant, isChart: $isChart, isFalse: $isFalse, isWin: $isWin, isChooseA: $isChooseA, isTrueA: $isTrueA, isChooseB: $isChooseB, isTrueB: $isTrueB, isChooseC: $isChooseC, isTrueC: $isTrueC, isChooseD: $isChooseD, isTrueD: $isTrueD, isHideA: $isHideA, isHideB: $isHideB, isHideC: $isHideC, isHideD: $isHideD, isShowGameResult: $isShowGameResult, isMute: $isMute, isLoading: $isLoading, isAccessAnswer: $isAccessAnswer, chooseMC: $chooseMC, level: $level, timeCounter: $timeCounter, startCounter: $startCounter, timer: $timer, point: $point, player: $player, user: $user, error: $error)';
+    return 'PlayGameState(questions: $questions, isDelete2Answers: $isDelete2Answers, isCall: $isCall, isShowCall: $isShowCall, isConsultant: $isConsultant, isChart: $isChart, isFalse: $isFalse, isWin: $isWin, isChooseA: $isChooseA, isTrueA: $isTrueA, isChooseB: $isChooseB, isTrueB: $isTrueB, isChooseC: $isChooseC, isTrueC: $isTrueC, isChooseD: $isChooseD, isTrueD: $isTrueD, isHideA: $isHideA, isHideB: $isHideB, isHideC: $isHideC, isHideD: $isHideD, isShowGameResult: $isShowGameResult, isMute: $isMute, isLoading: $isLoading, isAccessAnswer: $isAccessAnswer, saveDone: $saveDone, loadingDh: $loadingDh, chooseDh: $chooseDh, chooseMC: $chooseMC, level: $level, timeCounter: $timeCounter, startCounter: $startCounter, timer: $timer, point: $point, player: $player, user: $user, error: $error)';
   }
 
   @override
@@ -692,6 +742,12 @@ class _$_PlayGameState extends _PlayGameState {
                 other.isLoading == isLoading) &&
             (identical(other.isAccessAnswer, isAccessAnswer) ||
                 other.isAccessAnswer == isAccessAnswer) &&
+            (identical(other.saveDone, saveDone) ||
+                other.saveDone == saveDone) &&
+            (identical(other.loadingDh, loadingDh) ||
+                other.loadingDh == loadingDh) &&
+            (identical(other.chooseDh, chooseDh) ||
+                other.chooseDh == chooseDh) &&
             (identical(other.chooseMC, chooseMC) ||
                 other.chooseMC == chooseMC) &&
             (identical(other.level, level) || other.level == level) &&
@@ -733,6 +789,9 @@ class _$_PlayGameState extends _PlayGameState {
         isMute,
         isLoading,
         isAccessAnswer,
+        saveDone,
+        loadingDh,
+        chooseDh,
         chooseMC,
         level,
         timeCounter,
@@ -777,6 +836,9 @@ abstract class _PlayGameState extends PlayGameState {
       final bool isMute,
       final bool isLoading,
       final bool isAccessAnswer,
+      final bool saveDone,
+      final bool loadingDh,
+      final int? chooseDh,
       final int chooseMC,
       final int level,
       final int timeCounter,
@@ -836,6 +898,12 @@ abstract class _PlayGameState extends PlayGameState {
   bool get isLoading;
   @override
   bool get isAccessAnswer;
+  @override
+  bool get saveDone;
+  @override
+  bool get loadingDh;
+  @override
+  int? get chooseDh;
   @override
   int get chooseMC;
   @override
