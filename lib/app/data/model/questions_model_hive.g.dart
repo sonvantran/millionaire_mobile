@@ -23,13 +23,14 @@ class QuestionModelHiveAdapter extends TypeAdapter<QuestionModelHive> {
       isConsultant: fields[4] as bool,
       isCall: fields[5] as bool,
       isDelete2Answers: fields[6] as bool,
+      mc: fields[7] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, QuestionModelHive obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(1)
       ..write(obj.questions)
       ..writeByte(2)
@@ -41,7 +42,9 @@ class QuestionModelHiveAdapter extends TypeAdapter<QuestionModelHive> {
       ..writeByte(5)
       ..write(obj.isCall)
       ..writeByte(6)
-      ..write(obj.isDelete2Answers);
+      ..write(obj.isDelete2Answers)
+      ..writeByte(7)
+      ..write(obj.mc);
   }
 
   @override

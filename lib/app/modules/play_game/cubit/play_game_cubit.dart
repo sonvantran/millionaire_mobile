@@ -293,6 +293,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
         isChart: state.isChart,
         isConsultant: state.isConsultant,
         isDelete2Answers: state.isDelete2Answers,
+        mc: state.chooseMC
       ));
     } catch (e) {
       rethrow;

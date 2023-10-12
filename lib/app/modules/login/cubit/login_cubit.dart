@@ -63,10 +63,11 @@ class LoginCubit extends Cubit<LoginState> {
       // if (accessToken != null) return;
       final deviceId = await getId();
       final user = await _loginRepository.getUser(deviceId: deviceId ?? '');
-
+      final question = QuestionBox.getQuestions();
       emit(state.copyWith(
         hasUser: true,
         user: user,
+        chooseMC: state.hasDataLocal ? question[0].mc : 0,
       ));
 
       // print(response);
@@ -90,10 +91,8 @@ class LoginCubit extends Cubit<LoginState> {
           point: userState?.point ?? 0,
           deviceId: deviceId,
           playDate: userState?.playDate ?? Timestamp.now());
-          emit(state.copyWith(hasUser: true, user: x));
+      emit(state.copyWith(hasUser: true, user: x));
       await _loginRepository.updateUser(user: x);
-
-      
     } catch (e) {
       if (e is BadRequestException) {
         emit(state.copyWith(hasUser: false, message: e.message));

@@ -46,6 +46,6 @@ class FirestoreManager {
       users.add(User.fromJson(i.data() as Map<String, dynamic>));
     }
     users.sort((user1, user2) => user2.point.compareTo(user1.point));
-    return users;
+    return users.take(50).toList();
   }
 }
