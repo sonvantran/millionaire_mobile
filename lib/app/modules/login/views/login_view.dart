@@ -5,6 +5,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/services/ads_manager.dart';
+import '../../../core/services/check_internet.dart';
 import '../../../core/services/question_box.dart';
 import '../../../core/values/custom_color.dart';
 import '../../../core/values/show_message_internal.dart';
@@ -482,12 +483,14 @@ Trò chơi này dựa trên "Ai là Triệu Phú" và nhằm mang đến giây p
     );
   }
 
-  void createBannerAd() {
-    _bannerAd = BannerAd(
-      size: AdSize.banner,
-      adUnitId: AdsManager.bannerAdUnitId!,
-      listener: AdsManager.bannerListenner,
-      request: const AdRequest(),
-    )..load();
+  void createBannerAd() async {
+    if (await CheckInterner.checkInternet()) {
+      _bannerAd = BannerAd(
+        size: AdSize.banner,
+        adUnitId: AdsManager.bannerAdUnitId!,
+        listener: AdsManager.bannerListenner,
+        request: const AdRequest(),
+      )..load();
+    }
   }
 }

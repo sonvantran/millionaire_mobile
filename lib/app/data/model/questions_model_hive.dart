@@ -25,9 +25,6 @@ class QuestionModelHive {
   @HiveField(6)
   bool isDelete2Answers;
 
-  @HiveField(7)
-  int mc;
-
   QuestionModelHive({
     required this.questions,
     required this.currentLevel,
@@ -35,6 +32,5 @@ class QuestionModelHive {
     required this.isConsultant,
     required this.isCall,
     required this.isDelete2Answers,
-    required this.mc,
   });
 }

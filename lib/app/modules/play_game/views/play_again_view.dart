@@ -11,6 +11,7 @@ import 'dart:ui' as ui;
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/services/ads_manager.dart';
+import '../../../core/services/check_internet.dart';
 import '../../../core/services/question_box.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/appBar/custom_appbar.dart';
@@ -179,14 +180,16 @@ class _PlayAgainViewState extends State<PlayAgainView>
     );
   }
 
-  void createBannerAd() {
+  void createBannerAd() async {
     // _bannerAd = null;
-    _bannerAd = BannerAd(
-      size: AdSize.fullBanner,
-      adUnitId: AdsManager.bannerAdUnitId!,
-      listener: AdsManager.bannerListenner,
-      request: const AdRequest(),
-    )..load();
+    if (await CheckInterner.checkInternet()) {
+      _bannerAd = BannerAd(
+        size: AdSize.banner,
+        adUnitId: AdsManager.bannerAdUnitId!,
+        listener: AdsManager.bannerListenner,
+        request: const AdRequest(),
+      )..load();
+    }
   }
 
   Future<void> _share(BuildContext context) async {

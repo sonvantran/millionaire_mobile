@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:volume_controller/volume_controller.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/extension/integer_extension.dart';
 import '../../../core/services/ads_manager.dart';
+import '../../../core/services/check_internet.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/popup/popup_notice.dart';
@@ -249,7 +251,11 @@ class _PlayGamePageState extends State<PlayGamePage>
           listener: (context, state) async {
             if (!state.isChart) {
               if (state.chooseMC == 0) {
-                Future.delayed(const Duration(seconds: 10), () async {
+                final systemSound = await VolumeController().getVolume();
+                Future.delayed(
+                    Duration(
+                        seconds: state.isMute || systemSound <= 0.3 ? 2 : 10),
+                    () async {
                   await _showAudienceHelp(
                       context,
                       state.questions[state.level - 1].rightAnswer ?? 1,
@@ -729,14 +735,16 @@ class _PlayGamePageState extends State<PlayGamePage>
         });
   }
 
-  void createBannerAd() {
+  void createBannerAd() async {
     // _bannerAd = null;
-    _bannerAd = BannerAd(
-      size: AdSize.fullBanner,
-      adUnitId: AdsManager.bannerAdUnitId!,
-      listener: AdsManager.bannerListenner,
-      request: const AdRequest(),
-    )..load();
+    if (await CheckInterner.checkInternet()) {
+      _bannerAd = BannerAd(
+        size: AdSize.banner,
+        adUnitId: AdsManager.bannerAdUnitId!,
+        listener: AdsManager.bannerListenner,
+        request: const AdRequest(),
+      )..load();
+    }
   }
 }
 

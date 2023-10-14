@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:android_id/android_id.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
@@ -33,7 +33,9 @@ class LoginCubit extends Cubit<LoginState> {
     emit(state.copyWith(user: user));
   }
 
-  void setChooseMC(int chooseMC) {
+  Future<void> setChooseMC(int chooseMC) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt("mc", chooseMC);
     emit(state.copyWith(chooseMC: chooseMC));
     playAudioStartMc(chooseMC);
   }
@@ -63,17 +65,22 @@ class LoginCubit extends Cubit<LoginState> {
       // if (accessToken != null) return;
       final deviceId = await getId();
       final user = await _loginRepository.getUser(deviceId: deviceId ?? '');
-      final question = QuestionBox.getQuestions();
+      final prefs = await SharedPreferences.getInstance();
+      final mccc = prefs.getInt("mc");
       emit(state.copyWith(
         hasUser: true,
         user: user,
-        chooseMC: state.hasDataLocal ? question[0].mc : 0,
+        chooseMC: mccc ?? 0,
       ));
 
       // print(response);
     } catch (e) {
       if (e is BadRequestException) {
         emit(state.copyWith(hasUser: false));
+        return;
+      }
+      if (e is FirebaseException) {
+        emit(state.copyWith(message: "Kiểm tra lại kết nối mạng"));
         return;
       }
       rethrow;

@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import '../core/values/secure_key_constant.dart';
 
 class RequestHeaderInterceptor extends InterceptorsWrapper {
   @override
@@ -13,18 +11,18 @@ class RequestHeaderInterceptor extends InterceptorsWrapper {
   }
 
   Future<Map<String, String>> getCustomHeaders() async {
-    final secureStorage = FlutterSecureStorage();
-    final accessToken = 
-    await secureStorage.read(key: SecureKeyConstants.accessToken);
+    // final secureStorage = FlutterSecureStorage();
+    // final accessToken = 
+    // await secureStorage.read(key: SecureKeyConstants.accessToken);
     var customHeaders = {
       'content-type': 'application/json',
       'Accept': "application/json"
     };
-    if (accessToken != null && accessToken.isNotEmpty) {
-      customHeaders.addAll({
-        'Authorization': "Bearer $accessToken",
-      });
-    }
+    // if (accessToken != null && accessToken.isNotEmpty) {
+    //   customHeaders.addAll({
+    //     'Authorization': "Bearer $accessToken",
+    //   });
+    // }
 
     return customHeaders;
   }

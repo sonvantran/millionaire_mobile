@@ -5,6 +5,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/services/ads_manager.dart';
+import '../../../core/services/check_internet.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/appBar/custom_appbar.dart';
@@ -199,14 +200,16 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
     });
   }
 
-  void createBannerAd() {
+  void createBannerAd() async {
     // _bannerAd = null;
-    _bannerAd = BannerAd(
-      size: AdSize.fullBanner,
-      adUnitId: AdsManager.bannerAdUnitId!,
-      listener: AdsManager.bannerListenner,
-      request: const AdRequest(),
-    )..load();
+    if (await CheckInterner.checkInternet()) {
+      _bannerAd = BannerAd(
+        size: AdSize.banner,
+        adUnitId: AdsManager.bannerAdUnitId!,
+        listener: AdsManager.bannerListenner,
+        request: const AdRequest(),
+      )..load();
+    }
   }
 
   String formatNumber(int i) {
