@@ -11,8 +11,6 @@ import 'dart:ui' as ui;
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/services/ads_manager.dart';
-import '../../../core/services/check_internet.dart';
-import '../../../core/services/question_box.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/appBar/custom_appbar.dart';
 import '../../../core/widgets/button/second_button.dart';
@@ -52,7 +50,6 @@ class _PlayAgainViewState extends State<PlayAgainView>
   @override
   void initState() {
     createBannerAd();
-    clearDataLocal();
     super.initState();
   }
 
@@ -182,14 +179,14 @@ class _PlayAgainViewState extends State<PlayAgainView>
 
   void createBannerAd() async {
     // _bannerAd = null;
-    if (await CheckInterner.checkInternet()) {
-      _bannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: AdsManager.bannerAdUnitId!,
-        listener: AdsManager.bannerListenner,
-        request: const AdRequest(),
-      )..load();
-    }
+    // if (await CheckInterner.checkInternet()) {
+    _bannerAd = BannerAd(
+      size: AdSize.banner,
+      adUnitId: AdsManager.bannerAdUnitId!,
+      listener: AdsManager.bannerListenner,
+      request: const AdRequest(),
+    )..load();
+    // }
   }
 
   Future<void> _share(BuildContext context) async {
@@ -204,27 +201,19 @@ class _PlayAgainViewState extends State<PlayAgainView>
       String tempPath = tempDir.path;
       File qrImageFile = File('$tempPath/qrcode.png');
       await qrImageFile.writeAsBytes(pngBytes!);
+      // ignore: use_build_context_synchronously
       final RenderBox box = context.findRenderObject() as RenderBox;
-      // const text =
-      //     'Tải ứng dụng trên cửa hàng: https://play.google.com/store/apps/developer?id=mumesoft';
-      // final Directory tempDir2 = await getTemporaryDirectory();
-      // final File combinedFile = File("${tempDir2.path}/combined.txt");
-      // await combinedFile.writeAsString(text);
       await Share.shareFiles(
         [qrImageFile.path],
         subject:
-            'Tải ứng dụng trên cửa hàng: https://play.google.com/store/apps/developer?id=mumesoft',
+            'Tải ứng dụng trên cửa hàng: https://play.google.com/store/apps/dev?id=5241296680413671492',
         text:
-            'Tải ứng dụng trên cửa hàng: https://play.google.com/store/apps/developer?id=mumesoft',
+            'Tải ứng dụng trên cửa hàng: https://play.google.com/store/apps/dev?id=5241296680413671492',
         sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size,
       );
       await AnalyticsManager.share('share', '1 item', 'contentType');
     } catch (e) {
       rethrow;
     }
-  }
-
-  void clearDataLocal() async {
-    await QuestionBox.deleteAll();
   }
 }

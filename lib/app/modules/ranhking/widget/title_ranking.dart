@@ -15,24 +15,21 @@ class TitleRanking extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: check
             ? const BorderRadius.only(
-                topLeft: Radius.circular(24), topRight: Radius.circular(24))
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
+              )
             : const BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-                bottomRight: Radius.circular(24)),
-        gradient: LinearGradient(
+                bottomLeft: Radius.circular(60),
+                bottomRight: Radius.circular(60),
+              ),
+        gradient: const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: check
-              ? [
-                  AppColors.colorFF326D94,
-                  AppColors.colorFF0B2D42,
-                  AppColors.colorFF326D94,
-                ]
-              : [
-                  AppColors.colorFF57B9FB,
-                  AppColors.colorFF03456e,
-                  AppColors.colorFF57B9FB,
-                ],
+          colors: [
+            AppColors.colorFF326D94,
+            AppColors.colorFF0B2D42,
+            AppColors.colorFF326D94,
+          ],
         ),
       ),
       child: check
@@ -50,7 +47,9 @@ class TitleRanking extends StatelessWidget {
                 ),
               ],
             )
-          : const SizedBox(),
+          : const SizedBox(
+              width: double.infinity,
+            ),
     );
   }
 }
