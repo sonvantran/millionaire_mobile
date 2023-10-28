@@ -168,7 +168,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
           ),
         ),
       ),
-      bottomNavigationBar: _bannerAd == null
+      bottomNavigationBar: _bannerAd == null || !isBannerAdReady
           ? const SizedBox.shrink()
           : Container(
               height: 52,

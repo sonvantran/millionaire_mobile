@@ -548,7 +548,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                     ],
                   ));
             }),
-            bottomNavigationBar: _bannerAd == null
+            bottomNavigationBar: _bannerAd == null || !isBannerAdReady
                 ? const SizedBox.shrink()
                 : Container(
                     height: 52,
