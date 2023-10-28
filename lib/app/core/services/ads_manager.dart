@@ -1,10 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-
-import '../analytics/analytics_manager.dart';
-
 class AdsManager {
   static String? get bannerAdUnitId {
     if (Platform.isAndroid) {
@@ -32,15 +27,4 @@ class AdsManager {
     }
     return null;
   }
-
-  static final BannerAdListener bannerListenner = BannerAdListener(
-    onAdLoaded: (ad) => debugPrint("Ad Loaded"),
-    onAdFailedToLoad: (ad, err) {
-      ad.dispose();
-      debugPrint('Failed to load a banner ad: ${err.message}');
-    },
-    onAdOpened: (ad) => debugPrint('Ad opened'),
-    onAdClosed: (ad) => debugPrint('Ad closed'),
-    onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
-  );
 }

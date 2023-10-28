@@ -5,7 +5,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/services/ads_manager.dart';
-import '../../../core/services/check_internet.dart';
 import '../../../core/services/question_box.dart';
 import '../../../core/values/custom_color.dart';
 import '../../../core/values/show_message_internal.dart';
@@ -60,6 +59,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   final _nameController = TextEditingController();
   BannerAd? _bannerAd;
+  bool isBannerAdReady = false;
 
   @override
   void initState() {
@@ -80,6 +80,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   void dispose() {
     _nameController.dispose();
     _bannerAd?.dispose();
+    isBannerAdReady = false;
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -302,7 +303,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
               ],
             ),
           ),
-          bottomNavigationBar: _bannerAd == null
+          bottomNavigationBar: _bannerAd == null && isBannerAdReady
               ? const SizedBox.shrink()
               : Container(
                   height: 52,
@@ -483,14 +484,29 @@ Trò chơi này dựa trên "Ai là Triệu Phú" và nhằm mang đến giây p
     );
   }
 
-  void createBannerAd() async {
-    if (await CheckInterner.checkInternet()) {
+  void createBannerAd() {
+    try {
       _bannerAd = BannerAd(
         size: AdSize.banner,
         adUnitId: AdsManager.bannerAdUnitId!,
-        listener: AdsManager.bannerListenner,
+        listener: BannerAdListener(
+          onAdLoaded: (ad) {
+            setState(() {
+              isBannerAdReady = true;
+            });
+          },
+          onAdFailedToLoad: (ad, err) {
+            ad.dispose();
+            debugPrint('Failed to load a banner ad: ${err.message}');
+          },
+          onAdOpened: (ad) => debugPrint('Ad opened'),
+          onAdClosed: (ad) => debugPrint('Ad closed'),
+          onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
+        ),
         request: const AdRequest(),
       )..load();
+    } catch (e) {
+      _bannerAd = null;
     }
   }
 }

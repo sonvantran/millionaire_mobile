@@ -5,7 +5,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/services/ads_manager.dart';
-import '../../../core/services/check_internet.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/appBar/custom_appbar.dart';
@@ -27,7 +26,7 @@ class RankingView extends StatefulWidget {
 
 class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
   BannerAd? _bannerAd;
-
+  bool isBannerAdReady = false;
   @override
   TrackingScreenViewType get route => TrackingScreenViewType.ranking;
 
@@ -48,6 +47,7 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
   @override
   void dispose() {
     _bannerAd?.dispose();
+    isBannerAdReady = false;
     super.dispose();
   }
 
@@ -200,15 +200,29 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
     });
   }
 
-  void createBannerAd() async {
-    // _bannerAd = null;
-    if (await CheckInterner.checkInternet()) {
+  void createBannerAd() {
+    try {
       _bannerAd = BannerAd(
         size: AdSize.banner,
         adUnitId: AdsManager.bannerAdUnitId!,
-        listener: AdsManager.bannerListenner,
+        listener: BannerAdListener(
+          onAdLoaded: (ad) {
+            setState(() {
+              isBannerAdReady = true;
+            });
+          },
+          onAdFailedToLoad: (ad, err) {
+            ad.dispose();
+            debugPrint('Failed to load a banner ad: ${err.message}');
+          },
+          onAdOpened: (ad) => debugPrint('Ad opened'),
+          onAdClosed: (ad) => debugPrint('Ad closed'),
+          onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
+        ),
         request: const AdRequest(),
       )..load();
+    } catch (e) {
+      _bannerAd = null;
     }
   }
 

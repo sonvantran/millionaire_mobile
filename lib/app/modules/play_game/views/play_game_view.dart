@@ -9,7 +9,6 @@ import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/extension/integer_extension.dart';
 import '../../../core/services/ads_manager.dart';
-import '../../../core/services/check_internet.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/popup/popup_notice.dart';
@@ -103,7 +102,7 @@ class _PlayGamePageState extends State<PlayGamePage>
     with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
   BannerAd? _bannerAd;
-
+  bool isBannerAdReady = false;
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -125,6 +124,7 @@ class _PlayGamePageState extends State<PlayGamePage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _bannerAd?.dispose();
+    isBannerAdReady = false;
     super.dispose();
   }
 
@@ -735,15 +735,29 @@ class _PlayGamePageState extends State<PlayGamePage>
         });
   }
 
-  void createBannerAd() async {
-    // _bannerAd = null;
-    if (await CheckInterner.checkInternet()) {
+  void createBannerAd() {
+    try {
       _bannerAd = BannerAd(
         size: AdSize.banner,
         adUnitId: AdsManager.bannerAdUnitId!,
-        listener: AdsManager.bannerListenner,
+        listener: BannerAdListener(
+          onAdLoaded: (ad) {
+            setState(() {
+              isBannerAdReady = true;
+            });
+          },
+          onAdFailedToLoad: (ad, err) {
+            ad.dispose();
+            debugPrint('Failed to load a banner ad: ${err.message}');
+          },
+          onAdOpened: (ad) => debugPrint('Ad opened'),
+          onAdClosed: (ad) => debugPrint('Ad closed'),
+          onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
+        ),
         request: const AdRequest(),
       )..load();
+    } catch (e) {
+      _bannerAd = null;
     }
   }
 }

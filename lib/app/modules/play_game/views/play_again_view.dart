@@ -43,7 +43,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
     with RouteAwareAnalytics {
   final _key = GlobalKey();
   BannerAd? _bannerAd;
-
+  bool isBannerAdReady = false;
   @override
   TrackingScreenViewType get route => TrackingScreenViewType.playAgain;
 
@@ -56,6 +56,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
   @override
   void dispose() {
     _bannerAd?.dispose();
+    isBannerAdReady = false;
     super.dispose();
   }
 
@@ -177,13 +178,30 @@ class _PlayAgainViewState extends State<PlayAgainView>
     );
   }
 
-  void createBannerAd() async {
-    _bannerAd = BannerAd(
-      size: AdSize.banner,
-      adUnitId: AdsManager.bannerAdUnitId!,
-      listener: AdsManager.bannerListenner,
-      request: const AdRequest(),
-    )..load();
+  void createBannerAd() {
+    try {
+      _bannerAd = BannerAd(
+        size: AdSize.banner,
+        adUnitId: AdsManager.bannerAdUnitId!,
+        listener: BannerAdListener(
+          onAdLoaded: (ad) {
+            setState(() {
+              isBannerAdReady = true;
+            });
+          },
+          onAdFailedToLoad: (ad, err) {
+            ad.dispose();
+            debugPrint('Failed to load a banner ad: ${err.message}');
+          },
+          onAdOpened: (ad) => debugPrint('Ad opened'),
+          onAdClosed: (ad) => debugPrint('Ad closed'),
+          onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
+        ),
+        request: const AdRequest(),
+      )..load();
+    } catch (e) {
+      _bannerAd = null;
+    }
   }
 
   Future<void> _share(BuildContext context) async {
