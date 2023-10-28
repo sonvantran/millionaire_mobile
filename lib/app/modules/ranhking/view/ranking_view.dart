@@ -190,7 +190,7 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
           ),
         ),
         bottomNavigationBar: _bannerAd == null
-            ? null
+            ? const SizedBox.shrink()
             : Container(
                 height: 52,
                 margin: const EdgeInsets.only(bottom: 12),

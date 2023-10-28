@@ -168,7 +168,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
         ),
       ),
       bottomNavigationBar: _bannerAd == null
-          ? null
+          ? const SizedBox.shrink()
           : Container(
               height: 52,
               margin: const EdgeInsets.only(bottom: 12),
@@ -178,15 +178,12 @@ class _PlayAgainViewState extends State<PlayAgainView>
   }
 
   void createBannerAd() async {
-    // _bannerAd = null;
-    // if (await CheckInterner.checkInternet()) {
     _bannerAd = BannerAd(
       size: AdSize.banner,
       adUnitId: AdsManager.bannerAdUnitId!,
       listener: AdsManager.bannerListenner,
       request: const AdRequest(),
     )..load();
-    // }
   }
 
   Future<void> _share(BuildContext context) async {
