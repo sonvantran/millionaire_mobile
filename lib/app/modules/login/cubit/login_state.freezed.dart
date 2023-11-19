@@ -19,7 +19,8 @@ mixin _$LoginState {
   bool get isMute => throw _privateConstructorUsedError;
   bool get isMuteCheckAgain => throw _privateConstructorUsedError;
   bool get hasUser => throw _privateConstructorUsedError;
-  bool get hasDataLocal =>
+  bool get hasDataLocal => throw _privateConstructorUsedError;
+  String? get validateName =>
       throw _privateConstructorUsedError; // @Default(false) bool playGame,
 // @Default(false) bool watchRanking,
   User? get user => throw _privateConstructorUsedError;
@@ -45,6 +46,7 @@ abstract class $LoginStateCopyWith<$Res> {
       bool isMuteCheckAgain,
       bool hasUser,
       bool hasDataLocal,
+      String? validateName,
       User? user,
       int chooseMC,
       AudioPlayer? player,
@@ -70,6 +72,7 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
     Object? isMuteCheckAgain = null,
     Object? hasUser = null,
     Object? hasDataLocal = null,
+    Object? validateName = freezed,
     Object? user = freezed,
     Object? chooseMC = null,
     Object? player = freezed,
@@ -94,6 +97,10 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
           ? _value.hasDataLocal
           : hasDataLocal // ignore: cast_nullable_to_non_nullable
               as bool,
+      validateName: freezed == validateName
+          ? _value.validateName
+          : validateName // ignore: cast_nullable_to_non_nullable
+              as String?,
       user: freezed == user
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
@@ -135,6 +142,7 @@ abstract class _$$_LoginStateCopyWith<$Res>
       bool isMuteCheckAgain,
       bool hasUser,
       bool hasDataLocal,
+      String? validateName,
       User? user,
       int chooseMC,
       AudioPlayer? player,
@@ -158,6 +166,7 @@ class __$$_LoginStateCopyWithImpl<$Res>
     Object? isMuteCheckAgain = null,
     Object? hasUser = null,
     Object? hasDataLocal = null,
+    Object? validateName = freezed,
     Object? user = freezed,
     Object? chooseMC = null,
     Object? player = freezed,
@@ -182,6 +191,10 @@ class __$$_LoginStateCopyWithImpl<$Res>
           ? _value.hasDataLocal
           : hasDataLocal // ignore: cast_nullable_to_non_nullable
               as bool,
+      validateName: freezed == validateName
+          ? _value.validateName
+          : validateName // ignore: cast_nullable_to_non_nullable
+              as String?,
       user: freezed == user
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
@@ -218,6 +231,7 @@ class _$_LoginState extends _LoginState {
       this.isMuteCheckAgain = false,
       this.hasUser = true,
       this.hasDataLocal = false,
+      this.validateName,
       this.user,
       this.chooseMC = 0,
       this.player,
@@ -238,6 +252,8 @@ class _$_LoginState extends _LoginState {
   @override
   @JsonKey()
   final bool hasDataLocal;
+  @override
+  final String? validateName;
 // @Default(false) bool playGame,
 // @Default(false) bool watchRanking,
   @override
@@ -256,7 +272,7 @@ class _$_LoginState extends _LoginState {
 
   @override
   String toString() {
-    return 'LoginState(isMute: $isMute, isMuteCheckAgain: $isMuteCheckAgain, hasUser: $hasUser, hasDataLocal: $hasDataLocal, user: $user, chooseMC: $chooseMC, player: $player, player2: $player2, message: $message, error: $error)';
+    return 'LoginState(isMute: $isMute, isMuteCheckAgain: $isMuteCheckAgain, hasUser: $hasUser, hasDataLocal: $hasDataLocal, validateName: $validateName, user: $user, chooseMC: $chooseMC, player: $player, player2: $player2, message: $message, error: $error)';
   }
 
   @override
@@ -270,6 +286,8 @@ class _$_LoginState extends _LoginState {
             (identical(other.hasUser, hasUser) || other.hasUser == hasUser) &&
             (identical(other.hasDataLocal, hasDataLocal) ||
                 other.hasDataLocal == hasDataLocal) &&
+            (identical(other.validateName, validateName) ||
+                other.validateName == validateName) &&
             (identical(other.user, user) || other.user == user) &&
             (identical(other.chooseMC, chooseMC) ||
                 other.chooseMC == chooseMC) &&
@@ -280,8 +298,19 @@ class _$_LoginState extends _LoginState {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, isMute, isMuteCheckAgain,
-      hasUser, hasDataLocal, user, chooseMC, player, player2, message, error);
+  int get hashCode => Object.hash(
+      runtimeType,
+      isMute,
+      isMuteCheckAgain,
+      hasUser,
+      hasDataLocal,
+      validateName,
+      user,
+      chooseMC,
+      player,
+      player2,
+      message,
+      error);
 
   @JsonKey(ignore: true)
   @override
@@ -296,6 +325,7 @@ abstract class _LoginState extends LoginState {
       final bool isMuteCheckAgain,
       final bool hasUser,
       final bool hasDataLocal,
+      final String? validateName,
       final User? user,
       final int chooseMC,
       final AudioPlayer? player,
@@ -312,6 +342,8 @@ abstract class _LoginState extends LoginState {
   bool get hasUser;
   @override
   bool get hasDataLocal;
+  @override
+  String? get validateName;
   @override // @Default(false) bool playGame,
 // @Default(false) bool watchRanking,
   User? get user;

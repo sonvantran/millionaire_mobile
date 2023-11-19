@@ -42,7 +42,7 @@ void main() async {
   Hive.registerAdapter(QuestionAdapter());
   await QuestionBox.openBox();
 
-  MobileAds.instance.initialize();
+  await MobileAds.instance.initialize();
 
   // await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   await SystemChrome.setPreferredOrientations([

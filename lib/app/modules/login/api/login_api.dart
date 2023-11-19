@@ -17,6 +17,16 @@ class LoginApi {
     }
   }
 
+  Future<String> getBad() async {
+    final result = await fs.getBad();
+    if (result == null) {
+      throw BadRequestException(
+          httpCode: 404, status: "status", message: "không tồn tại");
+    } else {
+      return result;
+    }
+  }
+
   Future<User> updateUser({
     required User user,
   }) async {

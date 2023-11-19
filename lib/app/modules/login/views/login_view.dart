@@ -305,9 +305,9 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           ),
           bottomNavigationBar: _bannerAd == null || !isBannerAdReady
               ? const SizedBox.shrink()
-              : Container(
-                  height: 52,
-                  margin: const EdgeInsets.only(bottom: 12),
+              : SizedBox(
+                  height: _bannerAd!.size.height.toDouble(),
+                  width: _bannerAd!.size.width.toDouble(),
                   child: AdWidget(ad: _bannerAd!),
                 ),
         );
@@ -333,6 +333,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           title: "Bạn hãy điền tên để tiếp tục:",
           titleButton1: 'Tiếp tục',
           textController: _nameController,
+          validateName: cubit.state.validateName ?? '',
         );
       },
     );
@@ -350,6 +351,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           title: "Bạn hãy điền tên để tiếp tục:",
           titleButton1: 'Tiếp tục',
           textController: _nameController,
+          validateName: cubit.state.validateName ?? '',
         );
       },
     );
@@ -470,7 +472,7 @@ Trò chơi này dựa trên "Ai là Triệu Phú" và nhằm mang đến giây p
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      'PCTechWizard\nthiepcong12@gmail.com',
+                      'PCT Innovations\nthiepcong12@gmail.com',
                       style: TextStyles.mediumWhiteS14,
                       textAlign: TextAlign.center,
                     ),
@@ -488,7 +490,7 @@ Trò chơi này dựa trên "Ai là Triệu Phú" và nhằm mang đến giây p
     try {
       _bannerAd = BannerAd(
         size: AdSize.banner,
-        adUnitId: AdsManager.bannerAdUnitId!,
+        adUnitId: AdsManager.bannerAdUnitId,
         listener: BannerAdListener(
           onAdLoaded: (ad) {
             setState(() {

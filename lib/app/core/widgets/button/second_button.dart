@@ -13,6 +13,7 @@ class SecondButton extends StatelessWidget {
     this.icon,
     this.gradient = CustomColor.xanh,
     required this.width,
+    this.height,
   });
 
   final String text;
@@ -21,6 +22,7 @@ class SecondButton extends StatelessWidget {
   final Widget? icon;
   final Gradient? gradient;
   final double width;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,7 @@ class SecondButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: width,
+        height: height,
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: AppColors.colorFF03456e,
@@ -36,9 +39,12 @@ class SecondButton extends StatelessWidget {
           gradient: gradient,
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (icon != null) icon!,
+            if (icon != null)
+              Row(
+                children: [icon!, const SizedBox(width: 12)],
+              ),
             Text(
               text,
               style: style,

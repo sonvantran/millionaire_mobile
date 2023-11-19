@@ -21,6 +21,17 @@ class FirestoreManager {
     }
   }
 
+  Future<String?> getBad() async {
+    DocumentSnapshot documentSnapshot =
+        await firestore.collection('bads').doc("te").get();
+
+    if (documentSnapshot.exists) {
+      return (documentSnapshot.data() as Map<String, dynamic>)["tu"];
+    } else {
+      return null;
+    }
+  }
+
   Future<List<User>> getRanking(String type) async {
     DateTime currentDate = DateTime.now();
 

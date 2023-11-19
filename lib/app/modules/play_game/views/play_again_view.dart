@@ -11,6 +11,7 @@ import 'dart:ui' as ui;
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/services/ads_manager.dart';
+import '../../../core/values/show_message_internal.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/appBar/custom_appbar.dart';
 import '../../../core/widgets/button/second_button.dart';
@@ -44,11 +45,16 @@ class _PlayAgainViewState extends State<PlayAgainView>
   final _key = GlobalKey();
   BannerAd? _bannerAd;
   bool isBannerAdReady = false;
+
+  RewardedAd? _rewardedAd;
+  bool isRewardAdReady = false;
+
   @override
   TrackingScreenViewType get route => TrackingScreenViewType.playAgain;
 
   @override
   void initState() {
+    _loadRewardedAd();
     createBannerAd();
     super.initState();
   }
@@ -56,7 +62,9 @@ class _PlayAgainViewState extends State<PlayAgainView>
   @override
   void dispose() {
     _bannerAd?.dispose();
+    _rewardedAd?.dispose();
     isBannerAdReady = false;
+    isRewardAdReady = false;
     super.dispose();
   }
 
@@ -69,6 +77,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
   }
 
   Widget _buildPage(BuildContext context) {
+    final score = int.parse(widget.point.replaceAll('.', ''));
     return Scaffold(
       body: RepaintBoundary(
         key: _key,
@@ -134,6 +143,39 @@ class _PlayAgainViewState extends State<PlayAgainView>
                           ),
                           const SizedBox(height: 20),
                           SecondButton(
+                            icon: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.1,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.1,
+                                child: Image.asset(
+                                    "assets/images/reward_icon.png")),
+                            width: MediaQuery.of(context).size.width * 0.55,
+                            height: 54,
+                            onTap: () {
+                              if (_rewardedAd != null && isRewardAdReady) {
+                                _rewardedAd?.show(
+                                  onUserEarnedReward: (_, __) {
+                                    widget.cubit.updatePoint(score <= 100000000
+                                        ? widget.point
+                                        : "100.000.000");
+                                    ShowMessageInternal.showOverlay(
+                                        context, "Bạn đã thành công");
+                                    Future.delayed(
+                                      const Duration(seconds: 1),
+                                      () => context.router.pop(),
+                                    );
+                                  },
+                                );
+                              } else {
+                                ShowMessageInternal.showOverlay(
+                                    context, "Đã có lỗi xảy ra");
+                              }
+                            },
+                            text:
+                                score <= 100000000 ? 'X2 Điểm' : "+100.000.000",
+                          ),
+                          const SizedBox(height: 20),
+                          SecondButton(
                             width: MediaQuery.of(context).size.width * 0.55,
                             onTap: () => context.router.pop(),
                             text: 'Menu',
@@ -170,9 +212,9 @@ class _PlayAgainViewState extends State<PlayAgainView>
       ),
       bottomNavigationBar: _bannerAd == null || !isBannerAdReady
           ? const SizedBox.shrink()
-          : Container(
-              height: 52,
-              margin: const EdgeInsets.only(bottom: 12),
+          : SizedBox(
+              height: _bannerAd!.size.height.toDouble(),
+              width: _bannerAd!.size.width.toDouble(),
               child: AdWidget(ad: _bannerAd!),
             ),
     );
@@ -182,7 +224,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
     try {
       _bannerAd = BannerAd(
         size: AdSize.banner,
-        adUnitId: AdsManager.bannerAdUnitId!,
+        adUnitId: AdsManager.bannerAdUnitId,
         listener: BannerAdListener(
           onAdLoaded: (ad) {
             setState(() {
@@ -202,6 +244,38 @@ class _PlayAgainViewState extends State<PlayAgainView>
     } catch (e) {
       _bannerAd = null;
     }
+  }
+
+  void _loadRewardedAd() {
+    RewardedAd.load(
+      adUnitId: AdsManager.rewardedAdUnitId,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              setState(() {
+                ad.dispose();
+                _rewardedAd = null;
+              });
+              _loadRewardedAd();
+            },
+            onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
+              ad.dispose;
+              debugPrint('Ad failed to show: $error');
+            },
+          );
+
+          setState(() {
+            _rewardedAd = ad;
+            isRewardAdReady = true;
+          });
+        },
+        onAdFailedToLoad: (err) {
+          print('Failed to load a rewarded ad: ${err.message}');
+        },
+      ),
+    );
   }
 
   Future<void> _share(BuildContext context) async {

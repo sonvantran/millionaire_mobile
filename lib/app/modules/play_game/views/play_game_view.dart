@@ -101,11 +101,16 @@ class PlayGamePage extends StatefulWidget {
 class _PlayGamePageState extends State<PlayGamePage>
     with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
+
   BannerAd? _bannerAd;
   bool isBannerAdReady = false;
+
+  InterstitialAd? _interstitialAd;
+  bool isInterstitialAdLoaded = false;
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
+    _loadInterstitialAd();
     createBannerAd();
     super.initState();
   }
@@ -124,7 +129,9 @@ class _PlayGamePageState extends State<PlayGamePage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _bannerAd?.dispose();
+    _interstitialAd?.dispose();
     isBannerAdReady = false;
+    isInterstitialAdLoaded = false;
     super.dispose();
   }
 
@@ -155,6 +162,10 @@ class _PlayGamePageState extends State<PlayGamePage>
             // final cubit = context.read<PlayGameCubit>();
             if (state.timeCounter == 0) {
               final point = getQuestionByLevel(state.level - 1);
+              if (_interstitialAd != null && isInterstitialAdLoaded) {
+                await _interstitialAd?.show();
+              }
+              // ignore: use_build_context_synchronously
               await context.router.replace(PlayAgainViewRoute(
                 caseResult: 0,
                 point: point,
@@ -166,6 +177,13 @@ class _PlayGamePageState extends State<PlayGamePage>
             } else if (state.isFalse) {
               final point = getQuestionByLevel(state.level - 1);
               Future.delayed(const Duration(milliseconds: 1500), () async {
+                int randomValue = Random().nextInt(3);
+                if (_interstitialAd != null &&
+                    isInterstitialAdLoaded &&
+                    randomValue == 2) {
+                  await _interstitialAd?.show();
+                }
+                // ignore: use_build_context_synchronously
                 await context.router.replace(PlayAgainViewRoute(
                     caseResult: 1,
                     point: point,
@@ -550,9 +568,9 @@ class _PlayGamePageState extends State<PlayGamePage>
             }),
             bottomNavigationBar: _bannerAd == null || !isBannerAdReady
                 ? const SizedBox.shrink()
-                : Container(
-                    height: 52,
-                    margin: const EdgeInsets.only(bottom: 12),
+                : SizedBox(
+                    height: _bannerAd!.size.height.toDouble(),
+                    width: _bannerAd!.size.width.toDouble(),
                     child: AdWidget(ad: _bannerAd!),
                   ),
           ),
@@ -720,6 +738,10 @@ class _PlayGamePageState extends State<PlayGamePage>
           return PopupPlayConfirm(
             onTap: () async {
               cubit.updatePoint(point);
+              if (_interstitialAd != null && isInterstitialAdLoaded) {
+                await _interstitialAd?.show();
+              }
+              // ignore: use_build_context_synchronously
               await context.router.replace(PlayAgainViewRoute(
                 caseResult: 1,
                 point: point,
@@ -735,11 +757,42 @@ class _PlayGamePageState extends State<PlayGamePage>
         });
   }
 
+  void _loadInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: AdsManager.interstitialAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              // _moveToHome();
+              debugPrint("dsadasdsassss");
+            },
+            onAdFailedToShowFullScreenContent:
+                (InterstitialAd ad, AdError error) {
+              ad.dispose;
+              debugPrint('Ad failed to show: $error');
+            },
+            onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
+          );
+
+          setState(() {
+            _interstitialAd = ad;
+            isInterstitialAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (err) {
+          debugPrint('Failed to load an interstitial ad: ${err.message}');
+        },
+      ),
+    );
+  }
+
   void createBannerAd() {
     try {
       _bannerAd = BannerAd(
         size: AdSize.banner,
-        adUnitId: AdsManager.bannerAdUnitId!,
+        adUnitId: AdsManager.bannerAdUnitId,
         listener: BannerAdListener(
           onAdLoaded: (ad) {
             setState(() {

@@ -15,6 +15,14 @@ class LoginRepository {
     }
   }
 
+  Future<String> getBad() {
+    try {
+      return _api.getBad();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<User> updateUser({required User user}) {
     try {
       return _api.updateUser(user: user);

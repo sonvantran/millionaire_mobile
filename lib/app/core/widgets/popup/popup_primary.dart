@@ -14,14 +14,27 @@ class PopupPrimary extends StatelessWidget {
     this.onTap,
     this.textController,
     this.onTapCancel,
+    required this.validateName,
   });
   final String title;
   final String titleButton1;
   final String titleButton2;
+  final String validateName;
   final void Function()? onTap;
   final void Function()? onTapCancel;
   final TextEditingController? textController;
   final _formKey = GlobalKey<FormState>();
+
+  bool _validateUsername(String value) {
+    if (validateName.isEmpty) return false;
+    List<String> badWords = validateName.split(",");
+    for (var badWord in badWords) {
+      if (value.toLowerCase().contains(badWord.trim())) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +57,13 @@ class PopupPrimary extends StatelessWidget {
                   FocusScope.of(context).unfocus();
                 },
                 validator: (value) {
+                  if (value != null && _validateUsername(value)) {
+                    return "Tên người dùng không hợp lệ";
+                  }
                   if (value == null || value.trim().isEmpty) {
                     return 'Vui lòng nhập tên để tiếp tục';
-                  } else if (value.length > 40) {
+                  }
+                  if (value.length > 40) {
                     return "Vui lòng nhập tên tối đa 40 ký tự! ";
                   }
                   return null;

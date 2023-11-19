@@ -72,7 +72,8 @@ class LoginCubit extends Cubit<LoginState> {
         user: user,
         chooseMC: mccc ?? 0,
       ));
-
+      final validateName = await _loginRepository.getBad();
+      emit(state.copyWith(validateName: validateName));
       // print(response);
     } catch (e) {
       if (e is BadRequestException) {
@@ -114,12 +115,13 @@ class LoginCubit extends Cubit<LoginState> {
       final score = int.parse(point.replaceAll('.', ''));
       final userState = state.user;
       if (userState != null) {
-        await _loginRepository.updateUser(
-            user: User(
-                name: userState.name,
-                point: userState.point + score,
-                deviceId: userState.deviceId,
-                playDate: Timestamp.now()));
+        final x = User(
+            name: userState.name,
+            point: (userState.point) + score,
+            deviceId: userState.deviceId,
+            playDate: Timestamp.now());
+        emit(state.copyWith(user: x));
+        await _loginRepository.updateUser(user: x);
         AnalyticsManager.postScore(score, null);
         clearQuestionLocal();
       }

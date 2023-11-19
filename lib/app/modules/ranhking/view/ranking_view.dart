@@ -191,9 +191,9 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
         ),
         bottomNavigationBar: _bannerAd == null || !isBannerAdReady
             ? const SizedBox.shrink()
-            : Container(
-                height: 52,
-                margin: const EdgeInsets.only(bottom: 12),
+            : SizedBox(
+                height: _bannerAd!.size.height.toDouble(),
+                width: _bannerAd!.size.width.toDouble(),
                 child: AdWidget(ad: _bannerAd!),
               ),
       );
@@ -204,7 +204,7 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
     try {
       _bannerAd = BannerAd(
         size: AdSize.banner,
-        adUnitId: AdsManager.bannerAdUnitId!,
+        adUnitId: AdsManager.bannerAdUnitId,
         listener: BannerAdListener(
           onAdLoaded: (ad) {
             setState(() {

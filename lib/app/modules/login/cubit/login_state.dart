@@ -13,6 +13,7 @@ class LoginState with _$LoginState {
     @Default(false) bool isMuteCheckAgain,
     @Default(true) bool hasUser,
     @Default(false) bool hasDataLocal,
+    String? validateName,
     // @Default(false) bool playGame,
     // @Default(false) bool watchRanking,
     User? user,
