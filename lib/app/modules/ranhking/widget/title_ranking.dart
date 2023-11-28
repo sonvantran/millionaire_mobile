@@ -11,16 +11,16 @@ class TitleRanking extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: check ? 4 : 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
         borderRadius: check
             ? const BorderRadius.only(
-                topLeft: Radius.circular(24),
-                topRight: Radius.circular(24),
+                topLeft: Radius.circular(22),
+                topRight: Radius.circular(22),
               )
             : const BorderRadius.only(
-                bottomLeft: Radius.circular(60),
-                bottomRight: Radius.circular(60),
+                bottomLeft: Radius.circular(22),
+                bottomRight: Radius.circular(22),
               ),
         gradient: const LinearGradient(
           begin: Alignment.topCenter,
@@ -49,6 +49,11 @@ class TitleRanking extends StatelessWidget {
             )
           : const SizedBox(
               width: double.infinity,
+              child: Text(
+                "Ai Là Triệu Phú",
+                style: TextStyles.mediumWhitesS14,
+                textAlign: TextAlign.center,
+              ),
             ),
     );
   }

@@ -272,7 +272,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 final systemSound = await VolumeController().getVolume();
                 Future.delayed(
                     Duration(
-                        seconds: state.isMute || systemSound <= 0.3 ? 2 : 10),
+                        seconds: state.isMute || systemSound < 0.2 ? 2 : 10),
                     () async {
                   await _showAudienceHelp(
                       context,

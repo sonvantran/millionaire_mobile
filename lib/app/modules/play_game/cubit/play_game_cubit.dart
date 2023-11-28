@@ -433,12 +433,11 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       if (player != null) {
         setIsAccessAnswer(false);
         final systemSound = await VolumeController().getVolume();
-        // debugPrint(systemSound.toString());
         final assetSource = soundPath(
-            state.isMute || systemSound <= 0.3 ? SoundManager.muteSound : name);
+            state.isMute || systemSound < 0.2 ? SoundManager.muteSound : name);
         final source = AssetSource(assetSource);
         await player.play(source);
-        await player.onPlayerComplete.first; //đảm bảo âm thanh đã chơi hết
+        await player.onPlayerComplete.first; 
         setIsAccessAnswer(true);
       }
     } catch (e) {

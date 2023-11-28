@@ -272,7 +272,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
           });
         },
         onAdFailedToLoad: (err) {
-          print('Failed to load a rewarded ad: ${err.message}');
+          debugPrint('Failed to load a rewarded ad: ${err.message}');
         },
       ),
     );

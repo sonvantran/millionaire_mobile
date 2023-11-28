@@ -154,6 +154,12 @@ abstract class TextStyles {
     color: AppColors.colorFFFFFFFF,
   );
 
+  static const mediumWhitesS14 = TextStyle(
+    fontSize: 14,
+    fontWeight: FontW.medium,
+    color: AppColors.colorFFBBBABA,
+  );
+
   static const regularWhiteS12 = TextStyle(
     fontSize: 12,
     fontWeight: FontW.regular,
