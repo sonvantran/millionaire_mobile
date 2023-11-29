@@ -177,7 +177,7 @@ class _PlayGamePageState extends State<PlayGamePage>
             } else if (state.isFalse) {
               final point = getQuestionByLevel(state.level - 1);
               Future.delayed(const Duration(milliseconds: 1500), () async {
-                int randomValue = Random().nextInt(3);
+                int randomValue = Random().nextInt(5);
                 if (_interstitialAd != null &&
                     isInterstitialAdLoaded &&
                     randomValue == 2) {
@@ -232,11 +232,7 @@ class _PlayGamePageState extends State<PlayGamePage>
               previous.isFalse != current.isFalse,
           listener: (context, state) {
             if (state.isFalse) {
-              // final point = getQuestionByLevel(state.level - 1);
               context1.read<LoginCubit>().clearQuestionLocal();
-              // Future.delayed(const Duration(milliseconds: 2000), () async {
-
-              // });
             }
           },
         ),
@@ -257,9 +253,6 @@ class _PlayGamePageState extends State<PlayGamePage>
                   state.questions[state.level - 1].rightAnswer ?? 1;
               await _showCallHelp(
                   context, rightAnswer, context.read<PlayGameCubit>());
-              // Future.delayed(const Duration(seconds: 7), () async {
-
-              // });
             }
           },
         ),
@@ -272,7 +265,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 final systemSound = await VolumeController().getVolume();
                 Future.delayed(
                     Duration(
-                        seconds: state.isMute || systemSound < 0.2 ? 2 : 10),
+                        seconds: state.isMute || systemSound <= 0.1 ? 2 : 10),
                     () async {
                   await _showAudienceHelp(
                       context,

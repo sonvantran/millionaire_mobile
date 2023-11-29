@@ -287,13 +287,12 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     try {
       clearDataLocal();
       QuestionBox.setQuestion(QuestionModelHive(
-        currentLevel: state.level,
-        questions: state.questions,
-        isCall: state.isCall,
-        isChart: state.isChart,
-        isConsultant: state.isConsultant,
-        isDelete2Answers: state.isDelete2Answers
-      ));
+          currentLevel: state.level,
+          questions: state.questions,
+          isCall: state.isCall,
+          isChart: state.isChart,
+          isConsultant: state.isConsultant,
+          isDelete2Answers: state.isDelete2Answers));
     } catch (e) {
       rethrow;
     }
@@ -434,10 +433,10 @@ class PlayGameCubit extends Cubit<PlayGameState> {
         setIsAccessAnswer(false);
         final systemSound = await VolumeController().getVolume();
         final assetSource = soundPath(
-            state.isMute || systemSound < 0.2 ? SoundManager.muteSound : name);
+            state.isMute || systemSound <= 0.1 ? SoundManager.muteSound : name);
         final source = AssetSource(assetSource);
         await player.play(source);
-        await player.onPlayerComplete.first; 
+        await player.onPlayerComplete.first;
         setIsAccessAnswer(true);
       }
     } catch (e) {
@@ -493,6 +492,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
 
   Future<void> trueAnswer(String type) async {
     try {
+      clearDataLocal();
       await playAudio(SoundManager.trueAnswer(mc, type)[Random().nextInt(5)]);
     } catch (e) {
       if (e is StateError) {
@@ -506,8 +506,8 @@ class PlayGameCubit extends Cubit<PlayGameState> {
 
   Future<void> wrongAnswer(int type) async {
     try {
-      updatePoint(getQuestionByLevel(state.level - 1));
       clearDataLocal();
+      updatePoint(getQuestionByLevel(state.level - 1));
       type == 1
           ? emit(state.copyWith(isTrueA: true))
           : type == 2
@@ -555,8 +555,8 @@ class PlayGameCubit extends Cubit<PlayGameState> {
 
   void outTime() async {
     try {
-      updatePoint(getQuestionByLevel(state.level - 1));
       clearDataLocal();
+      updatePoint(getQuestionByLevel(state.level - 1));
       await playAudio(SoundManager.outTime());
       await chiatay();
     } catch (e) {
