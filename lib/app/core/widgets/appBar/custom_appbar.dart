@@ -10,7 +10,8 @@ class CustomAppBar extends StatelessWidget {
     required this.title,
     this.titleStyle = TextStyles.mediumMWhiteS20,
     this.leading,
-    this.top, this.bottom,
+    this.top,
+    this.bottom,
   });
   final String title;
   final List<Widget>? actions;
@@ -75,6 +76,7 @@ class CustomAppbarItem extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
+        margin: const EdgeInsets.only(left: 9),
         width: width,
         decoration: BoxDecoration(
             shape: BoxShape.circle,

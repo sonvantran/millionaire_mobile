@@ -35,4 +35,13 @@ class LoginApi {
     throw BadRequestException(
         httpCode: 404, status: "status", message: "lỗi update");
   }
+
+  Future<String> deleteUser({
+    required String deviceId,
+  }) async {
+    final user1 = await fs.deleteUser(deviceId);
+    if (user1 != null) return user1;
+    throw BadRequestException(
+        httpCode: 404, status: "status", message: "lỗi delete");
+  }
 }

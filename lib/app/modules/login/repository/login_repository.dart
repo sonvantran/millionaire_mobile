@@ -30,4 +30,12 @@ class LoginRepository {
       rethrow;
     }
   }
+
+  Future<String> deleteUser({required String deviceId}) {
+    try {
+      return _api.deleteUser(deviceId: deviceId);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

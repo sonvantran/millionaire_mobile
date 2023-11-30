@@ -110,6 +110,24 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
+  void deleteUser() async {
+    try {
+      emit(state.copyWith(message: null));
+
+      final deviceId = await getId();
+      if (deviceId != null) {
+        String message = await _loginRepository.deleteUser(deviceId: deviceId);
+        emit(state.copyWith(hasUser: false, user: null, message: message));
+      }
+    } catch (e) {
+      if (e is BadRequestException) {
+        emit(state.copyWith(hasUser: true, message: e.message));
+        return;
+      }
+      rethrow;
+    }
+  }
+
   void updatePoint(String point) async {
     try {
       final score = int.parse(point.replaceAll('.', ''));

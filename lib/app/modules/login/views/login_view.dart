@@ -155,6 +155,13 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                         if (state.user != null)
                           CustomAppbarItem(
                             onPressed: () async {
+                              await _showdialogDelete(context, cubit);
+                            },
+                            icon: Icons.delete,
+                          ),
+                        if (state.user != null)
+                          CustomAppbarItem(
+                            onPressed: () async {
                               _nameController.text = state.user!.name;
                               await _showdialogEdit(context, cubit);
                             },
@@ -334,6 +341,25 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           titleButton1: 'Tiếp tục',
           textController: _nameController,
           validateName: cubit.state.validateName ?? '',
+        );
+      },
+    );
+  }
+
+  Future<void> _showdialogDelete(BuildContext context, LoginCubit cubit) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext _) {
+        return PopupPrimary(
+          onTap: () {
+            Navigator.of(context).pop();
+            cubit.deleteUser();
+          },
+          title: "Bạn có chắc muốn xoá tài khoản?",
+          content:
+              "Việc này sẽ xoá toàn bộ thông tin tài khoản của bạn và không thể hoàn tác!",
+          titleButton1: 'Xác nhận',
+          validateName: '',
         );
       },
     );

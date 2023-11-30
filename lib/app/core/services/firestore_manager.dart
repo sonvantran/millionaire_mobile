@@ -10,6 +10,11 @@ class FirestoreManager {
     return user;
   }
 
+  Future<String?> deleteUser(String deviceId) async {
+    await firestore.collection("users").doc(deviceId).delete();
+    return "Xoá thành công";
+  }
+
   Future<User?> getUser(String id) async {
     DocumentSnapshot documentSnapshot =
         await firestore.collection('users').doc(id).get();

@@ -15,8 +15,10 @@ class PopupPrimary extends StatelessWidget {
     this.textController,
     this.onTapCancel,
     required this.validateName,
+    this.content = '',
   });
   final String title;
+  final String content;
   final String titleButton1;
   final String titleButton2;
   final String validateName;
@@ -113,7 +115,11 @@ class PopupPrimary extends StatelessWidget {
                 cursorColor: AppColors.colorFF000000,
               ),
             )
-          : null,
+          : Text(
+              content,
+              style: TextStyles.regularBlackS14,
+              textAlign: TextAlign.justify,
+            ),
       actionsAlignment: MainAxisAlignment.center,
       actions: [
         Column(
