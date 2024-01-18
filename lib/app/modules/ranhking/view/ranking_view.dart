@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:sky_ads/banner_anchor_ad_widget.dart';
+import 'package:sky_ads/native_ad_widget.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
-import '../../../core/services/ads_manager.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/appBar/custom_appbar.dart';
@@ -25,8 +25,8 @@ class RankingView extends StatefulWidget {
 }
 
 class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
-  BannerAd? _bannerAd;
-  bool isBannerAdReady = false;
+  // BannerAd? _bannerAd;
+  // bool isBannerAdReady = false;
   @override
   TrackingScreenViewType get route => TrackingScreenViewType.ranking;
 
@@ -40,14 +40,14 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
 
   @override
   void initState() {
-    createBannerAd();
+    // createBannerAd();
     super.initState();
   }
 
   @override
   void dispose() {
-    _bannerAd?.dispose();
-    isBannerAdReady = false;
+    // _bannerAd?.dispose();
+    // isBannerAdReady = false;
     super.dispose();
   }
 
@@ -164,12 +164,26 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                                     child: Column(
                                       children: [
                                         for (int i = 0; i < users.length; i++)
-                                          UserRankingItem(
-                                            name: users[i].name,
-                                            number: i + 1,
-                                            point:
-                                                '${formatNumber(users[i].point)} đ',
-                                          )
+                                          if (i != 2)
+                                            UserRankingItem(
+                                              name: users[i].name,
+                                              number: i + 1,
+                                              point:
+                                                  '${formatNumber(users[i].point)} đ',
+                                            )
+                                          else
+                                            Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const SkyNativeAdWidget(),
+                                                UserRankingItem(
+                                                  name: users[i].name,
+                                                  number: i + 1,
+                                                  point:
+                                                      '${formatNumber(users[i].point)} đ',
+                                                ),
+                                              ],
+                                            )
                                       ],
                                     ),
                                   ),
@@ -189,42 +203,36 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
             ],
           ),
         ),
-        bottomNavigationBar: _bannerAd == null || !isBannerAdReady
-            ? const SizedBox.shrink()
-            : SizedBox(
-                height: _bannerAd!.size.height.toDouble(),
-                width: _bannerAd!.size.width.toDouble(),
-                child: AdWidget(ad: _bannerAd!),
-              ),
+        bottomNavigationBar: const SkyBannerAnchorAdWidget(),
       );
     });
   }
 
-  void createBannerAd() {
-    try {
-      _bannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: AdsManager.bannerAdUnitId,
-        listener: BannerAdListener(
-          onAdLoaded: (ad) {
-            setState(() {
-              isBannerAdReady = true;
-            });
-          },
-          onAdFailedToLoad: (ad, err) {
-            ad.dispose();
-            debugPrint('Failed to load a banner ad: ${err.message}');
-          },
-          onAdOpened: (ad) => debugPrint('Ad opened'),
-          onAdClosed: (ad) => debugPrint('Ad closed'),
-          onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
-        ),
-        request: const AdRequest(),
-      )..load();
-    } catch (e) {
-      _bannerAd = null;
-    }
-  }
+  // void createBannerAd() {
+  //   try {
+  //     _bannerAd = BannerAd(
+  //       size: AdSize.banner,
+  //       adUnitId: AdsManager.bannerAdUnitId,
+  //       listener: BannerAdListener(
+  //         onAdLoaded: (ad) {
+  //           setState(() {
+  //             isBannerAdReady = true;
+  //           });
+  //         },
+  //         onAdFailedToLoad: (ad, err) {
+  //           ad.dispose();
+  //           debugPrint('Failed to load a banner ad: ${err.message}');
+  //         },
+  //         onAdOpened: (ad) => debugPrint('Ad opened'),
+  //         onAdClosed: (ad) => debugPrint('Ad closed'),
+  //         onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
+  //       ),
+  //       request: const AdRequest(),
+  //     )..load();
+  //   } catch (e) {
+  //     _bannerAd = null;
+  //   }
+  // }
 
   String formatNumber(int i) {
     String formatted = "";

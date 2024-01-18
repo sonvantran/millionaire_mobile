@@ -1,10 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
-import '../../../core/services/ads_manager.dart';
 import '../../../core/services/question_box.dart';
 import '../../../core/values/custom_color.dart';
 import '../../../core/values/show_message_internal.dart';
@@ -22,6 +20,7 @@ import '../../../core/widgets/button/second_button.dart';
 import '../widgets/icon_button.dart';
 import '../widgets/score_user.dart';
 import '../widgets/setting.dart';
+import 'package:sky_ads/banner_anchor_ad_widget.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -58,13 +57,13 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   final _nameController = TextEditingController();
-  BannerAd? _bannerAd;
-  bool isBannerAdReady = false;
+  // BannerAd? _bannerAd;
+  // bool isBannerAdReady = false;
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    createBannerAd();
+    // createBannerAd();
     super.initState();
   }
 
@@ -79,8 +78,8 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   @override
   void dispose() {
     _nameController.dispose();
-    _bannerAd?.dispose();
-    isBannerAdReady = false;
+    // _bannerAd?.dispose();
+    // isBannerAdReady = false;
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -310,13 +309,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
               ],
             ),
           ),
-          bottomNavigationBar: _bannerAd == null || !isBannerAdReady
-              ? const SizedBox.shrink()
-              : SizedBox(
-                  height: _bannerAd!.size.height.toDouble(),
-                  width: _bannerAd!.size.width.toDouble(),
-                  child: AdWidget(ad: _bannerAd!),
-                ),
+          bottomNavigationBar: const SkyBannerAnchorAdWidget(),
         );
       }),
     );
@@ -512,29 +505,29 @@ Trò chơi này dựa trên "Ai là Triệu Phú" và nhằm mang đến giây p
     );
   }
 
-  void createBannerAd() {
-    try {
-      _bannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: AdsManager.bannerAdUnitId,
-        listener: BannerAdListener(
-          onAdLoaded: (ad) {
-            setState(() {
-              isBannerAdReady = true;
-            });
-          },
-          onAdFailedToLoad: (ad, err) {
-            ad.dispose();
-            debugPrint('Failed to load a banner ad: ${err.message}');
-          },
-          onAdOpened: (ad) => debugPrint('Ad opened'),
-          onAdClosed: (ad) => debugPrint('Ad closed'),
-          onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
-        ),
-        request: const AdRequest(),
-      )..load();
-    } catch (e) {
-      _bannerAd = null;
-    }
-  }
+  // void createBannerAd() {
+  //   try {
+  //     _bannerAd = BannerAd(
+  //       size: AdSize.banner,
+  //       adUnitId: AdsManager.bannerAdUnitId,
+  //       listener: BannerAdListener(
+  //         onAdLoaded: (ad) {
+  //           setState(() {
+  //             isBannerAdReady = true;
+  //           });
+  //         },
+  //         onAdFailedToLoad: (ad, err) {
+  //           ad.dispose();
+  //           debugPrint('Failed to load a banner ad: ${err.message}');
+  //         },
+  //         onAdOpened: (ad) => debugPrint('Ad opened'),
+  //         onAdClosed: (ad) => debugPrint('Ad closed'),
+  //         onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
+  //       ),
+  //       request: const AdRequest(),
+  //     )..load();
+  //   } catch (e) {
+  //     _bannerAd = null;
+  //   }
+  // }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sky_ads/sky_ads.dart';
 import 'route_app.dart';
 
 class MyApp extends StatefulWidget {
@@ -19,6 +21,17 @@ class _MyAppState extends State<MyApp> {
     //     SystemUiOverlayStyle(statusBarColor: Colors.transparent
     //         //color set to purple or set your own color
     //         ));
+    init();
+  }
+
+  void init() async {
+    final pre = await SharedPreferences.getInstance();
+    bool isFirst = pre.getBool("isFirst") ?? true;
+    if (isFirst) {
+      pre.setBool("isFirst", false);
+    } else {
+      SkyAds.instance.showAppOpenAd(forceShow: true);
+    }
   }
 
   @override

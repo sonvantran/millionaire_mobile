@@ -3,12 +3,12 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:sky_ads/banner_anchor_ad_widget.dart';
+import 'package:sky_ads/sky_ads.dart';
 import 'package:volume_controller/volume_controller.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/extension/integer_extension.dart';
-import '../../../core/services/ads_manager.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/popup/popup_notice.dart';
@@ -102,16 +102,16 @@ class _PlayGamePageState extends State<PlayGamePage>
     with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
-  BannerAd? _bannerAd;
-  bool isBannerAdReady = false;
+  // BannerAd? _bannerAd;
+  // bool isBannerAdReady = false;
 
-  InterstitialAd? _interstitialAd;
-  bool isInterstitialAdLoaded = false;
+  // InterstitialAd? _interstitialAd;
+  // bool isInterstitialAdLoaded = false;
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    _loadInterstitialAd();
-    createBannerAd();
+    // _loadInterstitialAd();
+    // createBannerAd();
     super.initState();
   }
 
@@ -128,10 +128,10 @@ class _PlayGamePageState extends State<PlayGamePage>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _bannerAd?.dispose();
-    _interstitialAd?.dispose();
-    isBannerAdReady = false;
-    isInterstitialAdLoaded = false;
+    // _bannerAd?.dispose();
+    // _interstitialAd?.dispose();
+    // isBannerAdReady = false;
+    // isInterstitialAdLoaded = false;
     super.dispose();
   }
 
@@ -162,9 +162,7 @@ class _PlayGamePageState extends State<PlayGamePage>
             // final cubit = context.read<PlayGameCubit>();
             if (state.timeCounter == 0) {
               final point = getQuestionByLevel(state.level - 1);
-              if (_interstitialAd != null && isInterstitialAdLoaded) {
-                await _interstitialAd?.show();
-              }
+              SkyAds.instance.showInterstitialAd();
               // ignore: use_build_context_synchronously
               await context.router.replace(PlayAgainViewRoute(
                 caseResult: 0,
@@ -178,10 +176,8 @@ class _PlayGamePageState extends State<PlayGamePage>
               final point = getQuestionByLevel(state.level - 1);
               Future.delayed(const Duration(milliseconds: 1500), () async {
                 int randomValue = Random().nextInt(5);
-                if (_interstitialAd != null &&
-                    isInterstitialAdLoaded &&
-                    randomValue == 2) {
-                  await _interstitialAd?.show();
+                if (randomValue == 2) {
+                  SkyAds.instance.showInterstitialAd();
                 }
                 // ignore: use_build_context_synchronously
                 await context.router.replace(PlayAgainViewRoute(
@@ -559,13 +555,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                     ],
                   ));
             }),
-            bottomNavigationBar: _bannerAd == null || !isBannerAdReady
-                ? const SizedBox.shrink()
-                : SizedBox(
-                    height: _bannerAd!.size.height.toDouble(),
-                    width: _bannerAd!.size.width.toDouble(),
-                    child: AdWidget(ad: _bannerAd!),
-                  ),
+            bottomNavigationBar: const SkyBannerAnchorAdWidget(),
           ),
         );
       }),
@@ -731,9 +721,7 @@ class _PlayGamePageState extends State<PlayGamePage>
           return PopupPlayConfirm(
             onTap: () async {
               cubit.updatePoint(point);
-              if (_interstitialAd != null && isInterstitialAdLoaded) {
-                await _interstitialAd?.show();
-              }
+              SkyAds.instance.showInterstitialAd();
               // ignore: use_build_context_synchronously
               await context.router.replace(PlayAgainViewRoute(
                 caseResult: 1,
@@ -750,62 +738,62 @@ class _PlayGamePageState extends State<PlayGamePage>
         });
   }
 
-  void _loadInterstitialAd() {
-    InterstitialAd.load(
-      adUnitId: AdsManager.interstitialAdUnitId,
-      request: const AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (ad) {
-          ad.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (ad) {
-              // _moveToHome();
-              debugPrint("dsadasdsassss");
-            },
-            onAdFailedToShowFullScreenContent:
-                (InterstitialAd ad, AdError error) {
-              ad.dispose;
-              debugPrint('Ad failed to show: $error');
-            },
-            onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
-          );
+  // void _loadInterstitialAd() {
+  //   InterstitialAd.load(
+  //     adUnitId: AdsManager.interstitialAdUnitId,
+  //     request: const AdRequest(),
+  //     adLoadCallback: InterstitialAdLoadCallback(
+  //       onAdLoaded: (ad) {
+  //         ad.fullScreenContentCallback = FullScreenContentCallback(
+  //           onAdDismissedFullScreenContent: (ad) {
+  //             // _moveToHome();
+  //             debugPrint("dsadasdsassss");
+  //           },
+  //           onAdFailedToShowFullScreenContent:
+  //               (InterstitialAd ad, AdError error) {
+  //             ad.dispose;
+  //             debugPrint('Ad failed to show: $error');
+  //           },
+  //           onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
+  //         );
 
-          setState(() {
-            _interstitialAd = ad;
-            isInterstitialAdLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (err) {
-          debugPrint('Failed to load an interstitial ad: ${err.message}');
-        },
-      ),
-    );
-  }
+  //         setState(() {
+  //           _interstitialAd = ad;
+  //           isInterstitialAdLoaded = true;
+  //         });
+  //       },
+  //       onAdFailedToLoad: (err) {
+  //         debugPrint('Failed to load an interstitial ad: ${err.message}');
+  //       },
+  //     ),
+  //   );
+  // }
 
-  void createBannerAd() {
-    try {
-      _bannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: AdsManager.bannerAdUnitId,
-        listener: BannerAdListener(
-          onAdLoaded: (ad) {
-            setState(() {
-              isBannerAdReady = true;
-            });
-          },
-          onAdFailedToLoad: (ad, err) {
-            ad.dispose();
-            debugPrint('Failed to load a banner ad: ${err.message}');
-          },
-          onAdOpened: (ad) => debugPrint('Ad opened'),
-          onAdClosed: (ad) => debugPrint('Ad closed'),
-          onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
-        ),
-        request: const AdRequest(),
-      )..load();
-    } catch (e) {
-      _bannerAd = null;
-    }
-  }
+  // void createBannerAd() {
+  //   try {
+  //     _bannerAd = BannerAd(
+  //       size: AdSize.banner,
+  //       adUnitId: AdsManager.bannerAdUnitId,
+  //       listener: BannerAdListener(
+  //         onAdLoaded: (ad) {
+  //           setState(() {
+  //             isBannerAdReady = true;
+  //           });
+  //         },
+  //         onAdFailedToLoad: (ad, err) {
+  //           ad.dispose();
+  //           debugPrint('Failed to load a banner ad: ${err.message}');
+  //         },
+  //         onAdOpened: (ad) => debugPrint('Ad opened'),
+  //         onAdClosed: (ad) => debugPrint('Ad closed'),
+  //         onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
+  //       ),
+  //       request: const AdRequest(),
+  //     )..load();
+  //   } catch (e) {
+  //     _bannerAd = null;
+  //   }
+  // }
 }
 
 String getQuestionByLevel(int level) {

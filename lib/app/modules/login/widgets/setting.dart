@@ -33,13 +33,16 @@ class Setting extends StatelessWidget {
                     ],
                   ),
                   Switch(
+                    inactiveThumbColor: AppColors.colorFFFFFFFF,
+                    inactiveTrackColor: AppColors.colorFF03456e,
                     value: isNotMute,
                     onChanged: (e) {
                       cubit.setIsMute(!e);
                       cubit.setIsMuteCheckAgain(!e);
                     },
                     activeColor: AppColors.colorFFFFFFFF,
-                    activeTrackColor: AppColors.colorFFFFFFFF,
+                    activeTrackColor: AppColors.colorFF03456e,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                 ],
               );

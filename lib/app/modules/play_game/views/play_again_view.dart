@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
+import 'package:sky_ads/banner_anchor_ad_widget.dart';
 import 'dart:ui' as ui;
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
@@ -43,8 +44,8 @@ class PlayAgainView extends StatefulWidget {
 class _PlayAgainViewState extends State<PlayAgainView>
     with RouteAwareAnalytics {
   final _key = GlobalKey();
-  BannerAd? _bannerAd;
-  bool isBannerAdReady = false;
+  // BannerAd? _bannerAd;
+  // bool isBannerAdReady = false;
 
   RewardedAd? _rewardedAd;
   bool isRewardAdReady = false;
@@ -55,15 +56,15 @@ class _PlayAgainViewState extends State<PlayAgainView>
   @override
   void initState() {
     _loadRewardedAd();
-    createBannerAd();
+    // createBannerAd();
     super.initState();
   }
 
   @override
   void dispose() {
-    _bannerAd?.dispose();
+    // _bannerAd?.dispose();
     _rewardedAd?.dispose();
-    isBannerAdReady = false;
+    // isBannerAdReady = false;
     isRewardAdReady = false;
     super.dispose();
   }
@@ -210,41 +211,35 @@ class _PlayAgainViewState extends State<PlayAgainView>
           ),
         ),
       ),
-      bottomNavigationBar: _bannerAd == null || !isBannerAdReady
-          ? const SizedBox.shrink()
-          : SizedBox(
-              height: _bannerAd!.size.height.toDouble(),
-              width: _bannerAd!.size.width.toDouble(),
-              child: AdWidget(ad: _bannerAd!),
-            ),
+      bottomNavigationBar: const SkyBannerAnchorAdWidget(),
     );
   }
 
-  void createBannerAd() {
-    try {
-      _bannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: AdsManager.bannerAdUnitId,
-        listener: BannerAdListener(
-          onAdLoaded: (ad) {
-            setState(() {
-              isBannerAdReady = true;
-            });
-          },
-          onAdFailedToLoad: (ad, err) {
-            ad.dispose();
-            debugPrint('Failed to load a banner ad: ${err.message}');
-          },
-          onAdOpened: (ad) => debugPrint('Ad opened'),
-          onAdClosed: (ad) => debugPrint('Ad closed'),
-          onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
-        ),
-        request: const AdRequest(),
-      )..load();
-    } catch (e) {
-      _bannerAd = null;
-    }
-  }
+  // void createBannerAd() {
+  //   try {
+  //     _bannerAd = BannerAd(
+  //       size: AdSize.banner,
+  //       adUnitId: AdsManager.bannerAdUnitId,
+  //       listener: BannerAdListener(
+  //         onAdLoaded: (ad) {
+  //           setState(() {
+  //             isBannerAdReady = true;
+  //           });
+  //         },
+  //         onAdFailedToLoad: (ad, err) {
+  //           ad.dispose();
+  //           debugPrint('Failed to load a banner ad: ${err.message}');
+  //         },
+  //         onAdOpened: (ad) => debugPrint('Ad opened'),
+  //         onAdClosed: (ad) => debugPrint('Ad closed'),
+  //         onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
+  //       ),
+  //       request: const AdRequest(),
+  //     )..load();
+  //   } catch (e) {
+  //     _bannerAd = null;
+  //   }
+  // }
 
   void _loadRewardedAd() {
     RewardedAd.load(
