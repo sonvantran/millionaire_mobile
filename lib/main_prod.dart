@@ -21,7 +21,7 @@ void main() async {
   EnvConfig devConfig = EnvConfig(
     appName: "Ai là triệu phú?",
     appVersion: "0.1",
-    apiBaseUrl: "http://millionaire.mumesoft.com",
+    apiBaseUrl: "",
     webBaseUrl: "",
     shouldCollectCrashLog: true,
     iOSAppId: '',

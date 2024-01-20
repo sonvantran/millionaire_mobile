@@ -21,6 +21,7 @@ import '../widgets/icon_button.dart';
 import '../widgets/score_user.dart';
 import '../widgets/setting.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
+import 'package:sky_ads/sky_ads.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -70,6 +71,9 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final cubit = context.read<LoginCubit>();
+    if(state == AppLifecycleState.resumed) {
+      SkyAds.instance.showInterstitialAd();
+    }
     if (!cubit.state.isMuteCheckAgain) {
       cubit.setIsMute(state != AppLifecycleState.resumed);
     }
