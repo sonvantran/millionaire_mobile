@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
     if (isFirst) {
       pre.setBool("isFirst", false);
     } else {
-      SkyAds.instance.showAppOpenAd(forceShow: true);
+      SkyAds.instance.showAppOpenAd();
     }
   }
 
