@@ -18,6 +18,7 @@ import '../cubit/login_state.dart';
 import '../repository/login_repository.dart';
 import '../../../core/widgets/button/second_button.dart';
 import '../widgets/icon_button.dart';
+import '../widgets/rating_dialog.dart';
 import '../widgets/score_user.dart';
 import '../widgets/setting.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
@@ -291,16 +292,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                           ),
                           const SizedBox(width: 24),
                           ButtonItem(
-                            onTap: () {
-                              AnalyticsManager.sendAnalyticsEvent(
-                                  'The user want to review app!');
-                              cubit.reviewApp();
-                            },
-                            color: AppColors.colorFFAF4848,
-                            iconData: Icons.shopping_cart,
-                          ),
-                          const SizedBox(width: 24),
-                          ButtonItem(
                             onTap: () => _showSetting(context, cubit),
                             color: AppColors.colorFF375193,
                             iconData: Icons.settings,
@@ -310,6 +301,27 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                             onTap: () => _showRole(context),
                             color: AppColors.colorFFd1b037,
                             iconData: Icons.info_outline,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ButtonItem(
+                            onTap: () {
+                              AnalyticsManager.sendAnalyticsEvent(
+                                  'The_user_want_to_review_app!');
+                              _showdialogRating(context, cubit);
+                            },
+                            color: AppColors.colorFFAF4848,
+                            iconData: Icons.star,
+                          ),
+                          const SizedBox(width: 24),
+                          ButtonItem(
+                            onTap: () => cubit.feedBack(),
+                            color: AppColors.colorFF424242,
+                            iconData: Icons.rate_review_outlined,
                           ),
                         ],
                       ),
@@ -398,6 +410,17 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
             title: 'CÀI ĐẶT',
             content: Setting(),
           ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showdialogRating(BuildContext context, LoginCubit cubit) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext _) {
+        return RatingPopup(
+          onPressed: () => cubit.reviewApp(),
         );
       },
     );

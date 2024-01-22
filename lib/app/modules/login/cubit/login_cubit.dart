@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:millionaire_mobile/app/data/model/user.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../network/exceptions/bad_request_exception.dart';
 import '../../../core/services/question_box.dart';
@@ -50,10 +51,34 @@ class LoginCubit extends Cubit<LoginState> {
       final InAppReview inAppReview = InAppReview.instance;
 
       if (await inAppReview.isAvailable()) {
-        inAppReview.openStoreListing(appStoreId: "com.congthiep.millionaire");
+        inAppReview.openStoreListing();
       }
     } catch (e) {
       return;
+    }
+  }
+
+  String? encodeQueryParameters(Map<String, String> params) {
+    return params.entries
+        .map((MapEntry<String, String> e) =>
+            '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .join('&');
+  }
+
+  void feedBack() async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: "thiepcong12@gmail.com",
+      query: encodeQueryParameters(<String, String>{
+        'subject': 'Phản hồi từ Game Ai Là Triệu Phú',
+      }),
+    );
+    try {
+      // if (await canLaunchUrl(emailLaunchUri)) {
+      await launchUrl(emailLaunchUri);
+      // }
+    } catch (e) {
+      rethrow;
     }
   }
 
