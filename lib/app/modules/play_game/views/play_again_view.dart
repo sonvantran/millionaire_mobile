@@ -12,9 +12,11 @@ import 'dart:ui' as ui;
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/services/ads_manager.dart';
+import '../../../core/values/app_colors.dart';
 import '../../../core/values/show_message_internal.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/appBar/custom_appbar.dart';
+import '../../../core/widgets/button/ads_button.dart';
 import '../../../core/widgets/button/second_button.dart';
 import '../../../data/model/user.dart';
 import '../../../main_router.dart';
@@ -143,15 +145,15 @@ class _PlayAgainViewState extends State<PlayAgainView>
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 20),
-                          SecondButton(
+                          AdsButton(
                             icon: SizedBox(
                                 width: MediaQuery.of(context).size.width * 0.1,
                                 height:
                                     MediaQuery.of(context).size.height * 0.1,
                                 child: Image.asset(
-                                    "assets/images/reward_icon.png")),
-                            width: MediaQuery.of(context).size.width * 0.55,
-                            height: 54,
+                                  "assets/images/reward_icon.png",
+                                  color: AppColors.colorFF402744,
+                                )),
                             onTap: () {
                               if (_rewardedAd != null && isRewardAdReady) {
                                 _rewardedAd?.show(
@@ -173,7 +175,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
                               }
                             },
                             text:
-                                score <= 100000000 ? 'X2 Điểm' : "+100.000.000",
+                                "Xem Video Để ${score <= 100000000 ? 'X2 Điểm' : "+100.000.000 Đ"}",
                           ),
                           const SizedBox(height: 20),
                           SecondButton(

@@ -68,11 +68,17 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     super.initState();
   }
 
+  bool isAppHiden = false;
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final cubit = context.read<LoginCubit>();
-    if(state == AppLifecycleState.resumed) {
-      SkyAds.instance.showAppOpenAd();
+    if (state == AppLifecycleState.resumed) {
+      if (isAppHiden) {
+        SkyAds.instance.showAppOpenAd();
+      }
+      isAppHiden = false;
+    } else if (state == AppLifecycleState.hidden) {
+      isAppHiden = true;
     }
     if (!cubit.state.isMuteCheckAgain) {
       cubit.setIsMute(state != AppLifecycleState.resumed);
