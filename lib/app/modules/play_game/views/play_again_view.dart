@@ -213,7 +213,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
           ),
         ),
       ),
-      bottomNavigationBar: const SkyBannerAnchorAdWidget(),
+      bottomSheet: const SkyBannerAnchorAdWidget(),
     );
   }
 

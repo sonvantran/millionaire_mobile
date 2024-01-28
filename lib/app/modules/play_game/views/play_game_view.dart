@@ -3,12 +3,13 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
-import 'package:sky_ads/sky_ads.dart';
 import 'package:volume_controller/volume_controller.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/extension/integer_extension.dart';
+import '../../../core/services/ads_manager.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/popup/popup_notice.dart';
@@ -105,12 +106,12 @@ class _PlayGamePageState extends State<PlayGamePage>
   // BannerAd? _bannerAd;
   // bool isBannerAdReady = false;
 
-  // InterstitialAd? _interstitialAd;
-  // bool isInterstitialAdLoaded = false;
+  InterstitialAd? _interstitialAd;
+  bool isInterstitialAdLoaded = false;
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    // _loadInterstitialAd();
+    _loadInterstitialAd();
     // createBannerAd();
     super.initState();
   }
@@ -129,9 +130,11 @@ class _PlayGamePageState extends State<PlayGamePage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     // _bannerAd?.dispose();
-    // _interstitialAd?.dispose();
+    _interstitialAd?.dispose();
     // isBannerAdReady = false;
-    // isInterstitialAdLoaded = false;
+    isInterstitialAdLoaded = false;
+    final cubit = context.read<PlayGameCubit>();
+    cubit.dispose();
     super.dispose();
   }
 
@@ -162,7 +165,9 @@ class _PlayGamePageState extends State<PlayGamePage>
             // final cubit = context.read<PlayGameCubit>();
             if (state.timeCounter == 0) {
               final point = getQuestionByLevel(state.level - 1);
-              SkyAds.instance.showInterstitialAd();
+              if (_interstitialAd != null && isInterstitialAdLoaded) {
+                await _interstitialAd?.show();
+              }
               // ignore: use_build_context_synchronously
               await context.router.replace(PlayAgainViewRoute(
                 caseResult: 0,
@@ -176,8 +181,10 @@ class _PlayGamePageState extends State<PlayGamePage>
               final point = getQuestionByLevel(state.level - 1);
               Future.delayed(const Duration(milliseconds: 1500), () async {
                 int randomValue = Random().nextInt(5);
-                if (randomValue == 2) {
-                  SkyAds.instance.showInterstitialAd();
+                if (_interstitialAd != null &&
+                    isInterstitialAdLoaded &&
+                    randomValue == 2) {
+                  await _interstitialAd?.show();
                 }
                 // ignore: use_build_context_synchronously
                 await context.router.replace(PlayAgainViewRoute(
@@ -306,12 +313,15 @@ class _PlayGamePageState extends State<PlayGamePage>
             !state.isTrueC &&
             !state.isTrueD &&
             state.isAccessAnswer;
-        return WillPopScope(
-          onWillPop: () async {
+        return PopScope(
+          canPop: false,
+          onPopInvoked: (didPop) {
+            if (didPop) {
+              return;
+            }
             context.read<PlayGameCubit>().quesionStop();
-            await _showPlaycConfirm(
+            _showPlaycConfirm(
                 context, getQuestionByLevel(state.level - 1), cubit);
-            return false;
           },
           child: Scaffold(
             key: _key,
@@ -338,7 +348,11 @@ class _PlayGamePageState extends State<PlayGamePage>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           AppBarItem(
-                            onTap: () => context.router.pop(),
+                            onTap: () {
+                              context.read<PlayGameCubit>().quesionStop();
+                              _showPlaycConfirm(context,
+                                  getQuestionByLevel(state.level - 1), cubit);
+                            },
                             isCheck: false,
                             padding: const EdgeInsets.symmetric(vertical: 4),
                             child: const Icon(
@@ -552,10 +566,11 @@ class _PlayGamePageState extends State<PlayGamePage>
                           ),
                         ],
                       ),
+                      const SizedBox(height: 40),
                     ],
                   ));
             }),
-            bottomNavigationBar: const SkyBannerAnchorAdWidget(),
+            bottomSheet: const SkyBannerAnchorAdWidget(),
           ),
         );
       }),
@@ -721,7 +736,9 @@ class _PlayGamePageState extends State<PlayGamePage>
           return PopupPlayConfirm(
             onTap: () async {
               cubit.updatePoint(point);
-              SkyAds.instance.showInterstitialAd();
+              if (_interstitialAd != null && isInterstitialAdLoaded) {
+                await _interstitialAd?.show();
+              }
               // ignore: use_build_context_synchronously
               await context.router.replace(PlayAgainViewRoute(
                 caseResult: 1,
@@ -738,36 +755,36 @@ class _PlayGamePageState extends State<PlayGamePage>
         });
   }
 
-  // void _loadInterstitialAd() {
-  //   InterstitialAd.load(
-  //     adUnitId: AdsManager.interstitialAdUnitId,
-  //     request: const AdRequest(),
-  //     adLoadCallback: InterstitialAdLoadCallback(
-  //       onAdLoaded: (ad) {
-  //         ad.fullScreenContentCallback = FullScreenContentCallback(
-  //           onAdDismissedFullScreenContent: (ad) {
-  //             // _moveToHome();
-  //             debugPrint("dsadasdsassss");
-  //           },
-  //           onAdFailedToShowFullScreenContent:
-  //               (InterstitialAd ad, AdError error) {
-  //             ad.dispose;
-  //             debugPrint('Ad failed to show: $error');
-  //           },
-  //           onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
-  //         );
+  void _loadInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: AdsManager.interstitialAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              // _moveToHome();
+              debugPrint("dsadasdsassss");
+            },
+            onAdFailedToShowFullScreenContent:
+                (InterstitialAd ad, AdError error) {
+              ad.dispose;
+              debugPrint('Ad failed to show: $error');
+            },
+            onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
+          );
 
-  //         setState(() {
-  //           _interstitialAd = ad;
-  //           isInterstitialAdLoaded = true;
-  //         });
-  //       },
-  //       onAdFailedToLoad: (err) {
-  //         debugPrint('Failed to load an interstitial ad: ${err.message}');
-  //       },
-  //     ),
-  //   );
-  // }
+          setState(() {
+            _interstitialAd = ad;
+            isInterstitialAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (err) {
+          debugPrint('Failed to load an interstitial ad: ${err.message}');
+        },
+      ),
+    );
+  }
 
   // void createBannerAd() {
   //   try {

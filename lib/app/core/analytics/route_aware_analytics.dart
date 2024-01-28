@@ -15,7 +15,6 @@ mixin RouteAwareAnalytics<T extends StatefulWidget> on State<T>
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     _routeObserver =
         RouterScope.of(context).firstObserverOfType<AutoRouteObserver>();
@@ -36,13 +35,11 @@ mixin RouteAwareAnalytics<T extends StatefulWidget> on State<T>
 
   @override
   void didChangeTabRoute(TabPageRoute previousRoute) {
-    // TODO: implement didChangeTabRoute
+    //
   }
 
   @override
-  void didInitTabRoute(TabPageRoute? previousRoute) {
-    // TODO: implement didInitTabRoute
-  }
+  void didInitTabRoute(TabPageRoute? previousRoute) {}
 
   @override
   void didPopNext() {

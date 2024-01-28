@@ -192,7 +192,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                     children: [
                       Image.asset(
                         'assets/images/ic_app.png',
-                        width: MediaQuery.of(context).size.width * 0.5,
+                        width: MediaQuery.of(context).size.width * 0.4,
                       ),
                       const SizedBox(height: 16),
                       Container(
@@ -328,10 +328,11 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                     ],
                   ),
                 ),
+                const SizedBox(height: 40),
               ],
             ),
           ),
-          bottomNavigationBar: const SkyBannerAnchorAdWidget(),
+          bottomSheet: const SkyBannerAnchorAdWidget(),
         );
       }),
     );

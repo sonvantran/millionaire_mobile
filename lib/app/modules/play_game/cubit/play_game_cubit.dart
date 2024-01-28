@@ -634,6 +634,11 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   }
 
   String soundPath(String name) => 'audios/$name.mp3';
+
+  void dispose() {
+    state.player?.dispose();
+    state.timer?.cancel();
+  }
 }
 
 String getQuestionByLevel(int level) {

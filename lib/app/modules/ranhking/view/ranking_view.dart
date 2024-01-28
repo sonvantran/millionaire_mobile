@@ -137,9 +137,7 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
               users != null
                   ? Container(
                       width: MediaQuery.of(context).size.width * 0.96,
-                      height: MediaQuery.of(context).size.height * 0.42,
-                      // padding: const EdgeInsets.symmetric(
-                      //     horizontal: 18, vertical: 12),
+                      height: MediaQuery.of(context).size.height * 0.4,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           begin: Alignment.topCenter,
@@ -199,11 +197,12 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                               ),
                             ),
                     )
-                  : SizedBox(height: MediaQuery.of(context).size.height * 0.4)
+                  : SizedBox(height: MediaQuery.of(context).size.height * 0.4),
+              const SizedBox(height: 40),
             ],
           ),
         ),
-        bottomNavigationBar: const SkyBannerAnchorAdWidget(),
+        bottomSheet: const SkyBannerAnchorAdWidget(),
       );
     });
   }
