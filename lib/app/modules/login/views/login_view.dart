@@ -11,8 +11,8 @@ import '../../../core/widgets/appBar/custom_appbar.dart';
 import '../../../core/widgets/popup/popup_notice.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/widgets/popup/popup_primary.dart';
+import '../../../data/local_saver/question_level.dart';
 import '../../../main_router.dart';
-import '../../play_game/cubit/play_game_cubit.dart';
 import '../cubit/login_cubit.dart';
 import '../cubit/login_state.dart';
 import '../repository/login_repository.dart';
@@ -243,7 +243,8 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                                   AnalyticsManager.sendAnalyticsEvent(
                                       'The_user_want_to_play_game_again');
                                   cubit.updatePoint(getQuestionByLevel(
-                                      question[0].currentLevel - 1));
+                                      question[0].currentLevel - 1,
+                                      state.chooseMC));
                                   context.pushRoute(PlayGameViewRoute(
                                     isMute: state.isMute,
                                     mc: state.chooseMC,
@@ -538,30 +539,12 @@ Trò chơi này dựa trên "Ai là Triệu Phú" và nhằm mang đến giây p
       },
     );
   }
+}
 
-  // void createBannerAd() {
-  //   try {
-  //     _bannerAd = BannerAd(
-  //       size: AdSize.banner,
-  //       adUnitId: AdsManager.bannerAdUnitId,
-  //       listener: BannerAdListener(
-  //         onAdLoaded: (ad) {
-  //           setState(() {
-  //             isBannerAdReady = true;
-  //           });
-  //         },
-  //         onAdFailedToLoad: (ad, err) {
-  //           ad.dispose();
-  //           debugPrint('Failed to load a banner ad: ${err.message}');
-  //         },
-  //         onAdOpened: (ad) => debugPrint('Ad opened'),
-  //         onAdClosed: (ad) => debugPrint('Ad closed'),
-  //         onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
-  //       ),
-  //       request: const AdRequest(),
-  //     )..load();
-  //   } catch (e) {
-  //     _bannerAd = null;
-  //   }
-  // }
+String getQuestionByLevel(int level, int mc) {
+  final list = List.from(QuestionLevel.questionPoints(mc));
+  for (final item in list) {
+    if (item.level == level) return item.point;
+  }
+  return '0';
 }

@@ -108,7 +108,7 @@ class PlayGameViewRoute extends PageRouteInfo<PlayGameViewRouteArgs> {
     required bool isMute,
     QuestionModelHive? questionModelHive,
     required LoginCubit cubit,
-    required User user,
+    required User? user,
   }) : super(
           PlayGameViewRoute.name,
           path: 'play_game',
@@ -145,7 +145,7 @@ class PlayGameViewRouteArgs {
 
   final LoginCubit cubit;
 
-  final User user;
+  final User? user;
 
   @override
   String toString() {
@@ -163,7 +163,7 @@ class PlayAgainViewRoute extends PageRouteInfo<PlayAgainViewRouteArgs> {
     required int mc,
     required bool isMute,
     required LoginCubit cubit,
-    required User user,
+    required User? user,
   }) : super(
           PlayAgainViewRoute.name,
           path: 'play_again',
@@ -204,7 +204,7 @@ class PlayAgainViewRouteArgs {
 
   final LoginCubit cubit;
 
-  final User user;
+  final User? user;
 
   @override
   String toString() {

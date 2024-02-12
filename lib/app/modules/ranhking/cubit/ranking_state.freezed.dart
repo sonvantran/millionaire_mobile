@@ -20,6 +20,7 @@ mixin _$RankingState {
   List<User>? get usersday => throw _privateConstructorUsedError;
   List<User>? get usersMonth => throw _privateConstructorUsedError;
   List<User>? get usersYear => throw _privateConstructorUsedError;
+  String? get message => throw _privateConstructorUsedError;
   Error? get error => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -38,6 +39,7 @@ abstract class $RankingStateCopyWith<$Res> {
       List<User>? usersday,
       List<User>? usersMonth,
       List<User>? usersYear,
+      String? message,
       Error? error});
 }
 
@@ -58,6 +60,7 @@ class _$RankingStateCopyWithImpl<$Res, $Val extends RankingState>
     Object? usersday = freezed,
     Object? usersMonth = freezed,
     Object? usersYear = freezed,
+    Object? message = freezed,
     Object? error = freezed,
   }) {
     return _then(_value.copyWith(
@@ -77,6 +80,10 @@ class _$RankingStateCopyWithImpl<$Res, $Val extends RankingState>
           ? _value.usersYear
           : usersYear // ignore: cast_nullable_to_non_nullable
               as List<User>?,
+      message: freezed == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -98,6 +105,7 @@ abstract class _$$_RankingStateCopyWith<$Res>
       List<User>? usersday,
       List<User>? usersMonth,
       List<User>? usersYear,
+      String? message,
       Error? error});
 }
 
@@ -116,6 +124,7 @@ class __$$_RankingStateCopyWithImpl<$Res>
     Object? usersday = freezed,
     Object? usersMonth = freezed,
     Object? usersYear = freezed,
+    Object? message = freezed,
     Object? error = freezed,
   }) {
     return _then(_$_RankingState(
@@ -135,6 +144,10 @@ class __$$_RankingStateCopyWithImpl<$Res>
           ? _value._usersYear
           : usersYear // ignore: cast_nullable_to_non_nullable
               as List<User>?,
+      message: freezed == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -151,6 +164,7 @@ class _$_RankingState extends _RankingState {
       final List<User>? usersday,
       final List<User>? usersMonth,
       final List<User>? usersYear,
+      this.message,
       this.error})
       : _usersday = usersday,
         _usersMonth = usersMonth,
@@ -191,11 +205,13 @@ class _$_RankingState extends _RankingState {
   }
 
   @override
+  final String? message;
+  @override
   final Error? error;
 
   @override
   String toString() {
-    return 'RankingState(filter: $filter, usersday: $usersday, usersMonth: $usersMonth, usersYear: $usersYear, error: $error)';
+    return 'RankingState(filter: $filter, usersday: $usersday, usersMonth: $usersMonth, usersYear: $usersYear, message: $message, error: $error)';
   }
 
   @override
@@ -209,6 +225,7 @@ class _$_RankingState extends _RankingState {
                 .equals(other._usersMonth, _usersMonth) &&
             const DeepCollectionEquality()
                 .equals(other._usersYear, _usersYear) &&
+            (identical(other.message, message) || other.message == message) &&
             (identical(other.error, error) || other.error == error));
   }
 
@@ -219,6 +236,7 @@ class _$_RankingState extends _RankingState {
       const DeepCollectionEquality().hash(_usersday),
       const DeepCollectionEquality().hash(_usersMonth),
       const DeepCollectionEquality().hash(_usersYear),
+      message,
       error);
 
   @JsonKey(ignore: true)
@@ -234,6 +252,7 @@ abstract class _RankingState extends RankingState {
       final List<User>? usersday,
       final List<User>? usersMonth,
       final List<User>? usersYear,
+      final String? message,
       final Error? error}) = _$_RankingState;
   const _RankingState._() : super._();
 
@@ -245,6 +264,8 @@ abstract class _RankingState extends RankingState {
   List<User>? get usersMonth;
   @override
   List<User>? get usersYear;
+  @override
+  String? get message;
   @override
   Error? get error;
   @override

@@ -26,7 +26,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   final PlayGameRepository _playGameRepository;
   final int mc;
   final bool isMute;
-  final User user;
+  final User? user;
 
   void reset() {
     try {
@@ -310,10 +310,14 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     try {
       emit(state.copyWith(saveDone: false));
       final score = int.parse(point.replaceAll('.', ''));
+      if (user == null) {
+        emit(state.copyWith(saveDone: true));
+        return;
+      }
       final x = User(
           name: state.user?.name ?? "",
           point: (state.user?.point ?? 0) + score,
-          deviceId: user.deviceId,
+          deviceId: user!.deviceId,
           playDate: Timestamp.now());
       emit(state.copyWith(user: x));
       await _playGameRepository.updateUser(user: x);
@@ -379,7 +383,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       if (e is BadRequestException) {
         setIsLoading(true);
         final player = AudioPlayer();
-        final questions = QuestionLevel.questionPoints;
+        final questions = QuestionLevel.questionPoints(mc);
         emit(state.copyWith(questions: questions, player: player));
 
         await playAudio(SoundManager.startGame(mc));
@@ -507,7 +511,15 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   Future<void> wrongAnswer(int type) async {
     try {
       clearDataLocal();
-      updatePoint(getQuestionByLevel(state.level - 1));
+      int level = 0;
+      if (state.level >= 0 && state.level <= 5) {
+        level = 0;
+      } else if (state.level >= 6 && state.level <= 10) {
+        level = 5;
+      } else {
+        level = 10;
+      }
+      updatePoint(getQuestionByLevel(level));
       type == 1
           ? emit(state.copyWith(isTrueA: true))
           : type == 2
@@ -556,7 +568,15 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   void outTime() async {
     try {
       clearDataLocal();
-      updatePoint(getQuestionByLevel(state.level - 1));
+      int level = 0;
+      if (state.level >= 0 && state.level <= 5) {
+        level = 0;
+      } else if (state.level >= 6 && state.level <= 10) {
+        level = 5;
+      } else {
+        level = 10;
+      }
+      updatePoint(getQuestionByLevel(level));
       await playAudio(SoundManager.outTime());
       await chiatay();
     } catch (e) {
@@ -639,12 +659,12 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     state.player?.dispose();
     state.timer?.cancel();
   }
-}
 
-String getQuestionByLevel(int level) {
-  final list = List.from(QuestionLevel.questionPoints);
-  for (final item in list) {
-    if (item.level == level) return item.point;
+  String getQuestionByLevel(int level) {
+    final list = List.from(QuestionLevel.questionPoints(mc));
+    for (final item in list) {
+      if (item.level == level) return item.point;
+    }
+    return '0';
   }
-  return '0';
 }

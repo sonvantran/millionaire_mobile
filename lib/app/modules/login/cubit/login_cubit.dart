@@ -106,7 +106,7 @@ class LoginCubit extends Cubit<LoginState> {
         return;
       }
       if (e is FirebaseException) {
-        emit(state.copyWith(message: "Kiểm tra lại kết nối mạng"));
+        emit(state.copyWith(message: "Hệ thống đang gặp lỗi"));
         return;
       }
       rethrow;
@@ -220,14 +220,6 @@ class LoginCubit extends Cubit<LoginState> {
       rethrow;
     }
   }
-
-  // void setPlayGame(bool playGame) {
-  //   emit(state.copyWith(playGame: playGame));
-  // }
-
-  // void setWatchRanking(bool watchRanking) {
-  //   emit(state.copyWith(watchRanking: watchRanking));
-  // }
 
   void playAudioStartMc(int mc) async {
     await playAudioo(SoundManager.startGame(mc));

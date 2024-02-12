@@ -44,7 +44,7 @@ class PlayGameView extends StatefulWidget {
 
   final int mc;
   final bool isMute;
-  final User user;
+  final User? user;
   final QuestionModelHive? questionModelHive;
   final LoginCubit cubit;
 
@@ -93,7 +93,7 @@ class PlayGamePage extends StatefulWidget {
   final bool isMute;
   final QuestionModelHive? questionModelHive;
   final LoginCubit cubit;
-  final User user;
+  final User? user;
 
   @override
   State<PlayGamePage> createState() => _PlayGamePageState();
@@ -164,7 +164,15 @@ class _PlayGamePageState extends State<PlayGamePage>
           listener: (context, state) async {
             // final cubit = context.read<PlayGameCubit>();
             if (state.timeCounter == 0) {
-              final point = getQuestionByLevel(state.level - 1);
+              int level = 0;
+              if (state.level >= 0 && state.level <= 5) {
+                level = 0;
+              } else if (state.level >= 6 && state.level <= 10) {
+                level = 5;
+              } else {
+                level = 10;
+              }
+              final point = getQuestionByLevel(level, state.chooseMC);
               if (_interstitialAd != null && isInterstitialAdLoaded) {
                 await _interstitialAd?.show();
               }
@@ -178,7 +186,15 @@ class _PlayGamePageState extends State<PlayGamePage>
                 user: state.user!,
               ));
             } else if (state.isFalse) {
-              final point = getQuestionByLevel(state.level - 1);
+              int level = 0;
+              if (state.level >= 0 && state.level <= 5) {
+                level = 0;
+              } else if (state.level >= 6 && state.level <= 10) {
+                level = 5;
+              } else {
+                level = 10;
+              }
+              final point = getQuestionByLevel(level, state.chooseMC);
               Future.delayed(const Duration(milliseconds: 1500), () async {
                 int randomValue = Random().nextInt(5);
                 if (_interstitialAd != null &&
@@ -196,7 +212,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                     user: state.user!));
               });
             } else if (state.isWin) {
-              final point = getQuestionByLevel(state.level);
+              final point = getQuestionByLevel(state.level, state.chooseMC);
               await context.router.replace(PlayAgainViewRoute(
                 caseResult: 2,
                 point: point,
@@ -320,12 +336,12 @@ class _PlayGamePageState extends State<PlayGamePage>
               return;
             }
             context.read<PlayGameCubit>().quesionStop();
-            _showPlaycConfirm(
-                context, getQuestionByLevel(state.level - 1), cubit);
+            _showPlaycConfirm(context,
+                getQuestionByLevel(state.level - 1, state.chooseMC), cubit);
           },
           child: Scaffold(
             key: _key,
-            endDrawer: GamePoint(level: state.level),
+            endDrawer: GamePoint(level: state.level, mc: state.chooseMC),
             onEndDrawerChanged: (isOpened) {
               if (state.isShowGameResult != isOpened) {
                 cubit.openGameResult(isOpened);
@@ -350,8 +366,11 @@ class _PlayGamePageState extends State<PlayGamePage>
                           AppBarItem(
                             onTap: () {
                               context.read<PlayGameCubit>().quesionStop();
-                              _showPlaycConfirm(context,
-                                  getQuestionByLevel(state.level - 1), cubit);
+                              _showPlaycConfirm(
+                                  context,
+                                  getQuestionByLevel(
+                                      state.level - 1, state.chooseMC),
+                                  cubit);
                             },
                             isCheck: false,
                             padding: const EdgeInsets.symmetric(vertical: 4),
@@ -421,7 +440,8 @@ class _PlayGamePageState extends State<PlayGamePage>
                             ),
                           ),
                           PointItem(
-                            text: '${getQuestionByLevel(state.level)} đ',
+                            text:
+                                '${getQuestionByLevel(state.level, state.chooseMC)} đ',
                           ),
                           Expanded(
                             child: Container(
@@ -813,8 +833,8 @@ class _PlayGamePageState extends State<PlayGamePage>
   // }
 }
 
-String getQuestionByLevel(int level) {
-  final list = List.from(QuestionLevel.questionPoints);
+String getQuestionByLevel(int level, int mc) {
+  final list = List.from(QuestionLevel.questionPoints(mc));
   for (final item in list) {
     if (item.level == level) return item.point;
   }

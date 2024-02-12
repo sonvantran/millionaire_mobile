@@ -13,6 +13,7 @@ class RankingState with _$RankingState {
     List<User>? usersday,
     List<User>? usersMonth,
     List<User>? usersYear,
+    String? message,
     Error? error,
   }) = _RankingState;
 }

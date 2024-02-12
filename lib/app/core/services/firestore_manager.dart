@@ -56,12 +56,16 @@ class FirestoreManager {
         .where("play_date",
             isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
         .where("play_date", isLessThan: Timestamp.fromDate(endDate))
+        .orderBy("play_date", descending: true)
+        .limit(100)
         .get();
-    List<User> users = [];
-    for (final i in qs.docs) {
-      users.add(User.fromJson(i.data() as Map<String, dynamic>));
-    }
+
+    List<User> users = qs.docs
+        .map((doc) => User.fromJson(doc.data() as Map<String, dynamic>))
+        .toList();
+
     users.sort((user1, user2) => user2.point.compareTo(user1.point));
-    return users.take(50).toList();
+
+    return users.take(30).toList();
   }
 }

@@ -5,9 +5,10 @@ import '../../../core/values/text_styles.dart';
 import '../../../data/local_saver/question_level.dart';
 
 class GamePoint extends StatelessWidget {
-  const GamePoint({super.key, required this.level});
+  const GamePoint({super.key, required this.level, required this.mc});
 
   final int level;
+  final int mc;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,7 @@ class GamePoint extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 18),
               child: Column(
                 children: [
-                  for (final item in QuestionLevel.questionPoints.reversed)
+                  for (final item in QuestionLevel.questionPoints(mc).reversed)
                     if (item.level != 15)
                       GamePointItem(
                         number: item.level.toString(),

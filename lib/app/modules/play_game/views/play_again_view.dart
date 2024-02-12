@@ -36,7 +36,7 @@ class PlayAgainView extends StatefulWidget {
   final String point;
   final int mc;
   final bool isMute;
-  final User user;
+  final User? user;
   final LoginCubit cubit;
 
   @override

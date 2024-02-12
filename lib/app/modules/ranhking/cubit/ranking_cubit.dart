@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/extension/integer_extension.dart';
 import '../repository/ranking_repository.dart';
@@ -23,6 +24,10 @@ class RankingCubit extends Cubit<RankingState> {
       }
     } catch (e) {
       if (e is StateError) return;
+      if (e is FirebaseException) {
+        emit(state.copyWith(message: "Hệ thống đang gặp lỗi"));
+        return;
+      }
       rethrow;
     }
   }
