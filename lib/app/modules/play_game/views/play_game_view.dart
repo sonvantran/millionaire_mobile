@@ -183,7 +183,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 isMute: widget.isMute,
                 mc: widget.mc,
                 cubit: widget.cubit,
-                user: state.user!,
+                user: state.user,
               ));
             } else if (state.isFalse) {
               int level = 0;
@@ -209,7 +209,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                     isMute: widget.isMute,
                     mc: widget.mc,
                     cubit: widget.cubit,
-                    user: state.user!));
+                    user: state.user));
               });
             } else if (state.isWin) {
               final point = getQuestionByLevel(state.level, state.chooseMC);
@@ -218,7 +218,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 point: point,
                 isMute: widget.isMute,
                 mc: widget.mc,
-                user: state.user!,
+                user: state.user,
                 cubit: widget.cubit,
               ));
             }
@@ -765,7 +765,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 point: point,
                 isMute: widget.isMute,
                 mc: widget.mc,
-                user: cubit.state.user!,
+                user: cubit.state.user,
                 cubit: widget.cubit,
               ));
             },

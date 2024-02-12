@@ -209,26 +209,31 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                                 AnalyticsManager.sendAnalyticsEvent(
                                     'The_user_want_to_play_game');
                                 if (state.hasDataLocal) {
+                                  if (state.user == null) {
+                                    ShowMessageInternal.showOverlay(context,
+                                        "Hệ thống tạm thời không tính điểm");
+                                  }
                                   context.pushRoute(PlayGameViewRoute(
                                     isMute: state.isMute,
                                     mc: state.chooseMC,
-                                    user: state.user!,
+                                    user: state.user,
                                     questionModelHive: question[0],
                                     cubit: cubit,
                                   ));
                                   return;
                                 }
-                                // cubit.setPlayGame(true);
                                 if (state.hasUser) {
-                                  // ignore: use_build_context_synchronously
+                                  if (state.user == null) {
+                                    ShowMessageInternal.showOverlay(context,
+                                        "Hệ thống tạm thời không tính điểm");
+                                  }
                                   await context.pushRoute(PlayGameViewRoute(
                                     mc: state.chooseMC,
                                     isMute: state.isMute,
-                                    user: state.user!,
+                                    user: state.user,
                                     cubit: cubit,
                                   ));
                                 } else {
-                                  // ignore: use_build_context_synchronously
                                   await _showdialog(context, cubit);
                                 }
                               },
@@ -245,10 +250,14 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                                   cubit.updatePoint(getQuestionByLevel(
                                       question[0].currentLevel - 1,
                                       state.chooseMC));
+                                  if (state.user == null) {
+                                    ShowMessageInternal.showOverlay(context,
+                                        "Hệ thống tạm thời không tính điểm");
+                                  }
                                   context.pushRoute(PlayGameViewRoute(
                                     isMute: state.isMute,
                                     mc: state.chooseMC,
-                                    user: state.user!,
+                                    user: state.user,
                                     cubit: cubit,
                                   ));
                                 },
