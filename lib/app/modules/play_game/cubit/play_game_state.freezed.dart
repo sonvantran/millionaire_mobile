@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$PlayGameState {
   List<Question> get questions => throw _privateConstructorUsedError;
+  bool get isShowInstruction => throw _privateConstructorUsedError;
   bool get isDelete2Answers => throw _privateConstructorUsedError;
   bool get isCall => throw _privateConstructorUsedError;
   bool get isShowCall => throw _privateConstructorUsedError;
@@ -66,6 +67,7 @@ abstract class $PlayGameStateCopyWith<$Res> {
   @useResult
   $Res call(
       {List<Question> questions,
+      bool isShowInstruction,
       bool isDelete2Answers,
       bool isCall,
       bool isShowCall,
@@ -117,6 +119,7 @@ class _$PlayGameStateCopyWithImpl<$Res, $Val extends PlayGameState>
   @override
   $Res call({
     Object? questions = null,
+    Object? isShowInstruction = null,
     Object? isDelete2Answers = null,
     Object? isCall = null,
     Object? isShowCall = null,
@@ -158,6 +161,10 @@ class _$PlayGameStateCopyWithImpl<$Res, $Val extends PlayGameState>
           ? _value.questions
           : questions // ignore: cast_nullable_to_non_nullable
               as List<Question>,
+      isShowInstruction: null == isShowInstruction
+          ? _value.isShowInstruction
+          : isShowInstruction // ignore: cast_nullable_to_non_nullable
+              as bool,
       isDelete2Answers: null == isDelete2Answers
           ? _value.isDelete2Answers
           : isDelete2Answers // ignore: cast_nullable_to_non_nullable
@@ -312,6 +319,7 @@ abstract class _$$_PlayGameStateCopyWith<$Res>
   @useResult
   $Res call(
       {List<Question> questions,
+      bool isShowInstruction,
       bool isDelete2Answers,
       bool isCall,
       bool isShowCall,
@@ -361,6 +369,7 @@ class __$$_PlayGameStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? questions = null,
+    Object? isShowInstruction = null,
     Object? isDelete2Answers = null,
     Object? isCall = null,
     Object? isShowCall = null,
@@ -402,6 +411,10 @@ class __$$_PlayGameStateCopyWithImpl<$Res>
           ? _value._questions
           : questions // ignore: cast_nullable_to_non_nullable
               as List<Question>,
+      isShowInstruction: null == isShowInstruction
+          ? _value.isShowInstruction
+          : isShowInstruction // ignore: cast_nullable_to_non_nullable
+              as bool,
       isDelete2Answers: null == isDelete2Answers
           ? _value.isDelete2Answers
           : isDelete2Answers // ignore: cast_nullable_to_non_nullable
@@ -551,6 +564,7 @@ class __$$_PlayGameStateCopyWithImpl<$Res>
 class _$_PlayGameState extends _PlayGameState {
   const _$_PlayGameState(
       {final List<Question> questions = const [],
+      this.isShowInstruction = false,
       this.isDelete2Answers = true,
       this.isCall = true,
       this.isShowCall = false,
@@ -598,6 +612,9 @@ class _$_PlayGameState extends _PlayGameState {
     return EqualUnmodifiableListView(_questions);
   }
 
+  @override
+  @JsonKey()
+  final bool isShowInstruction;
   @override
   @JsonKey()
   final bool isDelete2Answers;
@@ -699,7 +716,7 @@ class _$_PlayGameState extends _PlayGameState {
 
   @override
   String toString() {
-    return 'PlayGameState(questions: $questions, isDelete2Answers: $isDelete2Answers, isCall: $isCall, isShowCall: $isShowCall, isConsultant: $isConsultant, isChart: $isChart, isFalse: $isFalse, isWin: $isWin, isChooseA: $isChooseA, isTrueA: $isTrueA, isChooseB: $isChooseB, isTrueB: $isTrueB, isChooseC: $isChooseC, isTrueC: $isTrueC, isChooseD: $isChooseD, isTrueD: $isTrueD, isHideA: $isHideA, isHideB: $isHideB, isHideC: $isHideC, isHideD: $isHideD, isShowGameResult: $isShowGameResult, isMute: $isMute, isLoading: $isLoading, isAccessAnswer: $isAccessAnswer, saveDone: $saveDone, loadingDh: $loadingDh, chooseDh: $chooseDh, chooseMC: $chooseMC, level: $level, timeCounter: $timeCounter, startCounter: $startCounter, timer: $timer, point: $point, player: $player, user: $user, error: $error)';
+    return 'PlayGameState(questions: $questions, isShowInstruction: $isShowInstruction, isDelete2Answers: $isDelete2Answers, isCall: $isCall, isShowCall: $isShowCall, isConsultant: $isConsultant, isChart: $isChart, isFalse: $isFalse, isWin: $isWin, isChooseA: $isChooseA, isTrueA: $isTrueA, isChooseB: $isChooseB, isTrueB: $isTrueB, isChooseC: $isChooseC, isTrueC: $isTrueC, isChooseD: $isChooseD, isTrueD: $isTrueD, isHideA: $isHideA, isHideB: $isHideB, isHideC: $isHideC, isHideD: $isHideD, isShowGameResult: $isShowGameResult, isMute: $isMute, isLoading: $isLoading, isAccessAnswer: $isAccessAnswer, saveDone: $saveDone, loadingDh: $loadingDh, chooseDh: $chooseDh, chooseMC: $chooseMC, level: $level, timeCounter: $timeCounter, startCounter: $startCounter, timer: $timer, point: $point, player: $player, user: $user, error: $error)';
   }
 
   @override
@@ -709,6 +726,8 @@ class _$_PlayGameState extends _PlayGameState {
             other is _$_PlayGameState &&
             const DeepCollectionEquality()
                 .equals(other._questions, _questions) &&
+            (identical(other.isShowInstruction, isShowInstruction) ||
+                other.isShowInstruction == isShowInstruction) &&
             (identical(other.isDelete2Answers, isDelete2Answers) ||
                 other.isDelete2Answers == isDelete2Answers) &&
             (identical(other.isCall, isCall) || other.isCall == isCall) &&
@@ -766,6 +785,7 @@ class _$_PlayGameState extends _PlayGameState {
   int get hashCode => Object.hashAll([
         runtimeType,
         const DeepCollectionEquality().hash(_questions),
+        isShowInstruction,
         isDelete2Answers,
         isCall,
         isShowCall,
@@ -813,6 +833,7 @@ class _$_PlayGameState extends _PlayGameState {
 abstract class _PlayGameState extends PlayGameState {
   const factory _PlayGameState(
       {final List<Question> questions,
+      final bool isShowInstruction,
       final bool isDelete2Answers,
       final bool isCall,
       final bool isShowCall,
@@ -852,6 +873,8 @@ abstract class _PlayGameState extends PlayGameState {
 
   @override
   List<Question> get questions;
+  @override
+  bool get isShowInstruction;
   @override
   bool get isDelete2Answers;
   @override

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/extension/integer_extension.dart';
 import '../repository/ranking_repository.dart';
 import 'ranking_state.dart';
 
@@ -9,18 +8,25 @@ class RankingCubit extends Cubit<RankingState> {
 
   final RankingRepository _rankingRepository;
 
-  void getQuestions(String type) async {
+  void optimize() {
     try {
-      if ((type == 'day' && state.usersday != null) ||
-          (type == 'month' && state.usersMonth != null) ||
-          (type == 'year' && state.usersYear != null)) return;
-      final users = await _rankingRepository.getRank(type);
-      if (type == 'day') {
-        emit(state.copyWith(usersday: users));
-      } else if (type == 'month') {
-        emit(state.copyWith(usersMonth: users));
+      _rankingRepository.optimize();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  void getUsers(bool filter) async {
+    try {
+      if ((!filter && state.usersday != null) ||
+          (filter && state.allUser != null)) return;
+
+      if (filter) {
+        final users = await _rankingRepository.getAllRank();
+        emit(state.copyWith(allUser: users));
       } else {
-        emit(state.copyWith(usersYear: users));
+        final users = await _rankingRepository.getRank();
+        emit(state.copyWith(usersday: users));
       }
     } catch (e) {
       if (e is StateError) return;
@@ -32,13 +38,12 @@ class RankingCubit extends Cubit<RankingState> {
     }
   }
 
-  void setFilter(int filter) {
+  void setFilter(bool filter) {
     emit(state.copyWith(filter: filter));
-    String type = filter.intToTimeType();
-    getQuestions(type);
+    getUsers(filter);
   }
 
   void init() {
-    getQuestions('day');
+    getUsers(false);
   }
 }

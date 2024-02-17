@@ -5,6 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volume_controller/volume_controller.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/extension/integer_extension.dart';
@@ -335,7 +336,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       final player = AudioPlayer();
       final response = questionModelHive == null
           ? await _playGameRepository.getQuestions()
-          : questionModelHive.questions; //QuestionLevel.questionPoints
+          : questionModelHive.questions;
       final questions = shuffleAnswer(response);
       emit(state.copyWith(
         questions: questions,
@@ -357,6 +358,32 @@ class PlayGameCubit extends Cubit<PlayGameState> {
           isDelete2Answers: questionModelHive.isDelete2Answers,
         ));
       }
+      await ruleGame(questionModelHive);
+      return;
+    } catch (e) {
+      if (e is BadRequestException) {
+        setIsLoading(true);
+        final player = AudioPlayer();
+        final questions = QuestionLevel.questionPoints(mc);
+        emit(state.copyWith(questions: questions, player: player));
+
+        await playAudio(SoundManager.startGame(mc));
+        await startFirstQuestion();
+        setIsLoading(false);
+        countDown();
+        return;
+      }
+      if (e is StateError) {
+        cancelCountDown();
+        stopAudio();
+        return;
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> init2(QuestionModelHive? questionModelHive) async {
+    try {
       final duration = await getDuration(SoundManager.startGame(mc));
       emit(state.copyWith(startCounter: duration!.inSeconds + 1));
       Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -592,6 +619,57 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   void quesionStop() async {
     try {
       await playAudio(SoundManager.questionStop(mc));
+    } catch (e) {
+      if (e is StateError) {
+        cancelCountDown();
+        stopAudio();
+        return;
+      }
+      rethrow;
+    }
+  }
+
+  void setShowInstruction(bool isShowInstruction) {
+    emit(state.copyWith(isShowInstruction: isShowInstruction));
+  }
+
+  Future<void> ruleGame(QuestionModelHive? questionModelHive) async {
+    try {
+      final pref = await SharedPreferences.getInstance();
+      final isFirstPlay = pref.getBool("isFirstPlay") ?? true;
+      if (!isFirstPlay || state.isMute) {
+        init2(questionModelHive);
+        return;
+      }
+      pref.setBool("isFirstPlay", false);
+      emit(state.copyWith(isShowGameResult: true));
+      int x = state.level;
+      Future.delayed(const Duration(seconds: 5))
+          .then((value) => emit(state.copyWith(
+                isShowGameResult: false,
+                isShowInstruction: true,
+              )));
+      Future.delayed(const Duration(seconds: 4)).then(
+        (value) {
+          emit(state.copyWith(level: 5));
+          Future.delayed(const Duration(milliseconds: 400)).then(
+            (value) {
+              emit(state.copyWith(level: 10));
+              Future.delayed(const Duration(milliseconds: 400)).then(
+                (value) {
+                  emit(state.copyWith(level: 15));
+                  Future.delayed(const Duration(milliseconds: 200)).then(
+                    (value) {
+                      emit(state.copyWith(level: x));
+                    },
+                  );
+                },
+              );
+            },
+          );
+        },
+      );
+      await playAudio(SoundManager.ruleGame(mc));
     } catch (e) {
       if (e is StateError) {
         cancelCountDown();

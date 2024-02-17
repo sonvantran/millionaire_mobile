@@ -269,11 +269,16 @@ class _PlayAgainViewState extends State<PlayAgainView>
           });
         },
         onAdFailedToLoad: (err) {
+          if (dem == 5) return;
+          dem++;
+          _loadRewardedAd();
           debugPrint('Failed to load a rewarded ad: ${err.message}');
         },
       ),
     );
   }
+
+  int dem = 0;
 
   Future<void> _share(BuildContext context) async {
     try {

@@ -160,6 +160,12 @@ abstract class TextStyles {
     color: AppColors.colorFFBBBABA,
   );
 
+  static const regularWhiteS10 = TextStyle(
+    fontSize: 10,
+    fontWeight: FontW.regular,
+    color: AppColors.colorFFFFFFFF,
+  );
+
   static const regularWhiteS12 = TextStyle(
     fontSize: 12,
     fontWeight: FontW.regular,
@@ -245,10 +251,17 @@ abstract class TextStyles {
     fontWeight: FontW.mediumM,
   );
 
+  static const regularWhiteS16 = TextStyle(
+    color: AppColors.colorFFFFFFFF,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+  );
+
   static const regularWhiteS18 = TextStyle(
-      color: AppColors.colorFFFFFFFF,
-      fontSize: 18,
-      fontWeight: FontWeight.w400);
+    color: AppColors.colorFFFFFFFF,
+    fontSize: 18,
+    fontWeight: FontWeight.w400,
+  );
 
   static const boldWhiteS20 = TextStyle(
     color: AppColors.colorFFFFFFFF,

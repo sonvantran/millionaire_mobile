@@ -9,10 +9,9 @@ class RankingState with _$RankingState {
   const RankingState._();
 
   const factory RankingState({
-    @Default(0) int filter,
+    @Default(false) bool filter,
     List<User>? usersday,
-    List<User>? usersMonth,
-    List<User>? usersYear,
+    List<User>? allUser,
     String? message,
     Error? error,
   }) = _RankingState;

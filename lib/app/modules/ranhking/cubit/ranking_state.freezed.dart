@@ -16,10 +16,9 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$RankingState {
-  int get filter => throw _privateConstructorUsedError;
+  bool get filter => throw _privateConstructorUsedError;
   List<User>? get usersday => throw _privateConstructorUsedError;
-  List<User>? get usersMonth => throw _privateConstructorUsedError;
-  List<User>? get usersYear => throw _privateConstructorUsedError;
+  List<User>? get allUser => throw _privateConstructorUsedError;
   String? get message => throw _privateConstructorUsedError;
   Error? get error => throw _privateConstructorUsedError;
 
@@ -35,10 +34,9 @@ abstract class $RankingStateCopyWith<$Res> {
       _$RankingStateCopyWithImpl<$Res, RankingState>;
   @useResult
   $Res call(
-      {int filter,
+      {bool filter,
       List<User>? usersday,
-      List<User>? usersMonth,
-      List<User>? usersYear,
+      List<User>? allUser,
       String? message,
       Error? error});
 }
@@ -58,8 +56,7 @@ class _$RankingStateCopyWithImpl<$Res, $Val extends RankingState>
   $Res call({
     Object? filter = null,
     Object? usersday = freezed,
-    Object? usersMonth = freezed,
-    Object? usersYear = freezed,
+    Object? allUser = freezed,
     Object? message = freezed,
     Object? error = freezed,
   }) {
@@ -67,18 +64,14 @@ class _$RankingStateCopyWithImpl<$Res, $Val extends RankingState>
       filter: null == filter
           ? _value.filter
           : filter // ignore: cast_nullable_to_non_nullable
-              as int,
+              as bool,
       usersday: freezed == usersday
           ? _value.usersday
           : usersday // ignore: cast_nullable_to_non_nullable
               as List<User>?,
-      usersMonth: freezed == usersMonth
-          ? _value.usersMonth
-          : usersMonth // ignore: cast_nullable_to_non_nullable
-              as List<User>?,
-      usersYear: freezed == usersYear
-          ? _value.usersYear
-          : usersYear // ignore: cast_nullable_to_non_nullable
+      allUser: freezed == allUser
+          ? _value.allUser
+          : allUser // ignore: cast_nullable_to_non_nullable
               as List<User>?,
       message: freezed == message
           ? _value.message
@@ -101,10 +94,9 @@ abstract class _$$_RankingStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int filter,
+      {bool filter,
       List<User>? usersday,
-      List<User>? usersMonth,
-      List<User>? usersYear,
+      List<User>? allUser,
       String? message,
       Error? error});
 }
@@ -122,8 +114,7 @@ class __$$_RankingStateCopyWithImpl<$Res>
   $Res call({
     Object? filter = null,
     Object? usersday = freezed,
-    Object? usersMonth = freezed,
-    Object? usersYear = freezed,
+    Object? allUser = freezed,
     Object? message = freezed,
     Object? error = freezed,
   }) {
@@ -131,18 +122,14 @@ class __$$_RankingStateCopyWithImpl<$Res>
       filter: null == filter
           ? _value.filter
           : filter // ignore: cast_nullable_to_non_nullable
-              as int,
+              as bool,
       usersday: freezed == usersday
           ? _value._usersday
           : usersday // ignore: cast_nullable_to_non_nullable
               as List<User>?,
-      usersMonth: freezed == usersMonth
-          ? _value._usersMonth
-          : usersMonth // ignore: cast_nullable_to_non_nullable
-              as List<User>?,
-      usersYear: freezed == usersYear
-          ? _value._usersYear
-          : usersYear // ignore: cast_nullable_to_non_nullable
+      allUser: freezed == allUser
+          ? _value._allUser
+          : allUser // ignore: cast_nullable_to_non_nullable
               as List<User>?,
       message: freezed == message
           ? _value.message
@@ -160,20 +147,18 @@ class __$$_RankingStateCopyWithImpl<$Res>
 
 class _$_RankingState extends _RankingState {
   const _$_RankingState(
-      {this.filter = 0,
+      {this.filter = false,
       final List<User>? usersday,
-      final List<User>? usersMonth,
-      final List<User>? usersYear,
+      final List<User>? allUser,
       this.message,
       this.error})
       : _usersday = usersday,
-        _usersMonth = usersMonth,
-        _usersYear = usersYear,
+        _allUser = allUser,
         super._();
 
   @override
   @JsonKey()
-  final int filter;
+  final bool filter;
   final List<User>? _usersday;
   @override
   List<User>? get usersday {
@@ -184,22 +169,12 @@ class _$_RankingState extends _RankingState {
     return EqualUnmodifiableListView(value);
   }
 
-  final List<User>? _usersMonth;
+  final List<User>? _allUser;
   @override
-  List<User>? get usersMonth {
-    final value = _usersMonth;
+  List<User>? get allUser {
+    final value = _allUser;
     if (value == null) return null;
-    if (_usersMonth is EqualUnmodifiableListView) return _usersMonth;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-  final List<User>? _usersYear;
-  @override
-  List<User>? get usersYear {
-    final value = _usersYear;
-    if (value == null) return null;
-    if (_usersYear is EqualUnmodifiableListView) return _usersYear;
+    if (_allUser is EqualUnmodifiableListView) return _allUser;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(value);
   }
@@ -211,7 +186,7 @@ class _$_RankingState extends _RankingState {
 
   @override
   String toString() {
-    return 'RankingState(filter: $filter, usersday: $usersday, usersMonth: $usersMonth, usersYear: $usersYear, message: $message, error: $error)';
+    return 'RankingState(filter: $filter, usersday: $usersday, allUser: $allUser, message: $message, error: $error)';
   }
 
   @override
@@ -221,10 +196,7 @@ class _$_RankingState extends _RankingState {
             other is _$_RankingState &&
             (identical(other.filter, filter) || other.filter == filter) &&
             const DeepCollectionEquality().equals(other._usersday, _usersday) &&
-            const DeepCollectionEquality()
-                .equals(other._usersMonth, _usersMonth) &&
-            const DeepCollectionEquality()
-                .equals(other._usersYear, _usersYear) &&
+            const DeepCollectionEquality().equals(other._allUser, _allUser) &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.error, error) || other.error == error));
   }
@@ -234,8 +206,7 @@ class _$_RankingState extends _RankingState {
       runtimeType,
       filter,
       const DeepCollectionEquality().hash(_usersday),
-      const DeepCollectionEquality().hash(_usersMonth),
-      const DeepCollectionEquality().hash(_usersYear),
+      const DeepCollectionEquality().hash(_allUser),
       message,
       error);
 
@@ -248,22 +219,19 @@ class _$_RankingState extends _RankingState {
 
 abstract class _RankingState extends RankingState {
   const factory _RankingState(
-      {final int filter,
+      {final bool filter,
       final List<User>? usersday,
-      final List<User>? usersMonth,
-      final List<User>? usersYear,
+      final List<User>? allUser,
       final String? message,
       final Error? error}) = _$_RankingState;
   const _RankingState._() : super._();
 
   @override
-  int get filter;
+  bool get filter;
   @override
   List<User>? get usersday;
   @override
-  List<User>? get usersMonth;
-  @override
-  List<User>? get usersYear;
+  List<User>? get allUser;
   @override
   String? get message;
   @override

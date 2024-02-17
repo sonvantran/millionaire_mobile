@@ -38,7 +38,7 @@ class LoginCubit extends Cubit<LoginState> {
     final prefs = await SharedPreferences.getInstance();
     prefs.setInt("mc", chooseMC);
     emit(state.copyWith(chooseMC: chooseMC));
-    playAudioStartMc(chooseMC);
+    // playAudioStartMc(chooseMC);
   }
 
   void setHasDataLocal() {

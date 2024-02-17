@@ -12,6 +12,7 @@ class PlayGameState with _$PlayGameState {
 
   const factory PlayGameState({
     @Default([]) List<Question> questions,
+    @Default(false) bool isShowInstruction,
     @Default(true) bool isDelete2Answers,
     @Default(true) bool isCall,
     @Default(false) bool isShowCall,

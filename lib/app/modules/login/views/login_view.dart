@@ -458,27 +458,27 @@ Người chơi được cung cấp bốn lựa chọn trợ giúp: "50:50", đi�
               ),
               SizedBox(height: 12),
               RoleItem(
-                text: 'Loại 2 phương án sai',
+                text: '🎯Loại 2 phương án sai',
                 textIcon: '50 : 50',
               ),
               RoleItem(
-                text: 'Gọi điện cho người thân',
+                text: '📞Gọi điện cho người thân',
                 iconData: Icons.phone_in_talk_outlined,
               ),
               RoleItem(
-                text: 'Tổ tư vấn tại chỗ',
+                text: '🙋Tổ tư vấn tại chỗ',
                 isAsset: true,
               ),
               RoleItem(
-                text: 'Trợ giúp khán giả trong trường quay',
+                text: '🧠Trợ giúp khán giả trong trường quay',
                 iconData: Icons.bar_chart_outlined,
               ),
               RoleItem(
-                text: 'Hỏi ý kiến bạn đồng hành',
+                text: '🤝Hỏi ý kiến bạn đồng hành',
                 iconData: Icons.person_add,
               ),
               RoleItem(
-                text: 'Hỏi ý kiến những nhà thông thái',
+                text: '💡Hỏi ý kiến những nhà thông thái',
                 isAsset: false,
               ),
             ],
@@ -490,7 +490,8 @@ Người chơi được cung cấp bốn lựa chọn trợ giúp: "50:50", đi�
 
   void _showDevelop(BuildContext context) async {
     const content = '''
-Trò chơi này dựa trên "Ai là Triệu Phú" và nhằm mang đến giây phút giải trí, lưu ý rằng tiền trong trò chơi không có giá trị thực tế.\nChúng tôi hy vọng bạn thích và tận hưởng trò chơi.
+🎮 Trò chơi này dựa trên "Ai là Triệu Phú" và nhằm mang đến giây phút giải trí, lưu ý rằng tiền trong trò chơi không có giá trị thực tế.
+💡Chúng tôi hy vọng bạn thích và tận hưởng trò chơi.
 ''';
     await showDialog(
       context: context,
@@ -518,7 +519,6 @@ Trò chơi này dựa trên "Ai là Triệu Phú" và nhằm mang đến giây p
                   textAlign: TextAlign.justify,
                 ),
               ),
-              const SizedBox(height: 24),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

@@ -15,82 +15,88 @@ class PopupNotice extends StatelessWidget {
       this.content,
       this.titleWidget,
       this.isCountDown = true,
-      this.closePopup = true});
+      this.closePopup = true,
+      this.onTap});
   final String? title;
   final Widget? titleWidget;
   final String textButton;
   final Widget? content;
   final bool isCountDown;
   final bool closePopup;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      shadowColor: AppColors.colorFF000000,
-      backgroundColor: AppColors.colorFF375193,
-      title: title != null
-          ? Column(
-              children: [
-                if (isCountDown)
-                  BlocBuilder<PlayGameCubit, PlayGameState>(
-                      builder: (context, state) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TimeCount(
-                          text: state.timeCounter.toString(),
-                          isLoading: true,
-                        ),
-                        const SizedBox(height: 12)
-                      ],
-                    );
-                  }),
-                Text(
-                  title!,
-                  textAlign: TextAlign.center,
-                  style: TextStyles.boldWhiteS24,
-                ),
-              ],
-            )
-          : Column(
-              children: [
-                if (isCountDown)
-                  BlocBuilder<PlayGameCubit, PlayGameState>(
-                      builder: (context, state) {
-                    return TimeCount(
-                      text: state.timeCounter.toString(),
-                      isLoading: true,
-                    );
-                  }),
-                titleWidget!,
-              ],
-            ),
-      content: content,
-      actionsAlignment: MainAxisAlignment.center,
-      actions: [
-        InkWell(
-          onTap: () {
-            if (closePopup) Navigator.of(context).pop();
-          },
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.colorFF77dbe5, width: 2),
-              borderRadius: const BorderRadius.all(Radius.circular(8)),
-              color: AppColors.colorFF03456e,
-            ),
-            child: Text(
-              textButton,
-              style: TextStyles.mediumWhiteS16,
-              textAlign: TextAlign.center,
+    return PopScope(
+      canPop: onTap == null,
+      child: AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        shadowColor: AppColors.colorFF000000,
+        backgroundColor: AppColors.colorFF375193,
+        title: title != null
+            ? Column(
+                children: [
+                  if (isCountDown)
+                    BlocBuilder<PlayGameCubit, PlayGameState>(
+                        builder: (context, state) {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TimeCount(
+                            text: state.timeCounter.toString(),
+                            isLoading: true,
+                          ),
+                          const SizedBox(height: 12)
+                        ],
+                      );
+                    }),
+                  Text(
+                    title!,
+                    textAlign: TextAlign.center,
+                    style: TextStyles.boldWhiteS24,
+                  ),
+                ],
+              )
+            : Column(
+                children: [
+                  if (isCountDown)
+                    BlocBuilder<PlayGameCubit, PlayGameState>(
+                        builder: (context, state) {
+                      return TimeCount(
+                        text: state.timeCounter.toString(),
+                        isLoading: true,
+                      );
+                    }),
+                  titleWidget!,
+                ],
+              ),
+        content: content,
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          InkWell(
+            onTap: onTap ??
+                () {
+                  if (closePopup) Navigator.of(context).pop();
+                },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.colorFF77dbe5, width: 2),
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                color: AppColors.colorFF03456e,
+              ),
+              child: Text(
+                textButton,
+                style: TextStyles.mediumWhiteS16,
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

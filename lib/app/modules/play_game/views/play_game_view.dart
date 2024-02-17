@@ -133,8 +133,8 @@ class _PlayGamePageState extends State<PlayGamePage>
     _interstitialAd?.dispose();
     // isBannerAdReady = false;
     isInterstitialAdLoaded = false;
-    final cubit = context.read<PlayGameCubit>();
-    cubit.dispose();
+    // final cubit = context.read<PlayGameCubit>();
+    // cubit.dispose();
     super.dispose();
   }
 
@@ -146,6 +146,20 @@ class _PlayGamePageState extends State<PlayGamePage>
           listenWhen: (previous, current) => previous.user != current.user,
           listener: (context, state) {
             context.read<LoginCubit>().setUser(state.user!);
+          },
+        ),
+        BlocListener<PlayGameCubit, PlayGameState>(
+          listenWhen: (previous, current) =>
+              previous.isShowInstruction != current.isShowInstruction,
+          listener: (context, state) {
+            if (state.isShowInstruction) {
+              _showRole(context, () {
+                Navigator.of(context).pop();
+                context.read<PlayGameCubit>().setShowInstruction(false);
+              });
+            } else {
+              context.read<PlayGameCubit>().init2(widget.questionModelHive);
+            }
           },
         ),
         BlocListener<LoginCubit, LoginState>(
@@ -451,9 +465,35 @@ class _PlayGamePageState extends State<PlayGamePage>
                           ),
                         ],
                       ),
-                      TimeCount(
-                        text: state.timeCounter.toString(),
-                        isLoading: state.isLoading,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Expanded(child: SizedBox.shrink()),
+                          TimeCount(
+                            text: state.timeCounter.toString(),
+                            isLoading: state.isLoading,
+                          ),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                _showRole(context, null);
+                              },
+                              child: const Stack(
+                                children: [
+                                  SpinKitPulse(
+                                    color: AppColors.colorFFf78f2b,
+                                    duration: Duration(seconds: 4),
+                                  ),
+                                  Positioned.fill(
+                                      child: Icon(
+                                    Icons.info_outline,
+                                    color: AppColors.colorFFFFFFFF,
+                                  ))
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                       Column(
                         children: [
@@ -800,11 +840,16 @@ class _PlayGamePageState extends State<PlayGamePage>
           });
         },
         onAdFailedToLoad: (err) {
+          if (dem == 5) return;
+          dem++;
+          _loadInterstitialAd();
           debugPrint('Failed to load an interstitial ad: ${err.message}');
         },
       ),
     );
   }
+
+  int dem = 0;
 
   // void createBannerAd() {
   //   try {
@@ -839,4 +884,52 @@ String getQuestionByLevel(int level, int mc) {
     if (item.level == level) return item.point;
   }
   return '0';
+}
+
+void _showRole(BuildContext context, void Function()? onTap) async {
+  const String text = '''
+🎮 **Chào mừng đến với Ai Là Triệu Phú!**
+
+Trong trò chơi này, bạn sẽ phải vượt qua ba mốc quan trọng tại các câu hỏi thứ 5, 10 và 15 để giành được phần thưởng lớn.
+
+📜 **Luật chơi:**
+- 🎯 Trả lời đúng để tiến lên các mốc điểm quan trọng.
+- 🔄 Trả lời sai, bạn sẽ quay lại các mốc điểm trước đó (0, 5, 10).
+- ✅ Trả lời đúng, bạn sẽ tiến lên câu hỏi tiếp theo và có cơ hội giành thêm điểm số.
+
+🛠️ **Lựa chọn trợ giúp:**
+- 🔍 "50:50": Loại bỏ hai phương án sai.
+- 📞 Điện thoại cho người thân để nhờ họ giúp đỡ.
+- 🙋 Hỏi ý kiến từ khán giả trường quay để lấy ý kiến đa số.
+- 🧠 Tổ tư vấn từ MC Lại Văn Sâm để nhận được sự tư vấn từ một chuyên gia.
+- 🤝 Nhận ý kiến từ bạn đồng hành và các chuyên gia khi đối diện với MC Phan Đăng và MC Giáo Sư Xoay. Các ý kiến này có thể giúp bạn đưa ra quyết định đúng đắn hơn khi trả lời câu hỏi.
+
+🏆 **Khi dừng lại:**
+Khi bạn dừng lại trong cuộc chơi, điểm số của bạn sẽ được bảo toàn.
+
+💡 **Chúc bạn may mắn và thành công trong cuộc phiêu lưu trí tuệ này!**
+''';
+  await showDialog(
+    context: context,
+    builder: (BuildContext _) {
+      return PopupNotice(
+        isCountDown: false,
+        textButton: onTap == null ? "ĐÓNG" : 'SẴN SÀNG',
+        title: "LUẬT CHƠI",
+        content: const SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                text,
+                style: TextStyles.regularWhiteS16,
+                textAlign: TextAlign.justify,
+              ),
+            ],
+          ),
+        ),
+        onTap: onTap,
+      );
+    },
+  );
 }

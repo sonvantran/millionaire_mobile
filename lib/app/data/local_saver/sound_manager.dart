@@ -41,6 +41,8 @@ class SoundManager {
   static String startQuestion(int i, int level) =>
       '${intToMc(i)}/start_cau$level';
 
+  static String ruleGame(int i) => '${intToMc(i)}/rule';
+
   static List<String> startFirstQuestion(int i) =>
       ['${intToMc(i)}/start_cau1', '${intToMc(i)}/start_cau_1b'];
 

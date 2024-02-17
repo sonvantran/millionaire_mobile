@@ -68,12 +68,10 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
       child: BlocBuilder<RankingCubit, RankingState>(builder: (context, state) {
         final cubit = context.read<RankingCubit>();
         List<User>? users;
-        if (state.filter == 0) {
+        if (!state.filter) {
           users = state.usersday;
-        } else if (state.filter == 1) {
-          users = state.usersMonth;
         } else {
-          users = state.usersYear;
+          users = state.allUser;
         }
         return Scaffold(
           body: Container(
@@ -99,20 +97,20 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     DateButton(
-                      isChoose: state.filter == 0,
-                      onTap: () => cubit.setFilter(0),
-                      text: 'Ngày',
+                      isChoose: !state.filter,
+                      onTap: () => cubit.setFilter(false),
+                      text: 'Hôm nay',
                     ),
                     DateButton(
-                      isChoose: state.filter == 1,
-                      onTap: () => cubit.setFilter(1),
-                      text: 'Tháng',
+                      isChoose: state.filter,
+                      onTap: () => cubit.setFilter(true),
+                      text: 'Tất cả',
                     ),
-                    DateButton(
-                      isChoose: state.filter == 2,
-                      onTap: () => cubit.setFilter(2),
-                      text: 'Năm',
-                    )
+                    // DateButton(
+                    //   isChoose: state.filter == 2,
+                    //   onTap: () => cubit.setFilter(2),
+                    //   text: 'Năm',
+                    // )
                   ],
                 ),
                 users != null
@@ -171,32 +169,33 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                                 children: [
                                   const TitleRanking(),
                                   Expanded(
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        children: [
-                                          for (int i = 0; i < users.length; i++)
-                                            if (i != 2)
+                                    child: ListView.builder(
+                                      padding: EdgeInsets.zero,
+                                      itemCount: users.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        if ((index - 2) % 5 != 0) {
+                                          return UserRankingItem(
+                                            name: users![index].name,
+                                            number: index + 1,
+                                            point:
+                                                '${formatNumber(users[index].point)} đ',
+                                          );
+                                        } else {
+                                          return Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const SkyNativeAdWidget(),
                                               UserRankingItem(
-                                                name: users[i].name,
-                                                number: i + 1,
+                                                name: users![index].name,
+                                                number: index + 1,
                                                 point:
-                                                    '${formatNumber(users[i].point)} đ',
-                                              )
-                                            else
-                                              Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const SkyNativeAdWidget(),
-                                                  UserRankingItem(
-                                                    name: users[i].name,
-                                                    number: i + 1,
-                                                    point:
-                                                        '${formatNumber(users[i].point)} đ',
-                                                  ),
-                                                ],
-                                              )
-                                        ],
-                                      ),
+                                                    '${formatNumber(users[index].point)} đ',
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                      },
                                     ),
                                   ),
                                   const TitleRanking(check: false),
@@ -210,7 +209,8 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                                 ),
                               ),
                       )
-                    : SizedBox(height: MediaQuery.of(context).size.height * 0.4),
+                    : SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.4),
                 const SizedBox(height: 40),
               ],
             ),
