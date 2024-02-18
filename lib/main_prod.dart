@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sky_ads/sky_ads.dart';
 import 'app/core/services/init_helper.dart';
+import 'app/core/services/messaging_service.dart';
 import 'app/core/services/question_box.dart';
 import 'app/data/model/question.dart';
 import 'app/data/model/questions_model_hive.dart';
@@ -36,7 +37,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
-
+  await MessagingService().initNotification();
   await Hive.initFlutter((await getApplicationDocumentsDirectory()).path);
 
   Hive.registerAdapter(QuestionModelHiveAdapter());
