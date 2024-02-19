@@ -10,6 +10,8 @@ abstract class Routes {
   static const roleApp = _Paths.roleApp;
 
   static const ranking = _Paths.ranking;
+
+  static const store = _Paths.store;
 }
 
 abstract class _Paths {
@@ -18,4 +20,5 @@ abstract class _Paths {
   static const login = 'login';
   static const roleApp = 'role_app';
   static const ranking = 'ranking';
+  static const store = 'store';
 }

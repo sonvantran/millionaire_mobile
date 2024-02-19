@@ -267,27 +267,15 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                               onTap: () async {
                                 AnalyticsManager.sendAnalyticsEvent(
                                     'The_user_want_to_watch_ranking_view');
-                                // cubit.setWatchRanking(true);
                                 if (state.hasUser) {
-                                  // ignore: use_build_context_synchronously
                                   await context
                                       .pushRoute(const RankingViewRoute());
                                 } else {
-                                  // ignore: use_build_context_synchronously
                                   await _showdialog(context, cubit);
                                 }
                               },
                               text: "Bảng xếp hạng",
                             ),
-                            // SecondButton(
-                            //   width: MediaQuery.of(context).size.width * 0.55,
-                            //   onTap: () {
-                            //     AnalyticsManager.sendAnalyticsEvent(
-                            //         'The user want to see the role app!');
-                            //     context.pushRoute(const RoleAppViewRoute());
-                            //   },
-                            //   text: "Về ứng dụng",
-                            // ),
                           ],
                         ),
                       ),

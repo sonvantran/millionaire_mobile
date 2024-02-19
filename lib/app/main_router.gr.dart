@@ -58,6 +58,12 @@ class _$MainRouter extends RootStackRouter {
         child: const RankingView(),
       );
     },
+    StoreViewRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const StoreView(),
+      );
+    },
   };
 
   @override
@@ -82,6 +88,10 @@ class _$MainRouter extends RootStackRouter {
         ),
         RouteConfig(
           RankingViewRoute.name,
+          path: 'ranking',
+        ),
+        RouteConfig(
+          StoreViewRoute.name,
           path: 'ranking',
         ),
       ];
@@ -222,4 +232,16 @@ class RankingViewRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'RankingViewRoute';
+}
+
+/// generated route for
+/// [StoreView]
+class StoreViewRoute extends PageRouteInfo<void> {
+  const StoreViewRoute()
+      : super(
+          StoreViewRoute.name,
+          path: 'ranking',
+        );
+
+  static const String name = 'StoreViewRoute';
 }

@@ -1,3 +1,4 @@
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sky_ads/sky_ads.dart';
@@ -30,7 +31,9 @@ class _MyAppState extends State<MyApp> {
     if (isFirst) {
       pre.setBool("isFirst", false);
     } else {
-      SkyAds.instance.showAppOpenAd();
+      final remoteConfig = FirebaseRemoteConfig.instance;
+      final isFirstAOA = remoteConfig.getBool("isFirstAOA");
+      if (isFirstAOA) SkyAds.instance.showAppOpenAd(forceShow: true);
     }
   }
 

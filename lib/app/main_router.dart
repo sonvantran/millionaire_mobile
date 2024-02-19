@@ -8,6 +8,7 @@ import 'modules/login/views/login_view.dart';
 import 'modules/play_game/views/play_again_view.dart';
 import 'modules/play_game/views/play_game_view.dart';
 import 'modules/ranhking/view/ranking_view.dart';
+import 'modules/store/view/store_view.dart';
 part 'main_router.gr.dart';
 
 @MaterialAutoRouter(
@@ -16,6 +17,7 @@ part 'main_router.gr.dart';
     MaterialRoute(page: PlayGameView, path: Routes.playGame),
     MaterialRoute(page: PlayAgainView, path: Routes.playAgain),
     MaterialRoute(page: RankingView, path: Routes.ranking),
+    MaterialRoute(page: StoreView, path: Routes.ranking),
   ],
 )
 class MainRouter extends _$MainRouter {
