@@ -581,7 +581,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                                     1),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 10),
-                            child: const Text(
+                            child: Text(
                               "50 : 50",
                               style: TextStyles.mediumWhiteS16,
                             ),
@@ -761,7 +761,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                       ? Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text(
+                            Text(
                               'Tôi chắc chắn đáp án chính xác cuối cùng là:',
                               style: TextStyles.regularWhiteS20,
                             ),
@@ -799,8 +799,8 @@ class _PlayGamePageState extends State<PlayGamePage>
               if (_interstitialAd != null && isInterstitialAdLoaded) {
                 await _interstitialAd?.show();
               }
-              // ignore: use_build_context_synchronously
-              await context.router.replace(PlayAgainViewRoute(
+              if (!context.mounted) return;
+              context.router.replace(PlayAgainViewRoute(
                 caseResult: 1,
                 point: point,
                 isMute: widget.isMute,
@@ -916,7 +916,7 @@ Khi bạn dừng lại trong cuộc chơi, điểm số của bạn sẽ đượ
         isCountDown: false,
         textButton: onTap == null ? "ĐÓNG" : 'SẴN SÀNG',
         title: "LUẬT CHƠI",
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

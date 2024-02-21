@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../../../core/values/app_colors.dart';
@@ -16,7 +17,7 @@ class TimeCount extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         Container(
-          padding: const EdgeInsets.all(18),
+          padding:  EdgeInsets.all(18.r),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: const LinearGradient(
@@ -28,7 +29,7 @@ class TimeCount extends StatelessWidget {
                 AppColors.colorFF57B9FB,
               ],
             ),
-            border: Border.all(color: AppColors.colorFF77dbe5, width: 3),
+            border: Border.all(color: AppColors.colorFF77dbe5, width: 3.w),
           ),
           child: Text(
             text,
@@ -38,7 +39,7 @@ class TimeCount extends StatelessWidget {
         if (isLoading)
           SpinKitDualRing(
             duration: const Duration(milliseconds: 2000),
-            size: (int.parse(text) < 10) ? 60 : 74,
+            size: (int.parse(text) < 10) ? 60.r : 74.r,
             color: AppColors.colorFF1F2A48,
           )
       ],

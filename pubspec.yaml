@@ -49,6 +49,8 @@ dependencies:
   firebase_messaging: 14.6.8
   flutter_local_notifications: 16.3.2
   firebase_remote_config: 4.2.6
+  flutter_screenutil: 5.9.0
+  cached_network_image: 3.3.1
 
 dev_dependencies:
   flutter_test:

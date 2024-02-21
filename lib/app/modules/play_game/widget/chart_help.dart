@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:millionaire_mobile/app/core/extension/integer_extension.dart';
 
 import '../../../core/values/app_colors.dart';
@@ -20,7 +21,7 @@ class _ChartHelpState extends State<ChartHelp> {
   Widget build(BuildContext context) {
     final list = getByRightAnswer(widget.rightAnswer);
     return Container(
-      padding: const EdgeInsets.only(top: 24),
+      padding: EdgeInsets.only(top: 24.h),
       child: AspectRatio(
         aspectRatio: 1.6,
         child: _BarChart(list),

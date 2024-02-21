@@ -129,7 +129,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
                             style: TextStyles.mediumWhiteS36,
                             textAlign: TextAlign.center,
                           ),
-                          const Text(
+                          Text(
                             'Bạn sẽ ra về với phần thưởng:',
                             style: TextStyles.mediumMWhiteS24,
                             textAlign: TextAlign.center,
@@ -139,7 +139,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
                             style: TextStyles.mediumMWhiteS24,
                             textAlign: TextAlign.center,
                           ),
-                          const Text(
+                          Text(
                             'Chúc bạn may mắn lần sau!',
                             style: TextStyles.mediumMWhiteS24,
                             textAlign: TextAlign.center,

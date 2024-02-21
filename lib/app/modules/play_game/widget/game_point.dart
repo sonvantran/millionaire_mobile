@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
@@ -15,20 +16,19 @@ class GamePoint extends StatelessWidget {
     return Drawer(
       backgroundColor: AppColors.transparent,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 24),
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        decoration: const BoxDecoration(
-            image: DecorationImage(
+        padding: EdgeInsets.symmetric(horizontal: 8.w),
+        decoration: BoxDecoration(
+            image: const DecorationImage(
               image: AssetImage('assets/images/nav_bg.jpg'),
               fit: BoxFit.cover,
             ),
-            borderRadius: BorderRadius.all(Radius.circular(32))),
+            borderRadius: BorderRadius.all(Radius.circular(32.r))),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             const GamePointItemNo1(),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
+              padding: EdgeInsets.symmetric(horizontal: 18.w),
               child: Column(
                 children: [
                   for (final item in QuestionLevel.questionPoints(mc).reversed)
@@ -79,8 +79,8 @@ class GamePointItem extends StatelessWidget {
         )),
         Container(
           width: MediaQuery.of(context).size.width * 0.5,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          margin: const EdgeInsets.only(bottom: 2),
+          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+          margin: EdgeInsets.only(bottom: 2.h),
           decoration: BoxDecoration(
             gradient: checkCurrent > 0
                 ? const LinearGradient(
@@ -111,7 +111,7 @@ class GamePointItem extends StatelessWidget {
                           AppColors.colorFF9BD7FF,
                         ],
                       ),
-            borderRadius: const BorderRadius.all(Radius.circular(12)),
+            borderRadius: BorderRadius.all(Radius.circular(12.r)),
             border: Border.all(color: AppColors.colorFFd1b037, width: 2),
           ),
           child: Row(
@@ -161,7 +161,7 @@ class GamePointItemNo1 extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 50),
+          padding: EdgeInsets.only(top: 50.h),
           child: Row(
             children: [
               Expanded(
@@ -176,12 +176,12 @@ class GamePointItemNo1 extends StatelessWidget {
                     ],
                   ),
                 ),
-                height: 2,
+                height: 2.h,
               )),
               Container(
                 width: MediaQuery.of(context).size.width * 0.6,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                margin: const EdgeInsets.only(bottom: 2),
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
+                margin: EdgeInsets.only(bottom: 2.h),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     begin: Alignment.topCenter,
@@ -192,10 +192,10 @@ class GamePointItemNo1 extends StatelessWidget {
                       AppColors.colorFFf7d35a,
                     ],
                   ),
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  borderRadius: BorderRadius.all(Radius.circular(12.r)),
                   border: Border.all(color: AppColors.colorFFd1b037, width: 2),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(

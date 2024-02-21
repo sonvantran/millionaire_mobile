@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/services/question_box.dart';
@@ -153,11 +154,11 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Stack(
+                Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     CustomAppBar(
-                      top: 32,
-                      bottom: 48,
+                      top: 32.h,
                       title: state.user != null
                           ? state.user!.name
                           : 'Ai là triệu phú',
@@ -179,151 +180,163 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                           ),
                       ],
                     ),
-                    Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: ScoreUser(text: state.user?.point ?? 0))
+                    const SizedBox(height: 4),
+                    Container(
+                      alignment: Alignment.centerRight,
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: ScoreUser(text: state.user?.point ?? 0),
+                    )
                   ],
                 ),
                 Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Image.asset(
-                        'assets/images/ic_app.png',
-                        width: MediaQuery.of(context).size.width * 0.4,
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        height: MediaQuery.of(context).size.height * 0.3,
-                        color: AppColors.transparent,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          'assets/images/ic_app.png',
+                          width: 160.w,
+                          height: 160.h,
+                        ),
+                        SizedBox(height: 16.h),
+                        SecondButton(
+                          gradient: CustomColor.dung,
+                          width: MediaQuery.of(context).size.width * 0.70,
+                          onTap: () async {
+                            AnalyticsManager.sendAnalyticsEvent(
+                                'The_user_want_to_play_game');
+                            if (state.hasDataLocal) {
+                              if (state.user == null) {
+                                ShowMessageInternal.showOverlay(context,
+                                    "Hệ thống tạm thời không tính điểm");
+                              }
+                              context.pushRoute(PlayGameViewRoute(
+                                isMute: state.isMute,
+                                mc: state.chooseMC,
+                                user: state.user,
+                                questionModelHive: question[0],
+                                cubit: cubit,
+                              ));
+                              return;
+                            }
+                            if (state.hasUser) {
+                              if (state.user == null) {
+                                ShowMessageInternal.showOverlay(context,
+                                    "Hệ thống tạm thời không tính điểm");
+                              }
+                              await context.pushRoute(PlayGameViewRoute(
+                                mc: state.chooseMC,
+                                isMute: state.isMute,
+                                user: state.user,
+                                cubit: cubit,
+                              ));
+                            } else {
+                              await _showdialog(context, cubit);
+                            }
+                          },
+                          text: !state.hasDataLocal ? "Bắt đầu" : "Tiếp tục",
+                        ),
+                        Stack(
                           children: [
                             SecondButton(
-                              gradient: CustomColor.dung,
-                              width: MediaQuery.of(context).size.width * 0.70,
-                              onTap: () async {
-                                AnalyticsManager.sendAnalyticsEvent(
-                                    'The_user_want_to_play_game');
-                                if (state.hasDataLocal) {
-                                  if (state.user == null) {
-                                    ShowMessageInternal.showOverlay(context,
-                                        "Hệ thống tạm thời không tính điểm");
-                                  }
-                                  context.pushRoute(PlayGameViewRoute(
-                                    isMute: state.isMute,
-                                    mc: state.chooseMC,
-                                    user: state.user,
-                                    questionModelHive: question[0],
-                                    cubit: cubit,
-                                  ));
-                                  return;
-                                }
-                                if (state.hasUser) {
-                                  if (state.user == null) {
-                                    ShowMessageInternal.showOverlay(context,
-                                        "Hệ thống tạm thời không tính điểm");
-                                  }
-                                  await context.pushRoute(PlayGameViewRoute(
-                                    mc: state.chooseMC,
-                                    isMute: state.isMute,
-                                    user: state.user,
-                                    cubit: cubit,
-                                  ));
-                                } else {
-                                  await _showdialog(context, cubit);
-                                }
-                              },
-                              text:
-                                  !state.hasDataLocal ? "Bắt đầu" : "Tiếp tục",
-                            ),
-                            if (state.hasDataLocal)
-                              SecondButton(
-                                width: MediaQuery.of(context).size.width * 0.55,
-                                text: "Chơi lại",
-                                onTap: () {
-                                  AnalyticsManager.sendAnalyticsEvent(
-                                      'The_user_want_to_play_game_again');
-                                  cubit.updatePoint(getQuestionByLevel(
-                                      question[0].currentLevel - 1,
-                                      state.chooseMC));
-                                  if (state.user == null) {
-                                    ShowMessageInternal.showOverlay(context,
-                                        "Hệ thống tạm thời không tính điểm");
-                                  }
-                                  context.pushRoute(PlayGameViewRoute(
-                                    isMute: state.isMute,
-                                    mc: state.chooseMC,
-                                    user: state.user,
-                                    cubit: cubit,
-                                  ));
-                                },
-                              ),
-                            SecondButton(
                               width: MediaQuery.of(context).size.width * 0.55,
-                              onTap: () async {
+                              text: "Cửa hàng",
+                              onTap: () {
                                 AnalyticsManager.sendAnalyticsEvent(
-                                    'The_user_want_to_watch_ranking_view');
-                                if (state.hasUser) {
-                                  await context
-                                      .pushRoute(const RankingViewRoute());
-                                } else {
-                                  await _showdialog(context, cubit);
-                                }
+                                    'The_user_want_to_purchase');
+                                context.pushRoute(const StoreViewRoute());
                               },
-                              text: "Bảng xếp hạng",
+                            ),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: CircleAvatar(
+                                radius: 8.r,
+                                backgroundColor: AppColors.colorFFB20000,
+                              ),
+                            )
+                          ],
+                        ),
+                        if (state.hasDataLocal)
+                          SecondButton(
+                            width: MediaQuery.of(context).size.width * 0.55,
+                            text: "Chơi lại",
+                            onTap: () {
+                              AnalyticsManager.sendAnalyticsEvent(
+                                  'The_user_want_to_play_game_again');
+                              cubit.updatePoint(getQuestionByLevel(
+                                  question[0].currentLevel - 1,
+                                  state.chooseMC));
+                              if (state.user == null) {
+                                ShowMessageInternal.showOverlay(context,
+                                    "Hệ thống tạm thời không tính điểm");
+                              }
+                              context.pushRoute(PlayGameViewRoute(
+                                isMute: state.isMute,
+                                mc: state.chooseMC,
+                                user: state.user,
+                                cubit: cubit,
+                              ));
+                            },
+                          ),
+                        SecondButton(
+                          width: MediaQuery.of(context).size.width * 0.55,
+                          onTap: () async {
+                            AnalyticsManager.sendAnalyticsEvent(
+                                'The_user_want_to_watch_ranking_view');
+                            if (state.hasUser) {
+                              await context.pushRoute(const RankingViewRoute());
+                            } else {
+                              await _showdialog(context, cubit);
+                            }
+                          },
+                          text: "Bảng xếp hạng",
+                        ),
+                        SizedBox(height: 16.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ButtonItem(
+                              onTap: () => _showDevelop(context),
+                              color: AppColors.colorFF3AA33A,
+                              iconData: Icons.developer_mode_sharp,
+                            ),
+                            const SizedBox(width: 24),
+                            ButtonItem(
+                              onTap: () => _showSetting(context, cubit),
+                              color: AppColors.colorFF375193,
+                              iconData: Icons.settings,
+                            ),
+                            const SizedBox(width: 24),
+                            ButtonItem(
+                              onTap: () => _showRole(context),
+                              color: AppColors.colorFFd1b037,
+                              iconData: Icons.info_outline,
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ButtonItem(
-                            onTap: () => _showDevelop(context),
-                            color: AppColors.colorFF3AA33A,
-                            iconData: Icons.developer_mode_sharp,
-                          ),
-                          const SizedBox(width: 24),
-                          ButtonItem(
-                            onTap: () => _showSetting(context, cubit),
-                            color: AppColors.colorFF375193,
-                            iconData: Icons.settings,
-                          ),
-                          const SizedBox(width: 24),
-                          ButtonItem(
-                            onTap: () => _showRole(context),
-                            color: AppColors.colorFFd1b037,
-                            iconData: Icons.info_outline,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ButtonItem(
-                            onTap: () {
-                              AnalyticsManager.sendAnalyticsEvent(
-                                  'The_user_want_to_review_app!');
-                              _showdialogRating(context, cubit);
-                            },
-                            color: AppColors.colorFFAF4848,
-                            iconData: Icons.star,
-                          ),
-                          const SizedBox(width: 24),
-                          ButtonItem(
-                            onTap: () => cubit.feedBack(),
-                            color: AppColors.colorFF424242,
-                            iconData: Icons.rate_review_outlined,
-                          ),
-                        ],
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ButtonItem(
+                              onTap: () {
+                                AnalyticsManager.sendAnalyticsEvent(
+                                    'The_user_want_to_review_app!');
+                                _showdialogRating(context, cubit);
+                              },
+                              color: AppColors.colorFFAF4848,
+                              iconData: Icons.star,
+                            ),
+                            const SizedBox(width: 24),
+                            ButtonItem(
+                              onTap: () => cubit.feedBack(),
+                              color: AppColors.colorFF424242,
+                              iconData: Icons.rate_review_outlined,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -432,7 +445,7 @@ Người chơi được cung cấp bốn lựa chọn trợ giúp: "50:50", đi�
     await showDialog(
       context: context,
       builder: (BuildContext _) {
-        return const PopupNotice(
+        return PopupNotice(
           isCountDown: false,
           textButton: 'ĐÓNG',
           title: "LUẬT CHƠI",
@@ -444,28 +457,28 @@ Người chơi được cung cấp bốn lựa chọn trợ giúp: "50:50", đi�
                 style: TextStyles.regularWhiteS12,
                 textAlign: TextAlign.justify,
               ),
-              SizedBox(height: 12),
-              RoleItem(
+              SizedBox(height: 12.h),
+              const RoleItem(
                 text: '🎯Loại 2 phương án sai',
                 textIcon: '50 : 50',
               ),
-              RoleItem(
+              const RoleItem(
                 text: '📞Gọi điện cho người thân',
                 iconData: Icons.phone_in_talk_outlined,
               ),
-              RoleItem(
+              const RoleItem(
                 text: '🙋Tổ tư vấn tại chỗ',
                 isAsset: true,
               ),
-              RoleItem(
+              const RoleItem(
                 text: '🧠Trợ giúp khán giả trong trường quay',
                 iconData: Icons.bar_chart_outlined,
               ),
-              RoleItem(
+              const RoleItem(
                 text: '🤝Hỏi ý kiến bạn đồng hành',
                 iconData: Icons.person_add,
               ),
-              RoleItem(
+              const RoleItem(
                 text: '💡Hỏi ý kiến những nhà thông thái',
                 isAsset: false,
               ),
@@ -501,7 +514,7 @@ Người chơi được cung cấp bốn lựa chọn trợ giúp: "50:50", đi�
                 //       Border.all(color: AppColors.colorFF03456e, width: 2),
                 //   borderRadius: const BorderRadius.all(Radius.circular(24)),
                 // ),
-                child: const Text(
+                child: Text(
                   content,
                   style: TextStyles.regularWhiteS18,
                   textAlign: TextAlign.justify,
@@ -515,7 +528,7 @@ Người chơi được cung cấp bốn lựa chọn trợ giúp: "50:50", đi�
                   borderRadius: const BorderRadius.all(Radius.circular(8)),
                   color: AppColors.colorFF03456e,
                 ),
-                child: const Column(
+                child: Column(
                   children: [
                     Text(
                       'Được phát triển bởi:',

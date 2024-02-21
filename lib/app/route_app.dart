@@ -10,6 +10,8 @@ import 'modules/play_game/api/play_game_api.dart';
 import 'modules/play_game/repository/play_game_repository.dart';
 import 'modules/ranhking/api/ranking_api.dart';
 import 'modules/ranhking/repository/ranking_repository.dart';
+import 'modules/store/api/store_api.dart';
+import 'modules/store/repository/store_repository.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -42,6 +44,9 @@ class _RouteAppState extends State<RouteApp> {
         ),
         RepositoryProvider<RankingRepository>(
           create: (context) => RankingRepository(RankingApi()),
+        ),
+        RepositoryProvider<StoreRepository>(
+          create: (context) => StoreRepository(StoreApi()),
         ),
       ],
       child: MaterialApp.router(

@@ -52,7 +52,10 @@ class PopupPlayConfirm extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             PrimaryButton(
-              onTap: onTap,
+              onTap: () {
+                Navigator.pop(context);
+                onTap();
+              },
               title: titleButton2,
               borderColor: AppColors.colorFFD0D5DD,
               backgroundColor: AppColors.colorFFFFFFFF,

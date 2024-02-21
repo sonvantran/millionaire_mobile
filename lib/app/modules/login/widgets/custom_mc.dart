@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
@@ -23,11 +24,13 @@ class CustomMC extends StatelessWidget {
   Widget build(BuildContext context) {
     const activeColor = AppColors.colorFFFFFFFF;
     return Container(
-      padding: const EdgeInsets.all(8),
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: const BoxDecoration(
+      padding: EdgeInsets.all(8.r),
+      margin: EdgeInsets.only(bottom: 8.h),
+      decoration: BoxDecoration(
         color: AppColors.colorFF1F2A48,
-        borderRadius: BorderRadius.all(Radius.circular(16)),
+        borderRadius: BorderRadius.all(
+          Radius.circular(16.r),
+        ),
       ),
       child: InkWell(
         onTap: () {
@@ -39,8 +42,8 @@ class CustomMC extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 50.w,
+                  height: 50.h,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: avatar != null
@@ -51,14 +54,14 @@ class CustomMC extends StatelessWidget {
                           : null,
                       color: AppColors.colorFFD9D9D9),
                   child: avatar == null
-                      ? const Icon(
+                      ? Icon(
                           Icons.person_2,
-                          size: 24,
+                          size: 24.r,
                           color: Colors.white,
                         )
                       : null,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.h),
                 Text(
                   title,
                   style: TextStyles.regularWhiteS18,
@@ -68,9 +71,9 @@ class CustomMC extends StatelessWidget {
               ],
             ),
             Container(
-              padding: const EdgeInsets.all(4),
-              width: 20,
-              height: 20,
+              padding: EdgeInsets.all(4.r),
+              width: 20.w,
+              height: 20.h,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
@@ -80,8 +83,8 @@ class CustomMC extends StatelessWidget {
               ),
               child: Container(
                 alignment: Alignment.center,
-                width: 10,
-                height: 10,
+                width: 10.w,
+                height: 10.h,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: groupValue == value ? activeColor : Colors.transparent,

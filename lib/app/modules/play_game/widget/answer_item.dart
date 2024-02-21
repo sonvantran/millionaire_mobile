@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
@@ -28,8 +29,8 @@ class AnswerItem extends StatelessWidget {
       onTap: checkExpire && !isHide ? onTap : null,
       child: Container(
         width: MediaQuery.of(context).size.width * 0.8,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        margin: const EdgeInsets.only(top: 10),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+        margin: EdgeInsets.only(top: 10.h),
         decoration: BoxDecoration(
           gradient: isTrue
               ? const LinearGradient(
@@ -60,8 +61,8 @@ class AnswerItem extends StatelessWidget {
                         AppColors.colorFF57B9FB,
                       ],
                     ),
-          borderRadius: const BorderRadius.all(Radius.circular(32)),
-          border: Border.all(color: AppColors.colorFF77dbe5, width: 3),
+          borderRadius: BorderRadius.all(Radius.circular(32.r)),
+          border: Border.all(color: AppColors.colorFF77dbe5, width: 3.w),
         ),
         child: Text(
           !isHide ? '$type. $text' : '',

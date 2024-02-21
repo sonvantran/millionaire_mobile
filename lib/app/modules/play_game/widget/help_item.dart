@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/values/app_colors.dart';
 
@@ -36,8 +37,8 @@ class HelpItem extends StatelessWidget {
                 AppColors.colorFF57B9FB,
               ],
             ),
-            borderRadius: const BorderRadius.all(Radius.circular(24)),
-            border: Border.all(color: AppColors.colorFF77dbe5, width: 3),
+            borderRadius: BorderRadius.all(Radius.circular(24.r)),
+            border: Border.all(color: AppColors.colorFF77dbe5, width: 3.w),
           ),
           child: child,
         ),

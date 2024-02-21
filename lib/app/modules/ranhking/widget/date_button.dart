@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
@@ -17,12 +18,12 @@ class DateButton extends StatelessWidget {
       child: InkWell(
         onTap: !isChoose ? onTap : null,
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 30),
-          padding: const EdgeInsets.symmetric(vertical: 6),
+          margin: EdgeInsets.symmetric(horizontal: 30.w),
+          padding: EdgeInsets.symmetric(vertical: 6.h),
           decoration: BoxDecoration(
             color: AppColors.colorFF03456e,
-            border: Border.all(color: AppColors.colorFF77dbe5, width: 2),
-            borderRadius: const BorderRadius.all(Radius.circular(16)),
+            border: Border.all(color: AppColors.colorFF77dbe5, width: 2.r),
+            borderRadius: BorderRadius.all(Radius.circular(16.r)),
             gradient: isChoose
                 ? const LinearGradient(
                     begin: Alignment.topCenter,

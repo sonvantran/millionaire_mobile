@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../data/local_saver/mc.dart';
@@ -28,8 +29,8 @@ class Setting extends StatelessWidget {
                         isNotMute ? Icons.volume_up_rounded : Icons.volume_off,
                         color: AppColors.colorFFFFFFFF,
                       ),
-                      const SizedBox(width: 8),
-                      const Text("Âm thanh", style: TextStyles.boldWhiteS20),
+                      SizedBox(width: 8.w),
+                      Text("Âm thanh", style: TextStyles.boldWhiteS20),
                     ],
                   ),
                   Switch(
@@ -55,17 +56,17 @@ class Setting extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.person,
                         color: AppColors.colorFFFFFFFF,
                       ),
-                      SizedBox(width: 8),
+                      SizedBox(width: 8.w),
                       Text('Chọn MC', style: TextStyles.boldWhiteS20),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.w),
                   for (final item in MC.listOfMC)
                     CustomMC(
                       title: item.name,

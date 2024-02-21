@@ -9,6 +9,8 @@ import 'package:sky_ads/sky_ads.dart';
 import 'app/core/services/init_helper.dart';
 import 'app/core/services/messaging_service.dart';
 import 'app/core/services/question_box.dart';
+import 'app/core/services/store_box.dart';
+import 'app/data/model/item_model.dart';
 import 'app/data/model/question.dart';
 import 'app/data/model/questions_model_hive.dart';
 import 'app/flavors/build_config.dart';
@@ -43,7 +45,10 @@ void main() async {
 
   Hive.registerAdapter(QuestionModelHiveAdapter());
   Hive.registerAdapter(QuestionAdapter());
+  Hive.registerAdapter(StoreAdapter());
+  Hive.registerAdapter(ItemModelAdapter());
   await QuestionBox.openBox();
+  await StoreBox.openBox();
   await InitHelper().initialize();
   SkyAds.instance.initialize(
     AdConstant(
@@ -57,7 +62,6 @@ void main() async {
     ),
   );
 
-  // await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

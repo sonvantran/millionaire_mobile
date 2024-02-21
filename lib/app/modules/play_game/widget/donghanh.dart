@@ -22,61 +22,67 @@ class _DongHanhState extends State<DongHanh> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PlayGameCubit, PlayGameState>(builder: (context, state) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          state.chooseDh == null
-              ? const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Item(i: 1),
-                        Item(i: 2),
-                        Item(i: 4),
-                      ],
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [Item(i: 3), Item(i: 5), Item(i: 6)],
-                    ),
-                  ],
-                )
-              : Item(
-                  i: state.chooseDh!,
-                  height: 100,
-                  width: 100,
-                  textStyle: TextStyles.boldWhiteS24,
-                ),
-          state.chooseDh == null
-              ? const Text(
-                  "Hãy chọn bạn đồng hành của bạn!",
-                  style: TextStyles.regularWhiteS18,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  maxLines: 5,
-                )
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Tôi chắc chắn đáp án chính xác cuối cùng là:',
-                      style: TextStyles.regularWhiteS20,
-                    ),
-                    state.loadingDh
-                        ? const SpinKitPouringHourGlassRefined(
-                            color: AppColors.colorFF57B9FB,
-                            duration: Duration(milliseconds: 1000),
-                            size: 60,
-                          )
-                        : Text(
-                            widget.rightAnswer.intToAnswer(),
-                            style: TextStyles.boldRedS40,
-                          ),
-                  ],
-                )
-        ],
+      return SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            state.chooseDh == null
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Item(i: 1, textStyle: TextStyles.regularWhiteS12),
+                          Item(i: 2, textStyle: TextStyles.regularWhiteS12),
+                          Item(i: 4, textStyle: TextStyles.regularWhiteS12),
+                        ],
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Item(i: 3, textStyle: TextStyles.regularWhiteS12),
+                          Item(i: 5, textStyle: TextStyles.regularWhiteS12),
+                          Item(i: 6, textStyle: TextStyles.regularWhiteS12),
+                        ],
+                      ),
+                    ],
+                  )
+                : Item(
+                    i: state.chooseDh!,
+                    height: 100,
+                    width: 100,
+                    textStyle: TextStyles.boldWhiteS24,
+                  ),
+            state.chooseDh == null
+                ? Text(
+                    "Hãy chọn bạn đồng hành của bạn!",
+                    style: TextStyles.regularWhiteS18,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    maxLines: 5,
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Tôi chắc chắn đáp án chính xác cuối cùng là:',
+                        style: TextStyles.regularWhiteS20,
+                      ),
+                      state.loadingDh
+                          ? const SpinKitPouringHourGlassRefined(
+                              color: AppColors.colorFF57B9FB,
+                              duration: Duration(milliseconds: 1000),
+                              size: 60,
+                            )
+                          : Text(
+                              widget.rightAnswer.intToAnswer(),
+                              style: TextStyles.boldRedS40,
+                            ),
+                    ],
+                  )
+          ],
+        ),
       );
     });
   }
@@ -89,7 +95,7 @@ class Item extends StatelessWidget {
     this.onTap,
     this.width = 60,
     this.height = 60,
-    this.textStyle = TextStyles.regularWhiteS12,
+    required this.textStyle,
   });
   final int i;
 

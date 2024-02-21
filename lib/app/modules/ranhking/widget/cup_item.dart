@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
@@ -33,10 +34,10 @@ class CupItem extends StatelessWidget {
             ),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+              padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 6.w),
               decoration: BoxDecoration(
                 color: AppColors.colorFF000000,
-                borderRadius: const BorderRadius.all(Radius.circular(16)),
+                borderRadius: BorderRadius.all(Radius.circular(16.r)),
                 gradient: const LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -46,7 +47,7 @@ class CupItem extends StatelessWidget {
                     AppColors.colorFF57B9FB,
                   ],
                 ),
-                border: Border.all(color: AppColors.colorFF77dbe5, width: 2),
+                border: Border.all(color: AppColors.colorFF77dbe5, width: 2.r),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -58,7 +59,7 @@ class CupItem extends StatelessWidget {
                     textAlign: TextAlign.center,
                     maxLines: 3,
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4.h),
                   Text(
                     point,
                     style: TextStyles.regularWhiteS12,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
@@ -11,16 +12,16 @@ class TitleRanking extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
       decoration: BoxDecoration(
         borderRadius: check
-            ? const BorderRadius.only(
-                topLeft: Radius.circular(22),
-                topRight: Radius.circular(22),
+            ? BorderRadius.only(
+                topLeft: Radius.circular(22.r),
+                topRight: Radius.circular(22.r),
               )
-            : const BorderRadius.only(
-                bottomLeft: Radius.circular(22),
-                bottomRight: Radius.circular(22),
+            : BorderRadius.only(
+                bottomLeft: Radius.circular(22.r),
+                bottomRight: Radius.circular(22.r),
               ),
         gradient: const LinearGradient(
           begin: Alignment.topCenter,
@@ -33,21 +34,21 @@ class TitleRanking extends StatelessWidget {
         ),
       ),
       child: check
-          ? const Row(
+          ? Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   "Hạng",
                   style: TextStyles.mediumWhiteS14,
                 ),
-                SizedBox(width: 8),
+                SizedBox(width: 8.h),
                 Text(
                   "Người chơi",
                   style: TextStyles.mediumWhiteS14,
                 ),
               ],
             )
-          : const SizedBox(
+          : SizedBox(
               width: double.infinity,
               child: Text(
                 "Ai Là Triệu Phú",

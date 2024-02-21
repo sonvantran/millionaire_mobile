@@ -8,7 +8,6 @@ class CustomAppBar extends StatelessWidget {
     super.key,
     this.actions,
     required this.title,
-    this.titleStyle = TextStyles.mediumMWhiteS20,
     this.leading,
     this.top,
     this.bottom,
@@ -16,7 +15,6 @@ class CustomAppBar extends StatelessWidget {
   final String title;
   final List<Widget>? actions;
   final Widget? leading;
-  final TextStyle titleStyle;
   final double? top;
   final double? bottom;
   @override
@@ -36,7 +34,7 @@ class CustomAppBar extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: titleStyle,
+              style: TextStyles.mediumMWhiteS20,
               overflow: TextOverflow.ellipsis,
               maxLines: 10,
             ),

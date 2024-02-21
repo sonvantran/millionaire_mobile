@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
 import 'package:sky_ads/native_ad_widget.dart';
@@ -87,12 +88,12 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 CustomAppBar(
-                    leading: CustomAppbarItem(
-                        icon: Icons.arrow_back_outlined,
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        }),
-                    title: 'Bảng xếp hạng'),
+                  leading: CustomAppbarItem(
+                    icon: Icons.arrow_back_outlined,
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  title: 'Bảng xếp hạng',
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -106,11 +107,6 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                       onTap: () => cubit.setFilter(true),
                       text: 'Tất cả',
                     ),
-                    // DateButton(
-                    //   isChoose: state.filter == 2,
-                    //   onTap: () => cubit.setFilter(2),
-                    //   text: 'Năm',
-                    // )
                   ],
                 ),
                 users != null
@@ -139,10 +135,10 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                           ),
                         ],
                       )
-                    : const Center(
+                    : Center(
                         child: SpinKitCircle(
                           color: AppColors.colorFF77dbe5,
-                          size: 100,
+                          size: 100.r,
                         ),
                       ),
                 users != null
@@ -161,8 +157,7 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                           ),
                           border: Border.all(
                               color: AppColors.colorFF77dbe5, width: 2),
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(24)),
+                          borderRadius: BorderRadius.all(Radius.circular(24.r)),
                         ),
                         child: users.isNotEmpty
                             ? Column(
@@ -201,7 +196,7 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                                   const TitleRanking(check: false),
                                 ],
                               )
-                            : const Center(
+                            : Center(
                                 child: Text(
                                   "Chơi ngay để vào bảng xếp hạng",
                                   style: TextStyles.regularWhiteS20,
@@ -211,7 +206,7 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                       )
                     : SizedBox(
                         height: MediaQuery.of(context).size.height * 0.4),
-                const SizedBox(height: 40),
+                SizedBox(height: 40.h),
               ],
             ),
           ),

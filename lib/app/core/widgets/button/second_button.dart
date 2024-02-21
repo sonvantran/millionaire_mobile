@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../values/app_colors.dart';
 import '../../values/custom_color.dart';
@@ -8,7 +9,6 @@ class SecondButton extends StatelessWidget {
   const SecondButton({
     super.key,
     required this.text,
-    this.style = TextStyles.boldWhiteS20,
     this.onTap,
     this.icon,
     this.gradient = CustomColor.xanh,
@@ -17,7 +17,6 @@ class SecondButton extends StatelessWidget {
   });
 
   final String text;
-  final TextStyle style;
   final void Function()? onTap;
   final Widget? icon;
   final Gradient? gradient;
@@ -31,6 +30,7 @@ class SecondButton extends StatelessWidget {
       child: Container(
         width: width,
         height: height,
+        margin: EdgeInsets.only(bottom: 8.h),
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: AppColors.colorFF03456e,
@@ -47,7 +47,7 @@ class SecondButton extends StatelessWidget {
               ),
             Text(
               text,
-              style: style,
+              style: TextStyles.boldWhiteS20,
               textAlign: TextAlign.center,
             ),
           ],

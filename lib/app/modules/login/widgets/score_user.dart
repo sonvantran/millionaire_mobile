@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 
@@ -8,10 +9,10 @@ class ScoreUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 2.h),
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.colorFFd1b037, width: 2),
-        borderRadius: const BorderRadius.all(Radius.circular(40)),
+        border: Border.all(color: AppColors.colorFFd1b037, width: 2.r),
+        borderRadius: BorderRadius.all(Radius.circular(40.r)),
         gradient: const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -25,16 +26,16 @@ class ScoreUser extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Icons.monetization_on_rounded,
             color: AppColors.colorFFa2602b,
-            size: 36,
+            size: 36.r,
           ),
           Text(
             '${formatNumber(text)} đ',
             style: TextStyles.mediumBlackS20,
           ),
-          const SizedBox(width: 8)
+          SizedBox(width: 8.w)
         ],
       ),
     );

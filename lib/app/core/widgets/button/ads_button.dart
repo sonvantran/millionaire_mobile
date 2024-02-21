@@ -8,14 +8,12 @@ class AdsButton extends StatelessWidget {
   const AdsButton({
     super.key,
     required this.text,
-    this.style = TextStyles.boldWhiteS20,
     this.onTap,
     required this.icon,
     this.gradient = CustomColor.dung,
   });
 
   final String text;
-  final TextStyle style;
   final void Function()? onTap;
   final Widget icon;
   final Gradient? gradient;
@@ -41,7 +39,7 @@ class AdsButton extends StatelessWidget {
             Expanded(
               child: Text(
                 text,
-                style: style,
+                style: TextStyles.boldWhiteS20,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,

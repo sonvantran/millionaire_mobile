@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '/app/core/values/app_colors.dart';
-
-const defaultFontFamily = 'Baloo Thambi 2';
-const defaultFontFamilyFallback = [
-  'NotoSansJP',
-  //'ZenMaruGothic',
-];
 
 abstract class FontW {
   static const small = FontWeight.w300;
@@ -22,297 +17,266 @@ abstract class TextStyles {
     fontSize: 14,
     letterSpacing: 0.7,
     color: AppColors.c1D1D1D_onSurface,
-    fontFamily: defaultFontFamily,
-    fontFamilyFallback: defaultFontFamilyFallback,
   );
 
   static const bold14TitleBold = _medium14_07;
 
-  static const _medium16LineHeight24 = TextStyle(
-    fontWeight: FontW.mediumM,
-    fontSize: 16,
-    letterSpacing: 0.7,
-    color: AppColors.c1D1D1D_onSurface,
-    fontFamily: defaultFontFamily,
-  );
-  static const small12LineHeight18RedSur = TextStyle(
-    fontWeight: FontW.bold,
-    fontSize: 12,
-    letterSpacing: 0.7,
-    color: AppColors.colorFF940000,
-  );
-  static const medium16LineHeight24Sur = _medium16LineHeight24;
-
-  static const _medium14LineHeight21 = TextStyle(
-    fontWeight: FontW.medium,
-    fontSize: 14,
-    letterSpacing: 0.7,
-    color: AppColors.c1D1D1D_onSurface,
-    fontFamily: defaultFontFamily,
-  );
-  static const medium14LineHeight21Sur = _medium14LineHeight21;
-  static const _small12LineHeight18 = TextStyle(
-    fontWeight: FontW.regular,
-    fontSize: 12,
-    letterSpacing: 0.7,
-    color: AppColors.colorFF808089,
-    fontFamily: defaultFontFamily,
-  );
-
-  static const small12LineHeight18Sur = _small12LineHeight18;
-
-  static const small12LineHeight18BlackSur = _small12LineHeight18;
-
-  static const regularWhiteS20 = TextStyle(
-    fontSize: 20,
+  static TextStyle regularWhiteS20 = TextStyle(
+    fontSize: 20.sp,
     color: AppColors.colorFFFFFFFF,
   );
 
-  static const mediumMWhiteS20 = TextStyle(
-    fontSize: 20,
+  static TextStyle mediumMWhiteS20 = TextStyle(
+    fontSize: 20.sp,
     color: AppColors.colorFFFFFFFF,
     fontWeight: FontW.mediumM,
   );
 
-  static const mediumBlackS20 = TextStyle(
-    fontSize: 20,
+  static TextStyle mediumBlackS20 = TextStyle(
+    fontSize: 20.sp,
     color: AppColors.colorFF000000,
     fontWeight: FontW.medium,
   );
 
-  static const boldBlackS18 = TextStyle(
+  static TextStyle boldBlackS18 = TextStyle(
     color: AppColors.colorFF000000,
-    fontSize: 18,
+    fontSize: 18.sp,
     fontWeight: FontW.bold,
   );
-  static const boldRedS18 = TextStyle(
+  static TextStyle boldRedS18 = TextStyle(
     color: AppColors.colorFFFF0000,
-    fontSize: 18,
+    fontSize: 18.sp,
     fontWeight: FontW.bold,
   );
 
-  static const size15 = TextStyle(
-    fontSize: 15,
+  static TextStyle size15 = TextStyle(
+    fontSize: 15.sp,
   );
 
-  static const size14 = TextStyle(
-    fontSize: 14,
+  static TextStyle size14 = TextStyle(
+    fontSize: 14.sp,
   );
 
-  static const size20 = TextStyle(
-    fontSize: 20,
+  static TextStyle size20 = TextStyle(
+    fontSize: 20.sp,
   );
 
-  static const mediumMBlackS18 = TextStyle(
+  static TextStyle mediumMBlackS18 = TextStyle(
     fontWeight: FontW.mediumM,
-    fontSize: 18,
+    fontSize: 18.sp,
   );
 
-  static const regularMBlackS18 = TextStyle(
+  static TextStyle regularMBlackS18 = TextStyle(
     fontWeight: FontW.regular,
-    fontSize: 18,
+    fontSize: 18.sp,
   );
 
-  static const mediumMBlueS16 = TextStyle(
+  static TextStyle mediumMBlueS16 = TextStyle(
     fontWeight: FontW.mediumM,
-    fontSize: 16,
+    fontSize: 16.sp,
     color: AppColors.colorFF344054,
   );
 
-  static const boldRedS20 = TextStyle(
+  static TextStyle boldRedS20 = TextStyle(
     color: AppColors.colorFF940000,
-    fontSize: 20,
+    fontSize: 20.sp,
     fontWeight: FontW.bold,
   );
 
-  static const boldRedS40 = TextStyle(
+  static TextStyle boldRedS40 = TextStyle(
     color: AppColors.colorFF9A0F0F,
-    fontSize: 40,
+    fontSize: 40.sp,
     fontWeight: FontW.bold,
   );
 
-  static const boldRed1S18 = TextStyle(
+  static TextStyle boldRed1S18 = TextStyle(
     color: AppColors.colorFF9A0F0F,
-    fontSize: 18,
+    fontSize: 18.sp,
     fontWeight: FontWeight.bold,
   );
 
-  static const regularBlueS18 = TextStyle(
+  static TextStyle regularBlueS18 = TextStyle(
     color: AppColors.colorFF2F394B,
-    fontSize: 18,
+    fontSize: 18.sp,
   );
 
-  static const mediumRedS20 = TextStyle(
+  static TextStyle mediumRedS20 = TextStyle(
     fontWeight: FontW.medium,
-    fontSize: 20,
+    fontSize: 20.sp,
     color: AppColors.colorFFB20000,
   );
 
-  static const mediumWhiteS14 = TextStyle(
-    fontSize: 14,
+  static TextStyle mediumWhiteS14 = TextStyle(
+    fontSize: 14.sp,
     fontWeight: FontW.medium,
     color: AppColors.colorFFFFFFFF,
   );
 
-  static const mediumWhitesS14 = TextStyle(
-    fontSize: 14,
+  static TextStyle mediumWhitesS14 = TextStyle(
+    fontSize: 14.sp,
     fontWeight: FontW.medium,
     color: AppColors.colorFFBBBABA,
   );
 
-  static const regularWhiteS10 = TextStyle(
-    fontSize: 10,
+  static TextStyle regularWhiteS10 = TextStyle(
+    fontSize: 10.sp,
     fontWeight: FontW.regular,
     color: AppColors.colorFFFFFFFF,
   );
 
-  static const regularWhiteS12 = TextStyle(
-    fontSize: 12,
+  static TextStyle regularWhiteS12 = TextStyle(
+    fontSize: 12.sp,
     fontWeight: FontW.regular,
     color: AppColors.colorFFFFFFFF,
   );
 
-  static const mediumRedS14 = TextStyle(
-    fontSize: 14,
+  static TextStyle boldBlackS10 = TextStyle(
+    fontSize: 10.sp,
+    fontWeight: FontW.bold,
+    color: AppColors.colorFF000000,
+  );
+
+  static TextStyle mediumRedS14 = TextStyle(
+    fontSize: 14.sp,
     fontWeight: FontW.medium,
     color: AppColors.colorFF940000,
   );
 
-  static const mediumBlackkS14 = TextStyle(
-    fontSize: 14,
+  static TextStyle mediumBlackkS14 = TextStyle(
+    fontSize: 14.sp,
     fontWeight: FontW.medium,
     color: AppColors.colorFF000000,
   );
 
-  static const regularRedS13 = TextStyle(
-    fontSize: 13,
+  static TextStyle regularRedS13 = TextStyle(
+    fontSize: 13.sp,
     fontWeight: FontW.regular,
     color: AppColors.colorFFFF0000,
   );
 
-  static const mediumWhiteS36 = TextStyle(
+  static TextStyle mediumWhiteS36 = TextStyle(
     fontWeight: FontW.medium,
-    fontSize: 36,
+    fontSize: 36.sp,
     color: AppColors.colorFFFFFFFF,
   );
 
-  static const regularBlackS14 = TextStyle(
+  static TextStyle regularBlackS14 = TextStyle(
     fontWeight: FontW.regular,
-    fontSize: 14,
+    fontSize: 14.sp,
     color: AppColors.colorFF424242,
   );
 
-  static const regularRedS14 = TextStyle(
+  static TextStyle regularRedS14 = TextStyle(
     fontWeight: FontW.regular,
-    fontSize: 14,
+    fontSize: 14.sp,
     color: AppColors.colorFF940000,
   );
 
-  static const mediumBlackS42 = TextStyle(
+  static TextStyle mediumBlackS42 = TextStyle(
     fontWeight: FontW.medium,
-    fontSize: 36,
+    fontSize: 36.sp,
     height: 11 / 9,
     color: AppColors.colorFF000000,
   );
 
-  static const smallBlackS24 = TextStyle(
+  static TextStyle smallBlackS24 = TextStyle(
     fontWeight: FontW.small,
-    fontSize: 24,
+    fontSize: 24.sp,
     color: AppColors.colorFF000000,
   );
 
-  static const regularBlackS16 = TextStyle(
+  static TextStyle regularBlackS16 = TextStyle(
     fontWeight: FontW.regular,
-    fontSize: 16,
+    fontSize: 16.sp,
     color: AppColors.colorFF000000,
   );
 
-  static const regularRedS16 = TextStyle(
+  static TextStyle regularRedS16 = TextStyle(
     fontWeight: FontW.regular,
-    fontSize: 16,
+    fontSize: 16.sp,
     color: AppColors.colorFF9A0F0F,
   );
 
-  static const boldBlackS16 = TextStyle(
+  static TextStyle boldBlackS16 = TextStyle(
     color: AppColors.colorFF313131,
-    fontSize: 16,
+    fontSize: 16.sp,
     fontWeight: FontW.bold,
   );
 
-  static const mediumWhiteS16 = TextStyle(
+  static TextStyle mediumWhiteS16 = TextStyle(
     color: AppColors.colorFFFFFFFF,
-    fontSize: 16,
+    fontSize: 16.sp,
     fontWeight: FontW.medium,
   );
 
-  static const mediumMWhiteS24 = TextStyle(
+  static TextStyle mediumMWhiteS24 = TextStyle(
     color: AppColors.colorFFFFFFFF,
-    fontSize: 24,
+    fontSize: 24.sp,
     fontWeight: FontW.mediumM,
   );
 
-  static const regularWhiteS16 = TextStyle(
+  static TextStyle regularWhiteS16 = TextStyle(
     color: AppColors.colorFFFFFFFF,
-    fontSize: 16,
+    fontSize: 16.sp,
     fontWeight: FontWeight.w400,
   );
 
-  static const regularWhiteS18 = TextStyle(
+  static TextStyle regularWhiteS18 = TextStyle(
     color: AppColors.colorFFFFFFFF,
-    fontSize: 18,
+    fontSize: 18.sp,
     fontWeight: FontWeight.w400,
   );
 
-  static const boldWhiteS20 = TextStyle(
+  static TextStyle boldWhiteS20 = TextStyle(
     color: AppColors.colorFFFFFFFF,
-    fontSize: 20,
+    fontSize: 20.sp,
     fontWeight: FontW.bold,
   );
 
-  static const mediumMWhiteS18 = TextStyle(
+  static TextStyle mediumMWhiteS18 = TextStyle(
     color: AppColors.colorFFFFFFFF,
-    fontSize: 18,
+    fontSize: 18.sp,
     fontWeight: FontW.mediumM,
   );
 
-  static const boldWhiteS28 = TextStyle(
+  static TextStyle boldWhiteS28 = TextStyle(
     color: AppColors.colorFFFFFFFF,
-    fontSize: 28,
+    fontSize: 28.sp,
     fontWeight: FontW.bold,
   );
 
-  static const boldBlackS28 = TextStyle(
+  static TextStyle boldBlackS28 = TextStyle(
     color: AppColors.colorFF000000,
-    fontSize: 28,
+    fontSize: 28.sp,
     fontWeight: FontW.bold,
   );
 
-  static const boldWhiteS24 = TextStyle(
+  static TextStyle boldWhiteS24 = TextStyle(
     color: AppColors.colorFFFFFFFF,
-    fontSize: 24,
+    fontSize: 24.sp,
     fontWeight: FontW.bold,
   );
 
-  static const boldBlackS20 = TextStyle(
+  static TextStyle boldBlackS20 = TextStyle(
     color: AppColors.colorFF000000,
-    fontSize: 20,
+    fontSize: 20.sp,
     fontWeight: FontW.bold,
   );
 
   static final mediumBlackS14 = TextStyle(
     color: AppColors.colorFF313131.withOpacity(0.5),
-    fontSize: 14,
+    fontSize: 14.sp,
     fontWeight: FontW.medium,
   );
 
-  static const greyS14 = TextStyle(
+  static TextStyle greyS14 = TextStyle(
     color: AppColors.colorFF636363,
-    fontSize: 14,
+    fontSize: 14.sp,
   );
 
-  static const regularGrayS14 = TextStyle(
+  static TextStyle regularGrayS14 = TextStyle(
     color: AppColors.colorFF475467,
-    fontSize: 14,
+    fontSize: 14.sp,
     fontWeight: FontW.regular,
   );
 }

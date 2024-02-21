@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/show_message_internal.dart';
@@ -18,7 +19,7 @@ class _RatingPopupState extends State<RatingPopup> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
       shadowColor: AppColors.colorFF000000,
       backgroundColor: AppColors.colorFF375193,
       title: Text(
@@ -29,12 +30,12 @@ class _RatingPopupState extends State<RatingPopup> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
+          Text(
             "Bạn cảm thấy trải nghiệm với game như thế nào?",
             style: TextStyles.mediumWhiteS16,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(
@@ -68,7 +69,7 @@ class _RatingPopupState extends State<RatingPopup> {
                 backgroundColor: AppColors.transparent,
               ),
             ),
-            const SizedBox(width: 4),
+            SizedBox(width: 4.w),
             Expanded(
               child: RatingButton(
                 onPressed: () {
@@ -135,7 +136,7 @@ class RatingButton extends StatelessWidget {
         children: [
           leftWidget != null
               ? Padding(
-                  padding: const EdgeInsets.only(right: 12),
+                  padding: EdgeInsets.only(right: 12.w),
                   child: leftWidget,
                 )
               : const SizedBox.shrink(),

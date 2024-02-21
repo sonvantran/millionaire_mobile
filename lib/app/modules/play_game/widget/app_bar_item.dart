@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/values/app_colors.dart';
 
@@ -22,7 +23,7 @@ class AppBarItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: MediaQuery.of(context).size.width * 0.25,
-        margin: const EdgeInsets.only(top: 8),
+        margin: EdgeInsets.only(top: 8.h),
         padding: padding,
         decoration: BoxDecoration(
           gradient: const LinearGradient(

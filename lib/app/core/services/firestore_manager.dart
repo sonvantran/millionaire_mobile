@@ -39,6 +39,14 @@ class FirestoreManager {
     }
   }
 
+  Future<List<DocumentChange<Map<String, dynamic>>>> getStore() async {
+    QuerySnapshot<Map<String, dynamic>> qr =
+        await firestore.collection('a_store').get();
+
+    final re = qr.docChanges.toList();
+    return re;
+  }
+
   Future<List<User>> getRanking() async {
     DateTime currentDate = DateTime.now();
 
