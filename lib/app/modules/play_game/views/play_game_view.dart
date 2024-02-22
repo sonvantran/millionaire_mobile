@@ -154,7 +154,6 @@ class _PlayGamePageState extends State<PlayGamePage>
           listener: (context, state) {
             if (state.isShowInstruction) {
               _showRole(context, () {
-                Navigator.of(context).pop();
                 context.read<PlayGameCubit>().setShowInstruction(false);
               });
             } else {
@@ -928,7 +927,7 @@ Khi bạn dừng lại trong cuộc chơi, điểm số của bạn sẽ đượ
             ],
           ),
         ),
-        onTap: onTap,
+        onCall: onTap,
       );
     },
   );

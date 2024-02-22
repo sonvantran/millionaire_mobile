@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
@@ -106,114 +107,110 @@ class _PlayAgainViewState extends State<PlayAgainView>
                 top: 32,
               ),
               Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      // decoration: BoxDecoration(
-                      //     color: AppColors.colorFF375193,
-                      //     border: Border.all(
-                      //         color: AppColors.colorFF03456e, width: 2),
-                      //     borderRadius:
-                      //         const BorderRadius.all(Radius.circular(8))),
-                      child: Column(
-                        children: [
-                          Text(
-                            widget.caseResult == 0
-                                ? 'Đã hết thời gian rồi!'
-                                : widget.caseResult == 1
-                                    ? 'Rất tiếc!'
-                                    : 'Chúc mừng bạn!',
-                            style: TextStyles.mediumWhiteS36,
-                            textAlign: TextAlign.center,
-                          ),
-                          Text(
-                            'Bạn sẽ ra về với phần thưởng:',
-                            style: TextStyles.mediumMWhiteS24,
-                            textAlign: TextAlign.center,
-                          ),
-                          Text(
-                            '${widget.point} điểm',
-                            style: TextStyles.mediumMWhiteS24,
-                            textAlign: TextAlign.center,
-                          ),
-                          Text(
-                            'Chúc bạn may mắn lần sau!',
-                            style: TextStyles.mediumMWhiteS24,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 20),
-                          AdsButton(
-                            icon: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.1,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.1,
-                                child: Image.asset(
-                                  "assets/images/reward_icon.png",
-                                  color: AppColors.colorFF402744,
-                                )),
-                            onTap: () {
-                              if (_rewardedAd != null && isRewardAdReady) {
-                                _rewardedAd?.show(
-                                  onUserEarnedReward: (_, __) {
-                                    widget.cubit.updatePoint(score <= 100000000
-                                        ? widget.point
-                                        : "100.000.000");
-                                    ShowMessageInternal.showOverlay(
-                                        context, "Bạn đã thành công");
-                                    Future.delayed(
-                                      const Duration(seconds: 1),
-                                      () => context.router.pop(),
-                                    );
-                                  },
-                                );
-                              } else {
-                                ShowMessageInternal.showOverlay(
-                                    context, "Đã có lỗi xảy ra");
-                              }
-                            },
-                            text:
-                                "Xem Video Để ${score <= 100000000 ? 'X2 Điểm' : "+100.000.000 Đ"}",
-                          ),
-                          const SizedBox(height: 20),
-                          SecondButton(
-                            width: MediaQuery.of(context).size.width * 0.55,
-                            onTap: () => context.router.pop(),
-                            text: 'Menu',
-                          ),
-                          const SizedBox(height: 20),
-                          SecondButton(
-                            width: MediaQuery.of(context).size.width * 0.55,
-                            onTap: () async => await _share(context),
-                            text: 'Chia sẻ',
-                          ),
-                          const SizedBox(height: 20),
-                          SecondButton(
-                            width: MediaQuery.of(context).size.width * 0.55,
-                            onTap: () {
-                              AnalyticsManager.sendAnalyticsEvent(
-                                  'The_user_want_to_play_game_again');
-                              context.router.replace(PlayGameViewRoute(
-                                  mc: widget.mc,
-                                  isMute: widget.isMute,
-                                  user: widget.user,
-                                  cubit: widget.cubit));
-                            },
-                            text: 'Chơi lại',
-                          ),
-                        ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Column(
+                          children: [
+                            Text(
+                              widget.caseResult == 0
+                                  ? 'Đã hết thời gian rồi!'
+                                  : widget.caseResult == 1
+                                      ? 'Rất tiếc!'
+                                      : 'Chúc mừng bạn!',
+                              style: TextStyles.mediumWhiteS36,
+                              textAlign: TextAlign.center,
+                            ),
+                            Text(
+                              'Bạn sẽ ra về với phần thưởng:',
+                              style: TextStyles.mediumMWhiteS24,
+                              textAlign: TextAlign.center,
+                            ),
+                            Text(
+                              '${widget.point} điểm',
+                              style: TextStyles.mediumMWhiteS24,
+                              textAlign: TextAlign.center,
+                            ),
+                            Text(
+                              'Chúc bạn may mắn lần sau!',
+                              style: TextStyles.mediumMWhiteS24,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 20),
+                            AdsButton(
+                              icon: SizedBox(
+                                  width: MediaQuery.of(context).size.width * 0.1,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.1,
+                                  child: Image.asset(
+                                    "assets/images/reward_icon.png",
+                                    color: AppColors.colorFF402744,
+                                  )),
+                              onTap: () {
+                                if (_rewardedAd != null && isRewardAdReady) {
+                                  _rewardedAd?.show(
+                                    onUserEarnedReward: (_, __) {
+                                      widget.cubit.updatePoint(score <= 100000000
+                                          ? widget.point
+                                          : "100.000.000");
+                                      ShowMessageInternal.showOverlay(
+                                          context, "Bạn đã thành công");
+                                      Future.delayed(
+                                        const Duration(seconds: 1),
+                                        () => context.router.pop(),
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  ShowMessageInternal.showOverlay(
+                                      context, "Đã có lỗi xảy ra");
+                                }
+                              },
+                              text:
+                                  "Xem Video Để ${score <= 100000000 ? 'X2 Điểm' : "+100.000.000 Đ"}",
+                            ),
+                             SizedBox(height: 20.h),
+                            SecondButton(
+                              width: MediaQuery.of(context).size.width * 0.55,
+                              onTap: () => context.router.pop(),
+                              text: 'Menu',
+                            ),
+                             SizedBox(height: 20.h),
+                            SecondButton(
+                              width: MediaQuery.of(context).size.width * 0.55,
+                              onTap: () async => await _share(context),
+                              text: 'Chia sẻ',
+                            ),
+                            SizedBox(height: 20.h),
+                            SecondButton(
+                              width: MediaQuery.of(context).size.width * 0.55,
+                              onTap: () {
+                                AnalyticsManager.sendAnalyticsEvent(
+                                    'The_user_want_to_play_game_again');
+                                context.router.replace(PlayGameViewRoute(
+                                    mc: widget.mc,
+                                    isMute: widget.isMute,
+                                    user: widget.user,
+                                    cubit: widget.cubit));
+                              },
+                              text: 'Chơi lại',
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
+              const SkyBannerAnchorAdWidget(),
             ],
           ),
         ),
       ),
-      bottomSheet: const SkyBannerAnchorAdWidget(),
     );
   }
 

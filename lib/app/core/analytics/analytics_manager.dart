@@ -66,7 +66,7 @@ class AnalyticsManager {
   }
 }
 
-enum TrackingScreenViewType { login, playGame, playAgain, ranking }
+enum TrackingScreenViewType { login, playGame, playAgain, ranking, store }
 
 extension TrackingScreenViewTypeX on TrackingScreenViewType {
   String get screenName {
@@ -79,6 +79,8 @@ extension TrackingScreenViewTypeX on TrackingScreenViewType {
         return 'play_again';
       case TrackingScreenViewType.ranking:
         return 'ranking';
+      case TrackingScreenViewType.store:
+        return "store";
     }
   }
 
@@ -92,6 +94,8 @@ extension TrackingScreenViewTypeX on TrackingScreenViewType {
         return 'PlayAgainView';
       case TrackingScreenViewType.ranking:
         return 'RankingView';
+      case TrackingScreenViewType.store:
+        return 'StoreView';
     }
   }
 }

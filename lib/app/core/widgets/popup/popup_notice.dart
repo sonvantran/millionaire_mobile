@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:millionaire_mobile/app/core/extension/integer_extension.dart';
 import 'package:millionaire_mobile/app/modules/play_game/cubit/play_game_cubit.dart';
 import 'package:millionaire_mobile/app/modules/play_game/cubit/play_game_state.dart';
@@ -16,23 +17,27 @@ class PopupNotice extends StatelessWidget {
       this.titleWidget,
       this.isCountDown = true,
       this.closePopup = true,
-      this.onTap});
+      this.onTap,
+      this.onCall});
   final String? title;
   final Widget? titleWidget;
   final String textButton;
   final Widget? content;
   final bool isCountDown;
   final bool closePopup;
+  final VoidCallback? onCall;
   final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: onTap == null,
+      onPopInvoked: (didPop) {
+        if(didPop){
+          onCall?.call();
+        }
+      },
       child: AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
         shadowColor: AppColors.colorFF000000,
         backgroundColor: AppColors.colorFF375193,
         title: title != null

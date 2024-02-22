@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 import 'package:android_id/android_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,7 +5,6 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:millionaire_mobile/app/data/model/user.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -173,17 +171,9 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-  Future<String?> getId() async {
-    var deviceInfo = DeviceInfoPlugin();
-    if (Platform.isIOS) {
-      var iosDeviceInfo = await deviceInfo.iosInfo;
-      return iosDeviceInfo.identifierForVendor;
-    } else if (Platform.isAndroid) {
-      // var androidDeviceInfo = await deviceInfo.androidInfo;
-      const androidId = AndroidId();
-      return androidId.getId();
-    }
-    return null;
+  Future<String?> getId() {
+    const androidId = AndroidId();
+    return androidId.getId();
   }
 
   void stopAudio() {

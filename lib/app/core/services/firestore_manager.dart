@@ -98,7 +98,7 @@ class FirestoreManager {
   }
 
   Future<void> optimize() async {
-    DateTime endDate = DateTime(2024);
+    DateTime endDate = DateTime.now().subtract(const Duration(days: 45));
 
     QuerySnapshot qs = await firestore
         .collection("users")

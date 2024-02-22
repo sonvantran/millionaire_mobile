@@ -16,6 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$StoreState {
+  User? get user => throw _privateConstructorUsedError;
   Store? get store => throw _privateConstructorUsedError;
   String? get message => throw _privateConstructorUsedError;
   Error? get error => throw _privateConstructorUsedError;
@@ -31,7 +32,7 @@ abstract class $StoreStateCopyWith<$Res> {
           StoreState value, $Res Function(StoreState) then) =
       _$StoreStateCopyWithImpl<$Res, StoreState>;
   @useResult
-  $Res call({Store? store, String? message, Error? error});
+  $Res call({User? user, Store? store, String? message, Error? error});
 }
 
 /// @nodoc
@@ -47,11 +48,16 @@ class _$StoreStateCopyWithImpl<$Res, $Val extends StoreState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? user = freezed,
     Object? store = freezed,
     Object? message = freezed,
     Object? error = freezed,
   }) {
     return _then(_value.copyWith(
+      user: freezed == user
+          ? _value.user
+          : user // ignore: cast_nullable_to_non_nullable
+              as User?,
       store: freezed == store
           ? _value.store
           : store // ignore: cast_nullable_to_non_nullable
@@ -76,7 +82,7 @@ abstract class _$$_StoreStateCopyWith<$Res>
       __$$_StoreStateCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Store? store, String? message, Error? error});
+  $Res call({User? user, Store? store, String? message, Error? error});
 }
 
 /// @nodoc
@@ -90,11 +96,16 @@ class __$$_StoreStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? user = freezed,
     Object? store = freezed,
     Object? message = freezed,
     Object? error = freezed,
   }) {
     return _then(_$_StoreState(
+      user: freezed == user
+          ? _value.user
+          : user // ignore: cast_nullable_to_non_nullable
+              as User?,
       store: freezed == store
           ? _value.store
           : store // ignore: cast_nullable_to_non_nullable
@@ -114,8 +125,11 @@ class __$$_StoreStateCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_StoreState extends _StoreState {
-  const _$_StoreState({this.store, this.message, this.error}) : super._();
+  const _$_StoreState({this.user, this.store, this.message, this.error})
+      : super._();
 
+  @override
+  final User? user;
   @override
   final Store? store;
   @override
@@ -125,7 +139,7 @@ class _$_StoreState extends _StoreState {
 
   @override
   String toString() {
-    return 'StoreState(store: $store, message: $message, error: $error)';
+    return 'StoreState(user: $user, store: $store, message: $message, error: $error)';
   }
 
   @override
@@ -133,13 +147,14 @@ class _$_StoreState extends _StoreState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_StoreState &&
+            (identical(other.user, user) || other.user == user) &&
             (identical(other.store, store) || other.store == store) &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.error, error) || other.error == error));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, store, message, error);
+  int get hashCode => Object.hash(runtimeType, user, store, message, error);
 
   @JsonKey(ignore: true)
   @override
@@ -150,11 +165,14 @@ class _$_StoreState extends _StoreState {
 
 abstract class _StoreState extends StoreState {
   const factory _StoreState(
-      {final Store? store,
+      {final User? user,
+      final Store? store,
       final String? message,
       final Error? error}) = _$_StoreState;
   const _StoreState._() : super._();
 
+  @override
+  User? get user;
   @override
   Store? get store;
   @override

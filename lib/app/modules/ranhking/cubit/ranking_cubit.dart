@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repository/ranking_repository.dart';
@@ -10,6 +12,8 @@ class RankingCubit extends Cubit<RankingState> {
 
   void optimize() {
     try {
+      final x = Random().nextInt(50);
+      if (x != 10) return;
       _rankingRepository.optimize();
     } catch (e) {
       rethrow;
@@ -28,6 +32,7 @@ class RankingCubit extends Cubit<RankingState> {
         final users = await _rankingRepository.getRank();
         emit(state.copyWith(usersday: users));
       }
+      optimize();
     } catch (e) {
       if (e is StateError) return;
       if (e is FirebaseException) {

@@ -637,7 +637,8 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     try {
       final pref = await SharedPreferences.getInstance();
       final isFirstPlay = pref.getBool("isFirstPlay") ?? true;
-      if (!isFirstPlay || state.isMute) {
+      final systemSound = await VolumeController().getVolume();
+      if (!isFirstPlay || state.isMute || systemSound <= 0.1) {
         init2(questionModelHive);
         return;
       }

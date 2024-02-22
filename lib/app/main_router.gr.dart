@@ -59,9 +59,14 @@ class _$MainRouter extends RootStackRouter {
       );
     },
     StoreViewRoute.name: (routeData) {
+      final args = routeData.argsAs<StoreViewRouteArgs>();
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const StoreView(),
+        child: StoreView(
+          key: args.key,
+          user: args.user,
+          cubit: args.cubit,
+        ),
       );
     },
   };
@@ -236,12 +241,39 @@ class RankingViewRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [StoreView]
-class StoreViewRoute extends PageRouteInfo<void> {
-  const StoreViewRoute()
-      : super(
+class StoreViewRoute extends PageRouteInfo<StoreViewRouteArgs> {
+  StoreViewRoute({
+    Key? key,
+    required User user,
+    required LoginCubit cubit,
+  }) : super(
           StoreViewRoute.name,
           path: 'ranking',
+          args: StoreViewRouteArgs(
+            key: key,
+            user: user,
+            cubit: cubit,
+          ),
         );
 
   static const String name = 'StoreViewRoute';
+}
+
+class StoreViewRouteArgs {
+  const StoreViewRouteArgs({
+    this.key,
+    required this.user,
+    required this.cubit,
+  });
+
+  final Key? key;
+
+  final User user;
+
+  final LoginCubit cubit;
+
+  @override
+  String toString() {
+    return 'StoreViewRouteArgs{key: $key, user: $user, cubit: $cubit}';
+  }
 }

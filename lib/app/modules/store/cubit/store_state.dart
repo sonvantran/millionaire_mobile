@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../data/model/item_model.dart';
+import '../../../data/model/user.dart';
 
 part 'store_state.freezed.dart';
 
@@ -9,6 +10,7 @@ class StoreState with _$StoreState {
   const StoreState._();
 
   const factory StoreState({
+    User? user,
     Store? store,
     String? message,
     Error? error,

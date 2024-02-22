@@ -25,7 +25,6 @@ dependencies:
   json_serializable: 6.6.0
   share: 2.0.4
   audioplayers: 5.1.0
-  device_info_plus: 9.0.3
   fl_chart: 0.63.0
   google_mobile_ads: 4.0.0
   path_provider: 2.1.0
@@ -82,3 +81,7 @@ flutter:
     - assets/audios/gsx/
     - assets/audios/pd/
     - assets/Question.sqlite
+  fonts:
+    - family: SVN
+      fonts:
+        - asset: assets/font/SVN-Merge Bold.otf

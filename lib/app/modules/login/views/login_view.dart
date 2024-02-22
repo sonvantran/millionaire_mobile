@@ -183,9 +183,9 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                     const SizedBox(height: 4),
                     Container(
                       alignment: Alignment.centerRight,
-                      width: MediaQuery.of(context).size.width * 0.9,
+                      padding: EdgeInsets.only(right: 12.w),
                       child: ScoreUser(text: state.user?.point ?? 0),
-                    )
+                    ),
                   ],
                 ),
                 Expanded(
@@ -235,27 +235,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                           },
                           text: !state.hasDataLocal ? "Bắt đầu" : "Tiếp tục",
                         ),
-                        Stack(
-                          children: [
-                            SecondButton(
-                              width: MediaQuery.of(context).size.width * 0.55,
-                              text: "Cửa hàng",
-                              onTap: () {
-                                AnalyticsManager.sendAnalyticsEvent(
-                                    'The_user_want_to_purchase');
-                                context.pushRoute(const StoreViewRoute());
-                              },
-                            ),
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              child: CircleAvatar(
-                                radius: 8.r,
-                                backgroundColor: AppColors.colorFFB20000,
-                              ),
-                            )
-                          ],
-                        ),
                         if (state.hasDataLocal)
                           SecondButton(
                             width: MediaQuery.of(context).size.width * 0.55,
@@ -278,6 +257,33 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                               ));
                             },
                           ),
+                        Stack(
+                          children: [
+                            SecondButton(
+                              width: MediaQuery.of(context).size.width * 0.55,
+                              text: "Cửa hàng",
+                              onTap: () {
+                                if (state.user == null) {
+                                  ShowMessageInternal.showOverlay(
+                                      context, "Vui lòng thử lại sau!");
+                                  return;
+                                }
+                                AnalyticsManager.sendAnalyticsEvent(
+                                    'The_user_want_to_purchase');
+                                context.pushRoute(StoreViewRoute(
+                                    cubit: cubit, user: state.user!));
+                              },
+                            ),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: CircleAvatar(
+                                radius: 8.r,
+                                backgroundColor: AppColors.colorFFB20000,
+                              ),
+                            )
+                          ],
+                        ),
                         SecondButton(
                           width: MediaQuery.of(context).size.width * 0.55,
                           onTap: () async {
@@ -339,11 +345,10 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SkyBannerAnchorAdWidget(),
               ],
             ),
           ),
-          bottomSheet: const SkyBannerAnchorAdWidget(),
         );
       }),
     );
@@ -449,40 +454,42 @@ Người chơi được cung cấp bốn lựa chọn trợ giúp: "50:50", đi�
           isCountDown: false,
           textButton: 'ĐÓNG',
           title: "LUẬT CHƠI",
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                text,
-                style: TextStyles.regularWhiteS12,
-                textAlign: TextAlign.justify,
-              ),
-              SizedBox(height: 12.h),
-              const RoleItem(
-                text: '🎯Loại 2 phương án sai',
-                textIcon: '50 : 50',
-              ),
-              const RoleItem(
-                text: '📞Gọi điện cho người thân',
-                iconData: Icons.phone_in_talk_outlined,
-              ),
-              const RoleItem(
-                text: '🙋Tổ tư vấn tại chỗ',
-                isAsset: true,
-              ),
-              const RoleItem(
-                text: '🧠Trợ giúp khán giả trong trường quay',
-                iconData: Icons.bar_chart_outlined,
-              ),
-              const RoleItem(
-                text: '🤝Hỏi ý kiến bạn đồng hành',
-                iconData: Icons.person_add,
-              ),
-              const RoleItem(
-                text: '💡Hỏi ý kiến những nhà thông thái',
-                isAsset: false,
-              ),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  text,
+                  style: TextStyles.regularWhiteS12,
+                  textAlign: TextAlign.justify,
+                ),
+                SizedBox(height: 12.h),
+                const RoleItem(
+                  text: '🎯Loại 2 phương án sai',
+                  textIcon: '50 : 50',
+                ),
+                const RoleItem(
+                  text: '📞Gọi điện cho người thân',
+                  iconData: Icons.phone_in_talk_outlined,
+                ),
+                const RoleItem(
+                  text: '🙋Tổ tư vấn tại chỗ',
+                  isAsset: true,
+                ),
+                const RoleItem(
+                  text: '🧠Trợ giúp khán giả trong trường quay',
+                  iconData: Icons.bar_chart_outlined,
+                ),
+                const RoleItem(
+                  text: '🤝Hỏi ý kiến bạn đồng hành',
+                  iconData: Icons.person_add,
+                ),
+                const RoleItem(
+                  text: '💡Hỏi ý kiến những nhà thông thái',
+                  isAsset: false,
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -501,49 +508,46 @@ Người chơi được cung cấp bốn lựa chọn trợ giúp: "50:50", đi�
           isCountDown: false,
           textButton: 'ĐÓNG',
           title: "ĐIỀU KHOẢN",
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                width: MediaQuery.of(context).size.width * 0.9,
-                // decoration: BoxDecoration(
-                //   color: AppColors.colorFF375193,
-                //   border:
-                //       Border.all(color: AppColors.colorFF03456e, width: 2),
-                //   borderRadius: const BorderRadius.all(Radius.circular(24)),
-                // ),
-                child: Text(
-                  content,
-                  style: TextStyles.regularWhiteS18,
-                  textAlign: TextAlign.justify,
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  child: Text(
+                    content,
+                    style: TextStyles.regularWhiteS18,
+                    textAlign: TextAlign.justify,
+                  ),
                 ),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.colorFF77dbe5, width: 2),
-                  borderRadius: const BorderRadius.all(Radius.circular(8)),
-                  color: AppColors.colorFF03456e,
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    border:
+                        Border.all(color: AppColors.colorFF77dbe5, width: 2),
+                    borderRadius: const BorderRadius.all(Radius.circular(8)),
+                    color: AppColors.colorFF03456e,
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Được phát triển bởi:',
+                        style: TextStyles.boldWhiteS20,
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        'PCT Innovations\nthiepcong12@gmail.com',
+                        style: TextStyles.mediumWhiteS14,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    Text(
-                      'Được phát triển bởi:',
-                      style: TextStyles.boldWhiteS20,
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      'PCT Innovations\nthiepcong12@gmail.com',
-                      style: TextStyles.mediumWhiteS14,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

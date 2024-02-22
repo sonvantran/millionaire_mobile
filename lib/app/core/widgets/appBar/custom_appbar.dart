@@ -1,5 +1,6 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../values/app_colors.dart';
 import '../../values/text_styles.dart';
 
@@ -22,7 +23,7 @@ class CustomAppBar extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width * 0.9,
       margin: EdgeInsets.only(top: top ?? 0, bottom: bottom ?? 0),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding:  EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       decoration: BoxDecoration(
           border: Border.all(color: AppColors.colorFF77dbe5),
           color: AppColors.colorFF2a0e5c,
