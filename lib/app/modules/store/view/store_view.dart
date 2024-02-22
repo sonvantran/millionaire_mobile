@@ -29,7 +29,7 @@ class StoreView extends StatefulWidget {
 
 class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
   @override
-  TrackingScreenViewType get route => TrackingScreenViewType.login;
+  TrackingScreenViewType get route => TrackingScreenViewType.store;
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
