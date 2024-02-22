@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:sky_ads/banner_anchor_ad_widget.dart';
+import 'package:sky_ads/native_ad_widget.dart';
 
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
@@ -111,7 +111,7 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
                                 ),
                               ),
                       ),
-                const SkyBannerAnchorAdWidget()
+                const SkyNativeAdWidget(),
               ],
             ),
           ),
