@@ -1,7 +1,7 @@
 name: millionaire_mobile
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.0.14+31
+version: 1.0.14+32
 # flutter pub run build_runner build --delete-conflicting-outputs
 # flutter build appbundle --flavor prod lib/main_prod.dart --release./gradlew build
 environment:
