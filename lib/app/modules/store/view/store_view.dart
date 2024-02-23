@@ -33,10 +33,8 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => StoreCubit(
-        context.read<StoreRepository>(),
-        widget.user,
-      )..init(),
+      create: (_) =>
+          StoreCubit(context.read<StoreRepository>())..init(widget.user),
       child: _buildPage(context),
     );
   }

@@ -9,12 +9,11 @@ import '../repository/store_repository.dart';
 import 'store_state.dart';
 
 class StoreCubit extends Cubit<StoreState> {
-  StoreCubit(this._repo, this.user) : super(const StoreState());
+  StoreCubit(this._repo) : super(const StoreState());
 
   final StoreRepository _repo;
-  final User user;
 
-  void init() async {
+  void init(User user) async {
     try {
       emit(state.copyWith(user: user));
       final li = StoreBox.getStore();
@@ -125,7 +124,8 @@ class StoreCubit extends Cubit<StoreState> {
   void updateUser(int price) async {
     try {
       emit(state.copyWith(message: null));
-      final userState = user;
+      final userState = state.user;
+      if (userState == null) return;
       final x = User(
         name: userState.name,
         point: userState.point - price,
