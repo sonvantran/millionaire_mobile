@@ -26,7 +26,8 @@ class StoreCubit extends Cubit<StoreState> {
         getStore();
         return;
       }
-      emit(state.copyWith(store: li[0]));
+      final changedStore = await resolve(li[0].store);
+      emit(state.copyWith(store: Store(store: changedStore)));
     } catch (e) {
       rethrow;
     }
@@ -103,6 +104,8 @@ class StoreCubit extends Cubit<StoreState> {
     final changedStore = await resolve(state.store!.store);
     emit(state.copyWith(store: Store(store: changedStore)));
     updateUser(int.parse(item.price));
+    await StoreBox.deleteAll();
+    StoreBox.setStore(Store(store: changedStore));
   }
 
   Future<List<List<ItemModel>>> resolve(List<List<ItemModel>> list) async {

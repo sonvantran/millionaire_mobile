@@ -100,7 +100,7 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
                                 itemBuilder: (context, index) => Category(
                                   label: labels[index],
                                   items: store[index],
-                                  user: widget.user,
+                                  user: state.user ?? widget.user,
                                 ),
                               )
                             : Center(
