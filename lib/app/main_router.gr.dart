@@ -69,6 +69,12 @@ class _$MainRouter extends RootStackRouter {
         ),
       );
     },
+    NoInternetPageRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const NoInternetPage(),
+      );
+    },
   };
 
   @override
@@ -98,6 +104,10 @@ class _$MainRouter extends RootStackRouter {
         RouteConfig(
           StoreViewRoute.name,
           path: 'ranking',
+        ),
+        RouteConfig(
+          NoInternetPageRoute.name,
+          path: 'no_internet',
         ),
       ];
 }
@@ -276,4 +286,16 @@ class StoreViewRouteArgs {
   String toString() {
     return 'StoreViewRouteArgs{key: $key, user: $user, cubit: $cubit}';
   }
+}
+
+/// generated route for
+/// [NoInternetPage]
+class NoInternetPageRoute extends PageRouteInfo<void> {
+  const NoInternetPageRoute()
+      : super(
+          NoInternetPageRoute.name,
+          path: 'no_internet',
+        );
+
+  static const String name = 'NoInternetPageRoute';
 }

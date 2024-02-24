@@ -1,7 +1,7 @@
 name: millionaire_mobile
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.0.14+32
+version: 1.0.15+33
 # flutter pub run build_runner build --delete-conflicting-outputs
 # flutter build appbundle --flavor prod lib/main_prod.dart --release./gradlew build
 environment:
@@ -50,6 +50,7 @@ dependencies:
   firebase_remote_config: 4.2.6
   flutter_screenutil: 5.9.0
   cached_network_image: 3.3.1
+  firebase_crashlytics: 3.3.6
 
 dev_dependencies:
   flutter_test:

@@ -19,6 +19,7 @@ class LoginCubit extends Cubit<LoginState> {
   LoginCubit(this._loginRepository) : super(const LoginState());
 
   final LoginRepository _loginRepository;
+  bool isBG = false;
 
   void setIsMute(bool isMute) {
     emit(state.copyWith(isMute: isMute));
@@ -36,7 +37,7 @@ class LoginCubit extends Cubit<LoginState> {
     final prefs = await SharedPreferences.getInstance();
     prefs.setInt("mc", chooseMC);
     emit(state.copyWith(chooseMC: chooseMC));
-    // playAudioStartMc(chooseMC);
+    playAudioStartMc(chooseMC);
   }
 
   void setHasDataLocal() {
@@ -83,7 +84,7 @@ class LoginCubit extends Cubit<LoginState> {
   void login() async {
     try {
       emit(state.copyWith(player: AudioPlayer(), player2: AudioPlayer()));
-      playAudio();
+      playBG();
       setHasDataLocal();
       // if (accessToken != null) return;
       final deviceId = await getId();
@@ -97,7 +98,6 @@ class LoginCubit extends Cubit<LoginState> {
       ));
       final validateName = await _loginRepository.getBad();
       emit(state.copyWith(validateName: validateName));
-      // print(response);
     } catch (e) {
       if (e is BadRequestException) {
         emit(state.copyWith(hasUser: false));
@@ -176,12 +176,12 @@ class LoginCubit extends Cubit<LoginState> {
     return androidId.getId();
   }
 
-  void stopAudio() {
+  Future<void> stopAudio() async {
     try {
       final player = state.player;
-      if (player != null) player.stop();
+      if (player != null) await player.stop();
       final player2 = state.player2;
-      if (player2 != null) player2.stop();
+      if (player2 != null) await player2.stop();
     } catch (e) {
       if (e is StateError) {
         return;
@@ -190,16 +190,40 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
+  void playBG() async {
+    try {
+      // await player.play(AssetSource(soundPath('bg15')));
+      final player = state.player;
+      if (player != null && !state.isMute) {
+        await stopAudio();
+        final source = AssetSource(soundPath(SoundManager.bgGame));
+        await player.setSource(source);
+        await player.setReleaseMode(ReleaseMode.loop);
+        await player.play(source);
+        isBG = true;
+      }
+    } catch (e) {
+      if (e is StateError) {
+        stopAudio();
+        return;
+      }
+      if (e is PlatformException) return;
+      rethrow;
+    }
+  }
+
   void playAudio() async {
     try {
       // await player.play(AssetSource(soundPath('bg15')));
       final player = state.player;
-      if (player != null) {
+      if (player != null && !state.isMute) {
+        await stopAudio();
         final source =
             AssetSource(soundPath(SoundManager.bg[Random().nextInt(3)]));
         await player.setSource(source);
         await player.setReleaseMode(ReleaseMode.loop);
         await player.play(source);
+        isBG = false;
       }
     } catch (e) {
       if (e is StateError) {
@@ -218,9 +242,8 @@ class LoginCubit extends Cubit<LoginState> {
   Future<void> playAudioo(String name) async {
     try {
       final player = state.player2;
-      if (player != null) {
-        final assetSource =
-            soundPath(state.isMute ? SoundManager.muteSound : name);
+      if (player != null && !state.isMute) {
+        final assetSource = soundPath(name);
         final source = AssetSource(assetSource);
         await player.play(source);
         await player.onPlayerComplete.first;

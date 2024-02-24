@@ -55,6 +55,11 @@ class PlayGameView extends StatefulWidget {
 class _PlayGameViewState extends State<PlayGameView> with RouteAwareAnalytics {
   @override
   TrackingScreenViewType get route => TrackingScreenViewType.playGame;
+  @override
+  void initState() {
+    widget.cubit.playAudio();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -822,7 +827,7 @@ class _PlayGamePageState extends State<PlayGamePage>
         onAdLoaded: (ad) {
           ad.fullScreenContentCallback = FullScreenContentCallback(
             onAdDismissedFullScreenContent: (ad) {
-              // _moveToHome();
+              widget.cubit.playBG();
               debugPrint("dsadasdsassss");
             },
             onAdFailedToShowFullScreenContent:

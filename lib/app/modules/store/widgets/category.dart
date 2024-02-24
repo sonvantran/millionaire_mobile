@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:sky_ads/native_ad_widget.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../data/model/item_model.dart';
@@ -24,6 +27,7 @@ class Category extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final randomIndex = Random().nextInt(items.length);
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       padding: EdgeInsets.symmetric(horizontal: 8.w),
@@ -50,77 +54,96 @@ class Category extends StatelessWidget {
               itemBuilder: (context, index) {
                 final item = items[index];
                 final text = "${formatCurrency(item.price)} đ";
-                return InkWell(
-                  onTap: () => showBuyPopup(
-                    context,
-                    item,
-                    user.point >= int.parse(item.price),
-                    onError: () => context.read<StoreCubit>().call(),
-                    onBuy: () => context.read<StoreCubit>().buy(item),
-                  ),
-                  child: Container(
-                    width: 110.w,
-                    padding: EdgeInsets.all(8.r),
-                    margin: EdgeInsets.symmetric(horizontal: 4.w),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                      color: item.isBuy
-                          ? AppColors.colorFF72F672
-                          : AppColors.colorFFF5F5F5,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Stack(
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    InkWell(
+                      onTap: () => showBuyPopup(
+                        context,
+                        item,
+                        user.point >= int.parse(item.price),
+                        onError: () => context.read<StoreCubit>().call(),
+                        onBuy: () => context.read<StoreCubit>().buy(item),
+                      ),
+                      child: Container(
+                        width: 110.w,
+                        padding: EdgeInsets.all(8.r),
+                        margin: EdgeInsets.symmetric(horizontal: 4.w),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                          color: item.isBuy
+                              ? AppColors.colorFF72F672
+                              : AppColors.colorFFF5F5F5,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            ClipRRect(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8.r)),
-                              child: CachedNetworkImage(
-                                color: AppColors.colorFF344054.withOpacity(0.5),
-                                colorBlendMode: BlendMode.darken,
-                                width: 100.w,
-                                height: 100.h,
-                                fit: BoxFit.cover,
-                                imageUrl: item.image,
-                                placeholder: (context, url) =>
-                                    SpinKitFadingCircle(
-                                  color: AppColors.colorFF57B9FB,
-                                  size: 32.sp,
-                                ),
-                                errorWidget: (context, url, error) {
-                                  context.read<StoreCubit>().call();
-                                  return const Icon(Icons.error);
-                                },
-                              ),
-                            ),
-                            item.isBuy
-                                ? const SizedBox.shrink()
-                                : Positioned.fill(
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Transform.rotate(
-                                        angle: -0.6,
-                                        child: Text(
-                                          text,
-                                          style: TextStyles.score.copyWith(
-                                              fontSize: (25 - text.length).sp),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
+                            Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(8.r)),
+                                  child: CachedNetworkImage(
+                                    color: AppColors.colorFF344054
+                                        .withOpacity(0.5),
+                                    colorBlendMode: BlendMode.darken,
+                                    width: 100.w,
+                                    height: 100.h,
+                                    fit: BoxFit.cover,
+                                    imageUrl: item.image,
+                                    placeholder: (context, url) =>
+                                        SpinKitFadingCircle(
+                                      color: AppColors.colorFF57B9FB,
+                                      size: 32.sp,
                                     ),
-                                  )
+                                    errorWidget: (context, url, error) {
+                                      context.read<StoreCubit>().call();
+                                      return const Icon(Icons.error);
+                                    },
+                                  ),
+                                ),
+                                item.isBuy
+                                    ? const SizedBox.shrink()
+                                    : Positioned.fill(
+                                        child: Align(
+                                          alignment: Alignment.center,
+                                          child: Transform.rotate(
+                                            angle: -0.6,
+                                            child: Text(
+                                              text,
+                                              style: TextStyles.score.copyWith(
+                                                  fontSize:
+                                                      (25 - text.length).sp),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                              ],
+                            ),
+                            Text(
+                              item.name,
+                              style: TextStyles.boldBlackS10,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
                           ],
                         ),
-                        Text(
-                          item.name,
-                          style: TextStyles.boldBlackS10,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                    if (index == randomIndex)
+                      Container(
+                        width: 160.w,
+                        height: 160.h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 8.h),
+                        margin: EdgeInsets.symmetric(horizontal: 4.w),
+                        child: const SkyNativeAdWidget(),
+                      ),
+                  ],
                 );
               },
             ),

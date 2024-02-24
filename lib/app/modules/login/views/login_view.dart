@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/services/question_box.dart';
@@ -67,8 +68,49 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     // createBannerAd();
+    // initConnectionListen();
     super.initState();
   }
+
+  // bool _isConnected = false;
+  // void initConnectionListen() {
+  //   Connectivity().onConnectivityChanged.listen((result) {
+  //     if (result != ConnectivityResult.mobile &&
+  //         result != ConnectivityResult.wifi &&
+  //         result != ConnectivityResult.ethernet) {
+  //       if (!_isConnected) return;
+  //       _isConnected = false;
+  //       if (!context.mounted) return;
+  //       context.pushRoute(const NoInternetPageRoute());
+  //     } else {
+  //       if (_isConnected) return;
+  //       _isConnected = true;
+  //       if (!context.mounted) return;
+  //       context.router.pushAndPopUntil(
+  //         const LoginViewRoute(),
+  //         predicate: (_) => false,
+  //       );
+  //     }
+  //   });
+  //   _checkInternetConnection();
+  // }
+
+  // Future<void> _checkInternetConnection() async {
+  //   var result = await Connectivity().checkConnectivity();
+  //   if (result != ConnectivityResult.mobile &&
+  //       result != ConnectivityResult.wifi &&
+  //       result != ConnectivityResult.ethernet) {
+  //     if (!_isConnected) return;
+  //     setState(() {
+  //       _isConnected = false;
+  //     });
+  //   } else {
+  //     if (_isConnected) return;
+  //     setState(() {
+  //       _isConnected = true;
+  //     });
+  //   }
+  // }
 
   bool isAppHiden = false;
   @override
@@ -98,6 +140,9 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    // return !_isConnected
+    //     ? const NoInternetPage()
+    //     :
     return MultiBlocListener(
       listeners: [
         BlocListener<LoginCubit, LoginState>(
@@ -119,11 +164,15 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         ),
         BlocListener<LoginCubit, LoginState>(
           listenWhen: (previous, current) => previous.isMute != current.isMute,
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state.isMute) {
               context.read<LoginCubit>().stopAudio();
             } else {
-              context.read<LoginCubit>().playAudio();
+              await Future.delayed(const Duration(milliseconds: 500));
+              if (!context.mounted) return;
+              context.read<LoginCubit>().isBG
+                  ? context.read<LoginCubit>().playBG()
+                  : context.read<LoginCubit>().playAudio();
             }
           },
         ),
@@ -192,10 +241,21 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Image.asset(
-                          'assets/images/ic_app.png',
-                          width: 160.w,
-                          height: 160.h,
+                        Stack(
+                          children: [
+                            SpinKitRipple(
+                              color: AppColors.colorFFFFFFFF,
+                              size: 160.r,
+                            ),
+                            Align(
+                              alignment: Alignment.center,
+                              child: Image.asset(
+                                'assets/images/ic_app.png',
+                                width: 160.w,
+                                height: 160.h,
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(height: 16.h),
                         SecondButton(
@@ -209,7 +269,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                                 ShowMessageInternal.showOverlay(context,
                                     "Hệ thống tạm thời không tính điểm");
                               }
-                              context.pushRoute(PlayGameViewRoute(
+                              await context.pushRoute(PlayGameViewRoute(
                                 isMute: state.isMute,
                                 mc: state.chooseMC,
                                 user: state.user,

@@ -384,7 +384,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
 
   Future<void> init2(QuestionModelHive? questionModelHive) async {
     try {
-      final duration = await getDuration(SoundManager.startGame(mc));
+      final duration = await getDuration(SoundManager.startGame2(mc));
       emit(state.copyWith(startCounter: duration!.inSeconds + 1));
       Timer.periodic(const Duration(seconds: 1), (timer) {
         try {
@@ -399,7 +399,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
           rethrow;
         }
       });
-      await playAudio(SoundManager.startGame(mc));
+      await playAudio(SoundManager.startGame2(mc));
       questionModelHive == null
           ? await startFirstQuestion()
           : await startQuestion(questionModelHive.currentLevel);

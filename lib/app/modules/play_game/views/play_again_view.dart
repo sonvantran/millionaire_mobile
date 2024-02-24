@@ -59,7 +59,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
   @override
   void initState() {
     _loadRewardedAd();
-    // createBannerAd();
+    widget.cubit.playBG();
     super.initState();
   }
 
@@ -143,7 +143,8 @@ class _PlayAgainViewState extends State<PlayAgainView>
                             const SizedBox(height: 20),
                             AdsButton(
                               icon: SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.1,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
                                   height:
                                       MediaQuery.of(context).size.height * 0.1,
                                   child: Image.asset(
@@ -154,9 +155,10 @@ class _PlayAgainViewState extends State<PlayAgainView>
                                 if (_rewardedAd != null && isRewardAdReady) {
                                   _rewardedAd?.show(
                                     onUserEarnedReward: (_, __) {
-                                      widget.cubit.updatePoint(score <= 100000000
-                                          ? widget.point
-                                          : "100.000.000");
+                                      widget.cubit.updatePoint(
+                                          score <= 100000000
+                                              ? widget.point
+                                              : "100.000.000");
                                       ShowMessageInternal.showOverlay(
                                           context, "Bạn đã thành công");
                                       Future.delayed(
@@ -173,13 +175,13 @@ class _PlayAgainViewState extends State<PlayAgainView>
                               text:
                                   "Xem Video Để ${score <= 100000000 ? 'X2 Điểm' : "+100.000.000 Đ"}",
                             ),
-                             SizedBox(height: 20.h),
+                            SizedBox(height: 20.h),
                             SecondButton(
                               width: MediaQuery.of(context).size.width * 0.55,
                               onTap: () => context.router.pop(),
                               text: 'Menu',
                             ),
-                             SizedBox(height: 20.h),
+                            SizedBox(height: 20.h),
                             SecondButton(
                               width: MediaQuery.of(context).size.width * 0.55,
                               onTap: () async => await _share(context),

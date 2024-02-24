@@ -1,4 +1,8 @@
+import 'dart:developer';
+import 'dart:ui';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -66,7 +70,12 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  _initFirebaseRemoteConfig();
+  try {
+    await _initFirebaseCrashlytic();
+    await _initFirebaseRemoteConfig();
+  } catch (e) {
+    log(e.toString());
+  }
 
   runApp(const MyApp());
 }
@@ -84,4 +93,16 @@ Future<void> _initFirebaseRemoteConfig() async {
   });
 
   await remoteConfig.fetchAndActivate();
+}
+
+Future<void> _initFirebaseCrashlytic() async {
+  // Pass all uncaught "fatal" errors from the framework to Crashlytics
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
+  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 }

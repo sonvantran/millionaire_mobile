@@ -1,6 +1,7 @@
 import 'package:millionaire_mobile/app/core/extension/string_extention.dart';
 
 class SoundManager {
+  static String bgGame = 'bg';
   static List<String> bg = [
     'bgmusic_level1',
     'bgmusic_level2',
@@ -24,6 +25,8 @@ class SoundManager {
         '${intToMc(i)}/answer_now2',
         '${intToMc(i)}/answer_now3',
       ];
+
+  static String startGame2(int i) => '${intToMc(i)}/gofind_quick';
 
   static String startGame(int i) => '${intToMc(i)}/batdauvaogame';
 
