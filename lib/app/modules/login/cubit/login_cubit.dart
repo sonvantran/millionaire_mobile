@@ -1,5 +1,9 @@
+import 'dart:io';
 import 'dart:math';
 import 'package:android_id/android_id.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,12 +29,30 @@ class LoginCubit extends Cubit<LoginState> {
     emit(state.copyWith(isMute: isMute));
   }
 
+  void initQuestion() async {
+    try {
+      Directory documentsDirectory = await getApplicationDocumentsDirectory();
+      String path = join(documentsDirectory.path, 'question.db');
+
+      if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound ||
+          File(path).lengthSync() == 0) {
+        Reference ref = FirebaseStorage.instance.ref("Question.sqlite");
+        await ref.writeToFile(File(path));
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   void setIsMuteCheckAgain(bool isMuteCheckAgain) {
     emit(state.copyWith(isMuteCheckAgain: isMuteCheckAgain));
   }
 
-  void setUser(User user) {
+  void setUser(User user) async {
     emit(state.copyWith(user: user));
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt("point", user.point);
+    await prefs.setString("userName", user.name);
   }
 
   Future<void> setChooseMC(int chooseMC) async {
@@ -86,7 +108,20 @@ class LoginCubit extends Cubit<LoginState> {
       emit(state.copyWith(player: AudioPlayer(), player2: AudioPlayer()));
       playBG();
       setHasDataLocal();
-      // if (accessToken != null) return;
+      initQuestion();
+      final localUser = await getUserFromLocal();
+      if (localUser != null) {
+        final prefs = await SharedPreferences.getInstance();
+        final validateName = await getBadWordsLocal();
+        final mccc = prefs.getInt("mc");
+        emit(state.copyWith(
+          hasUser: true,
+          user: localUser,
+          chooseMC: mccc ?? 0,
+          validateName: validateName,
+        ));
+        return;
+      }
       final deviceId = await getId();
       final user = await _loginRepository.getUser(deviceId: deviceId ?? '');
       final prefs = await SharedPreferences.getInstance();
@@ -96,7 +131,9 @@ class LoginCubit extends Cubit<LoginState> {
         user: user,
         chooseMC: mccc ?? 0,
       ));
-      final validateName = await _loginRepository.getBad();
+      await prefs.setInt("point", user.point);
+      await prefs.setString("userName", user.name);
+      final validateName = await getBadWordsLocal();
       emit(state.copyWith(validateName: validateName));
     } catch (e) {
       if (e is BadRequestException) {
@@ -112,6 +149,26 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
+  Future<User?> getUserFromLocal() async {
+    final pre = await SharedPreferences.getInstance();
+    final deviceId = await getId();
+    final name = pre.getString("userName");
+    final point = pre.getInt("point");
+    if (name == null || point == null) return null;
+    return User(name: name, point: point, deviceId: deviceId);
+  }
+
+  Future<String> getBadWordsLocal() async {
+    final pre = await SharedPreferences.getInstance();
+    final badWords = pre.getString("badWords");
+    if (badWords == null) {
+      final validateName = await _loginRepository.getBad();
+      await pre.setString("badWords", validateName);
+      return validateName;
+    }
+    return badWords;
+  }
+
   void updateUser(String username) async {
     try {
       emit(state.copyWith(message: null));
@@ -125,6 +182,8 @@ class LoginCubit extends Cubit<LoginState> {
           playDate: userState?.playDate ?? Timestamp.now());
       emit(state.copyWith(hasUser: true, user: x));
       await _loginRepository.updateUser(user: x);
+      final pre = await SharedPreferences.getInstance();
+      await pre.setString("userName", username);
     } catch (e) {
       if (e is BadRequestException) {
         emit(state.copyWith(hasUser: false, message: e.message));
@@ -143,6 +202,9 @@ class LoginCubit extends Cubit<LoginState> {
       if (deviceId != null) {
         String message = await _loginRepository.deleteUser(deviceId: deviceId);
         emit(state.copyWith(hasUser: false, user: null, message: message));
+        final pre = await SharedPreferences.getInstance();
+        await pre.remove("userName");
+        await pre.remove("point");
       }
     } catch (e) {
       if (e is BadRequestException) {
@@ -166,6 +228,8 @@ class LoginCubit extends Cubit<LoginState> {
             playDate: Timestamp.now());
         emit(state.copyWith(user: x));
         await _loginRepository.updateUser(user: x);
+        final pre = await SharedPreferences.getInstance();
+        await pre.setInt("point", x.point);
         AnalyticsManager.postScore(score, null);
         clearQuestionLocal();
       }
@@ -200,7 +264,6 @@ class LoginCubit extends Cubit<LoginState> {
 
   void playBG() async {
     try {
-      // await player.play(AssetSource(soundPath('bg15')));
       final player = state.player;
       if (player != null && !state.isMute) {
         await stopAudio();
@@ -222,7 +285,6 @@ class LoginCubit extends Cubit<LoginState> {
 
   void playAudio() async {
     try {
-      // await player.play(AssetSource(soundPath('bg15')));
       final player = state.player;
       if (player != null && !state.isMute) {
         await stopAudio();
@@ -267,4 +329,16 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   String soundPath(String name) => 'audios/$name.mp3';
+}
+
+Future<bool> checkHasQuestion() async {
+  try {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, 'question.db');
+
+    return !(FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound ||
+        File(path).lengthSync() == 0);
+  } catch (e) {
+    rethrow;
+  }
 }

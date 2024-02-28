@@ -14,7 +14,7 @@ class MessagingService {
 
   final _androidChannel = const AndroidNotificationChannel(
     "high_importance_channel",
-    "High Importance Notifications",
+    "Ai Là Triệu Phú",
     description: "this channel is used for important notification",
     importance: Importance.defaultImportance,
   );

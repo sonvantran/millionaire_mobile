@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sky_ads/native_ad_widget.dart';
+import 'package:sky_ads/sky_ads.dart';
 
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
@@ -85,10 +86,12 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
                 ),
                 const SizedBox(height: 8),
                 store == null
-                    ? Center(
-                        child: SpinKitCircle(
-                          color: AppColors.colorFF77dbe5,
-                          size: 100.r,
+                    ? Expanded(
+                        child: Center(
+                          child: SpinKitCircle(
+                            color: AppColors.colorFF77dbe5,
+                            size: 100.r,
+                          ),
                         ),
                       )
                     : Expanded(
@@ -109,7 +112,7 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
                                 ),
                               ),
                       ),
-                const SkyNativeAdWidget(),
+                const SkyNativeAdWidget(size: NativeAdSize.small),
               ],
             ),
           ),

@@ -13,21 +13,25 @@ import '../../../data/model/user.dart';
 import '../cubit/store_cubit.dart';
 import 'item_popup.dart';
 
-class Category extends StatelessWidget {
-  const Category({
-    super.key,
-    required this.label,
-    required this.items,
-    required this.user,
-  });
-
+class Category extends StatefulWidget {
+  const Category(
+      {super.key,
+      required this.label,
+      required this.items,
+      required this.user});
   final String label;
   final List<ItemModel> items;
   final User user;
 
   @override
+  State<Category> createState() => _CategoryState();
+}
+
+class _CategoryState extends State<Category> {
+  bool isLoadFail = false;
+  @override
   Widget build(BuildContext context) {
-    final randomIndex = Random().nextInt(items.length);
+    final randomIndex = Random().nextInt(widget.items.length);
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       padding: EdgeInsets.symmetric(horizontal: 8.w),
@@ -42,7 +46,7 @@ class Category extends StatelessWidget {
               color: AppColors.colorFF0B2D42,
             ),
             child: Text(
-              label,
+              widget.label,
               style: TextStyles.boldWhiteS24,
             ),
           ),
@@ -50,9 +54,9 @@ class Category extends StatelessWidget {
             height: 160.h,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: items.length,
+              itemCount: widget.items.length,
               itemBuilder: (context, index) {
-                final item = items[index];
+                final item = widget.items[index];
                 final text = "${formatCurrency(item.price)} đ";
                 return Row(
                   mainAxisSize: MainAxisSize.min,
@@ -61,7 +65,7 @@ class Category extends StatelessWidget {
                       onTap: () => showBuyPopup(
                         context,
                         item,
-                        user.point >= int.parse(item.price),
+                        widget.user.point >= int.parse(item.price),
                         onError: () => context.read<StoreCubit>().call(),
                         onBuy: () => context.read<StoreCubit>().buy(item),
                       ),
@@ -133,16 +137,23 @@ class Category extends StatelessWidget {
                       ),
                     ),
                     if (index == randomIndex)
-                      Container(
-                        width: 160.w,
-                        height: 160.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 8.h),
-                        margin: EdgeInsets.symmetric(horizontal: 4.w),
-                        child: const SkyNativeAdWidget(),
-                      ),
+                      !isLoadFail
+                          ? Container(
+                              width: 160.w,
+                              height: 160.h,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8.r)),
+                              ),
+                              padding: EdgeInsets.symmetric(vertical: 8.h),
+                              margin: EdgeInsets.symmetric(horizontal: 4.w),
+                              child: SkyNativeAdWidget(
+                                onAdFailedToLoad: () => setState(() {
+                                  isLoadFail = true;
+                                }),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
                   ],
                 );
               },

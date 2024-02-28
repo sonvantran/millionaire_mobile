@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
 import 'package:sky_ads/native_ad_widget.dart';
+import 'package:sky_ads/sky_ads.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/values/app_colors.dart';
@@ -169,7 +170,7 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                                       itemCount: users.length,
                                       itemBuilder:
                                           (BuildContext context, int index) {
-                                        if ((index - 2) % 5 != 0) {
+                                        if ((index - 2) % 10 != 0) {
                                           return UserRankingItem(
                                             name: users![index].name,
                                             number: index + 1,
@@ -180,7 +181,8 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                                           return Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              const SkyNativeAdWidget(),
+                                              const SkyNativeAdWidget(
+                                                  size: NativeAdSize.small),
                                               UserRankingItem(
                                                 name: users![index].name,
                                                 number: index + 1,

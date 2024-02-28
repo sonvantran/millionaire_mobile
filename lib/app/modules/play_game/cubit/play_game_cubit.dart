@@ -545,7 +545,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       clearDataLocal();
       int level = 0;
       if (state.level >= 0 && state.level <= 5) {
-        level = 0;
+        level = state.level - 1;
       } else if (state.level >= 6 && state.level <= 10) {
         level = 5;
       } else {
@@ -602,7 +602,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       clearDataLocal();
       int level = 0;
       if (state.level >= 0 && state.level <= 5) {
-        level = 0;
+        level = state.level;
       } else if (state.level >= 6 && state.level <= 10) {
         level = 5;
       } else {
@@ -650,8 +650,15 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       pref.setBool("isFirstPlay", false);
       emit(state.copyWith(isShowGameResult: true));
       int x = state.level;
-      await Future.delayed(const Duration(seconds: 5));
-      emit(state.copyWith(isShowGameResult: false, isShowInstruction: true));
+      playAudio(SoundManager.ruleGame(mc));
+      Future.delayed(const Duration(seconds: 5)).then((value) {
+        try {
+          emit(
+              state.copyWith(isShowGameResult: false, isShowInstruction: true));
+        } catch (e) {
+          if (e is StateError) return;
+        }
+      });
       await Future.delayed(const Duration(seconds: 4));
       emit(state.copyWith(level: 5));
       await Future.delayed(const Duration(milliseconds: 400));
@@ -660,7 +667,6 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       emit(state.copyWith(level: 15));
       await Future.delayed(const Duration(milliseconds: 200));
       emit(state.copyWith(level: x));
-      await playAudio(SoundManager.ruleGame(mc));
     } catch (e) {
       if (e is StateError) {
         cancelCountDown();

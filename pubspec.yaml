@@ -5,7 +5,7 @@ version: 1.0.15+33
 # flutter pub run build_runner build --delete-conflicting-outputs
 # flutter build appbundle --flavor prod lib/main_prod.dart --release./gradlew build
 environment:
-  sdk: '>=2.19.6 <3.0.0'
+  sdk: '>=3.2.3 <4.0.0'
 
 dependencies:
   flutter:
@@ -51,6 +51,8 @@ dependencies:
   flutter_screenutil: 5.9.0
   cached_network_image: 3.3.1
   firebase_crashlytics: 3.3.6
+  flutter_easyloading: 3.0.5
+  firebase_storage: 11.2.7
 
 dev_dependencies:
   flutter_test:
@@ -64,8 +66,8 @@ dev_dependencies:
 
 
 flutter_native_splash:
-  color: "#000000"
-  image: assets/images/ic_app.png
+  background_image: "assets/images/ic_splash.png"
+  background_image_dark: "assets/images/ic_splash.png"
 
 flutter:
 
@@ -81,7 +83,6 @@ flutter:
     - assets/audios/lvs/
     - assets/audios/gsx/
     - assets/audios/pd/
-    - assets/Question.sqlite
   fonts:
     - family: SVN
       fonts:

@@ -2,14 +2,14 @@ import 'dart:math';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
+import 'package:sky_ads/sky_ads.dart';
 import 'package:volume_controller/volume_controller.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/extension/integer_extension.dart';
-import '../../../core/services/ads_manager.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/popup/popup_notice.dart';
@@ -108,16 +108,9 @@ class _PlayGamePageState extends State<PlayGamePage>
     with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
-  // BannerAd? _bannerAd;
-  // bool isBannerAdReady = false;
-
-  InterstitialAd? _interstitialAd;
-  bool isInterstitialAdLoaded = false;
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    _loadInterstitialAd();
-    // createBannerAd();
     super.initState();
   }
 
@@ -134,12 +127,6 @@ class _PlayGamePageState extends State<PlayGamePage>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    // _bannerAd?.dispose();
-    _interstitialAd?.dispose();
-    // isBannerAdReady = false;
-    isInterstitialAdLoaded = false;
-    // final cubit = context.read<PlayGameCubit>();
-    // cubit.dispose();
     disposeCubit?.dispose();
     super.dispose();
   }
@@ -187,28 +174,56 @@ class _PlayGamePageState extends State<PlayGamePage>
             if (state.timeCounter == 0) {
               int level = 0;
               if (state.level >= 0 && state.level <= 5) {
-                level = 0;
+                level = state.level - 1;
               } else if (state.level >= 6 && state.level <= 10) {
                 level = 5;
               } else {
                 level = 10;
               }
               final point = getQuestionByLevel(level, state.chooseMC);
-              context.router.replace(PlayAgainViewRoute(
-                caseResult: 0,
-                point: point,
-                isMute: widget.isMute,
-                mc: widget.mc,
-                cubit: widget.cubit,
-                user: state.user,
-              ));
-              if (_interstitialAd != null && isInterstitialAdLoaded) {
-                await _interstitialAd?.show();
-              }
+              EasyLoading.show(status: 'Loading Ads...');
+              SkyAds.instance.showInterstitialAd(
+                forceShow: true,
+                onAdDismissedFullScreenContent: () {
+                  EasyLoading.dismiss();
+                  context.router.replace(PlayAgainViewRoute(
+                    caseResult: 0,
+                    point: point,
+                    isMute: widget.isMute,
+                    mc: widget.mc,
+                    cubit: widget.cubit,
+                    user: state.user,
+                  ));
+                },
+                onAdFailedToLoad: () {
+                  EasyLoading.dismiss();
+                  context.router.replace(PlayAgainViewRoute(
+                    caseResult: 0,
+                    point: point,
+                    isMute: widget.isMute,
+                    mc: widget.mc,
+                    cubit: widget.cubit,
+                    user: state.user,
+                  ));
+                },
+                onStartLoading: (canShowAd) {
+                  if (!canShowAd) {
+                    EasyLoading.dismiss();
+                    context.router.replace(PlayAgainViewRoute(
+                      caseResult: 0,
+                      point: point,
+                      isMute: widget.isMute,
+                      mc: widget.mc,
+                      cubit: widget.cubit,
+                      user: state.user,
+                    ));
+                  }
+                },
+              );
             } else if (state.isFalse) {
               int level = 0;
               if (state.level >= 0 && state.level <= 5) {
-                level = 0;
+                level = state.level - 1;
               } else if (state.level >= 6 && state.level <= 10) {
                 level = 5;
               } else {
@@ -217,17 +232,52 @@ class _PlayGamePageState extends State<PlayGamePage>
               final point = getQuestionByLevel(level, state.chooseMC);
               Future.delayed(const Duration(milliseconds: 1500), () async {
                 int randomValue = Random().nextInt(5);
-                context.router.replace(PlayAgainViewRoute(
-                    caseResult: 1,
-                    point: point,
-                    isMute: widget.isMute,
-                    mc: widget.mc,
-                    cubit: widget.cubit,
-                    user: state.user));
-                if (_interstitialAd != null &&
-                    isInterstitialAdLoaded &&
-                    randomValue == 2) {
-                  await _interstitialAd?.show();
+
+                if (randomValue == 2) {
+                  EasyLoading.show(status: 'Loading Ads...');
+                  SkyAds.instance.showInterstitialAd(
+                    forceShow: true,
+                    onAdDismissedFullScreenContent: () {
+                      EasyLoading.dismiss();
+                      context.router.replace(PlayAgainViewRoute(
+                          caseResult: 1,
+                          point: point,
+                          isMute: widget.isMute,
+                          mc: widget.mc,
+                          cubit: widget.cubit,
+                          user: state.user));
+                    },
+                    onAdFailedToLoad: () {
+                      EasyLoading.dismiss();
+                      context.router.replace(PlayAgainViewRoute(
+                          caseResult: 1,
+                          point: point,
+                          isMute: widget.isMute,
+                          mc: widget.mc,
+                          cubit: widget.cubit,
+                          user: state.user));
+                    },
+                    onStartLoading: (canShowAd) {
+                      if (!canShowAd) {
+                        EasyLoading.dismiss();
+                        context.router.replace(PlayAgainViewRoute(
+                            caseResult: 1,
+                            point: point,
+                            isMute: widget.isMute,
+                            mc: widget.mc,
+                            cubit: widget.cubit,
+                            user: state.user));
+                      }
+                    },
+                  );
+                } else {
+                  context.router.replace(PlayAgainViewRoute(
+                      caseResult: 1,
+                      point: point,
+                      isMute: widget.isMute,
+                      mc: widget.mc,
+                      cubit: widget.cubit,
+                      user: state.user));
                 }
               });
             } else if (state.isWin) {
@@ -802,86 +852,57 @@ class _PlayGamePageState extends State<PlayGamePage>
           return PopupPlayConfirm(
             onTap: () async {
               cubit.updatePoint(point);
-              if (_interstitialAd != null && isInterstitialAdLoaded) {
-                await _interstitialAd?.show();
-              }
-              if (!context.mounted) return;
-              context.router.replace(PlayAgainViewRoute(
-                caseResult: 1,
-                point: point,
-                isMute: widget.isMute,
-                mc: widget.mc,
-                user: cubit.state.user,
-                cubit: widget.cubit,
-              ));
+              // if (_interstitialAd != null && isInterstitialAdLoaded) {
+              //   await _interstitialAd?.show();
+              // }
+              // if (!context.mounted) return;
+              EasyLoading.show(
+                status: 'Loading Ads...',
+              );
+              SkyAds.instance.showInterstitialAd(
+                forceShow: true,
+                onAdDismissedFullScreenContent: () {
+                  EasyLoading.dismiss();
+                  context.router.replace(PlayAgainViewRoute(
+                    caseResult: 1,
+                    point: point,
+                    isMute: widget.isMute,
+                    mc: widget.mc,
+                    user: cubit.state.user,
+                    cubit: widget.cubit,
+                  ));
+                },
+                onAdFailedToLoad: () {
+                  EasyLoading.dismiss();
+                  context.router.replace(PlayAgainViewRoute(
+                    caseResult: 1,
+                    point: point,
+                    isMute: widget.isMute,
+                    mc: widget.mc,
+                    user: cubit.state.user,
+                    cubit: widget.cubit,
+                  ));
+                },
+                onStartLoading: (canShowAd) {
+                  if (!canShowAd) {
+                    EasyLoading.dismiss();
+                    context.router.replace(PlayAgainViewRoute(
+                      caseResult: 1,
+                      point: point,
+                      isMute: widget.isMute,
+                      mc: widget.mc,
+                      user: cubit.state.user,
+                      cubit: widget.cubit,
+                    ));
+                  }
+                },
+              );
             },
             title: 'Bạn chắc chắn muốn thoát?',
             titleButton1: 'Tiếp tục',
           );
         });
   }
-
-  void _loadInterstitialAd() {
-    InterstitialAd.load(
-      adUnitId: AdsManager.interstitialAdUnitId,
-      request: const AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (ad) {
-          ad.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (ad) {
-              widget.cubit.playBG();
-              debugPrint("dsadasdsassss");
-            },
-            onAdFailedToShowFullScreenContent:
-                (InterstitialAd ad, AdError error) {
-              ad.dispose;
-              debugPrint('Ad failed to show: $error');
-            },
-            onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
-          );
-
-          setState(() {
-            _interstitialAd = ad;
-            isInterstitialAdLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (err) {
-          if (dem == 5) return;
-          dem++;
-          _loadInterstitialAd();
-          debugPrint('Failed to load an interstitial ad: ${err.message}');
-        },
-      ),
-    );
-  }
-
-  int dem = 0;
-
-  // void createBannerAd() {
-  //   try {
-  //     _bannerAd = BannerAd(
-  //       size: AdSize.banner,
-  //       adUnitId: AdsManager.bannerAdUnitId,
-  //       listener: BannerAdListener(
-  //         onAdLoaded: (ad) {
-  //           setState(() {
-  //             isBannerAdReady = true;
-  //           });
-  //         },
-  //         onAdFailedToLoad: (ad, err) {
-  //           ad.dispose();
-  //           debugPrint('Failed to load a banner ad: ${err.message}');
-  //         },
-  //         onAdOpened: (ad) => debugPrint('Ad opened'),
-  //         onAdClosed: (ad) => debugPrint('Ad closed'),
-  //         onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
-  //       ),
-  //       request: const AdRequest(),
-  //     )..load();
-  //   } catch (e) {
-  //     _bannerAd = null;
-  //   }
-  // }
 }
 
 String getQuestionByLevel(int level, int mc) {
@@ -900,7 +921,7 @@ Trong trò chơi này, bạn sẽ phải vượt qua ba mốc quan trọng tại
 
 📜 **Luật chơi:**
 - 🎯 Trả lời đúng để tiến lên các mốc điểm quan trọng.
-- 🔄 Trả lời sai, bạn sẽ quay lại các mốc điểm trước đó (0, 5, 10).
+- 🔄 Trả lời sai, bạn sẽ quay lại các mốc điểm trước đó (5, 10).
 - ✅ Trả lời đúng, bạn sẽ tiến lên câu hỏi tiếp theo và có cơ hội giành thêm điểm số.
 
 🛠️ **Lựa chọn trợ giúp:**

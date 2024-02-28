@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../../core/analytics/analytics_manager.dart';
@@ -113,12 +114,33 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   // }
 
   bool isAppHiden = false;
+  bool isBlock = false;
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final cubit = context.read<LoginCubit>();
     if (state == AppLifecycleState.resumed) {
       if (isAppHiden) {
-        SkyAds.instance.showAppOpenAd();
+        EasyLoading.show(status: 'Loading Ads...');
+        setState(() {
+          isBlock = true;
+        });
+        SkyAds.instance.showAppOpenAd(
+          forceShow: true,
+          onAdDismissedFullScreenContent: () {
+            isBlock = false;
+            EasyLoading.dismiss();
+          },
+          onAdFailedToLoad: () {
+            isBlock = false;
+            EasyLoading.dismiss();
+          },
+          onStartLoading: (canShowAd) {
+            if (!canShowAd) {
+              isBlock = false;
+              EasyLoading.dismiss();
+            }
+          },
+        );
       }
       isAppHiden = false;
     } else if (state == AppLifecycleState.hidden) {
@@ -132,8 +154,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   @override
   void dispose() {
     _nameController.dispose();
-    // _bannerAd?.dispose();
-    // isBannerAdReady = false;
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -191,222 +211,235 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         final question = QuestionBox.getQuestions();
         return Scaffold(
           resizeToAvoidBottomInset: false,
-          body: Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/bg_login.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CustomAppBar(
-                      top: 32.h,
-                      title: state.user != null
-                          ? state.user!.name
-                          : 'Ai là triệu phú',
-                      actions: [
-                        if (state.user != null)
-                          CustomAppbarItem(
-                            onPressed: () async {
-                              await _showdialogDelete(context, cubit);
-                            },
-                            icon: Icons.delete,
-                          ),
-                        if (state.user != null)
-                          CustomAppbarItem(
-                            onPressed: () async {
-                              _nameController.text = state.user?.name ?? '';
-                              await _showdialogEdit(context, cubit);
-                            },
-                            icon: Icons.edit,
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Container(
-                      alignment: Alignment.centerRight,
-                      padding: EdgeInsets.only(right: 12.w),
-                      child: ScoreUser(text: state.user?.point ?? 0),
-                    ),
-                  ],
+          body: AbsorbPointer(
+            absorbing: isBlock,
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/bg_login.jpg'),
+                  fit: BoxFit.cover,
                 ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Stack(
-                          children: [
-                            SpinKitRipple(
-                              color: AppColors.colorFFFFFFFF,
-                              size: 160.r,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CustomAppBar(
+                        top: 32.h,
+                        title: state.user != null
+                            ? state.user!.name
+                            : 'Ai là triệu phú',
+                        actions: [
+                          if (state.user != null)
+                            CustomAppbarItem(
+                              onPressed: () async {
+                                await _showdialogDelete(context, cubit);
+                              },
+                              icon: Icons.delete,
                             ),
-                            Align(
-                              alignment: Alignment.center,
-                              child: Image.asset(
-                                'assets/images/ic_app.png',
-                                width: 160.w,
-                                height: 160.h,
+                          if (state.user != null)
+                            CustomAppbarItem(
+                              onPressed: () async {
+                                _nameController.text = state.user?.name ?? '';
+                                await _showdialogEdit(context, cubit);
+                              },
+                              icon: Icons.edit,
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        alignment: Alignment.centerRight,
+                        padding: EdgeInsets.only(right: 12.w),
+                        child: ScoreUser(text: state.user?.point ?? 0),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Stack(
+                            children: [
+                              SpinKitRipple(
+                                color: AppColors.colorFFFFFFFF,
+                                size: 160.r,
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 16.h),
-                        SecondButton(
-                          gradient: CustomColor.dung,
-                          width: MediaQuery.of(context).size.width * 0.70,
-                          onTap: () async {
-                            AnalyticsManager.sendAnalyticsEvent(
-                                'The_user_want_to_play_game');
-                            if (state.hasDataLocal) {
-                              if (state.user == null) {
-                                ShowMessageInternal.showOverlay(context,
-                                    "Hệ thống tạm thời không tính điểm");
-                              }
-                              await context.pushRoute(PlayGameViewRoute(
-                                isMute: state.isMute,
-                                mc: state.chooseMC,
-                                user: state.user,
-                                questionModelHive: question[0],
-                                cubit: cubit,
-                              ));
-                              return;
-                            }
-                            if (state.hasUser) {
-                              if (state.user == null) {
-                                ShowMessageInternal.showOverlay(context,
-                                    "Hệ thống tạm thời không tính điểm");
-                              }
-                              await context.pushRoute(PlayGameViewRoute(
-                                mc: state.chooseMC,
-                                isMute: state.isMute,
-                                user: state.user,
-                                cubit: cubit,
-                              ));
-                            } else {
-                              await _showdialog(context, cubit);
-                            }
-                          },
-                          text: !state.hasDataLocal ? "Bắt đầu" : "Tiếp tục",
-                        ),
-                        if (state.hasDataLocal)
-                          SecondButton(
-                            width: MediaQuery.of(context).size.width * 0.55,
-                            text: "Chơi lại",
-                            onTap: () {
-                              AnalyticsManager.sendAnalyticsEvent(
-                                  'The_user_want_to_play_game_again');
-                              cubit.updatePoint(getQuestionByLevel(
-                                  question[0].currentLevel - 1,
-                                  state.chooseMC));
-                              if (state.user == null) {
-                                ShowMessageInternal.showOverlay(context,
-                                    "Hệ thống tạm thời không tính điểm");
-                              }
-                              context.pushRoute(PlayGameViewRoute(
-                                isMute: state.isMute,
-                                mc: state.chooseMC,
-                                user: state.user,
-                                cubit: cubit,
-                              ));
-                            },
+                              Align(
+                                alignment: Alignment.center,
+                                child: Image.asset(
+                                  'assets/images/ic_app.png',
+                                  width: 160.w,
+                                  height: 160.h,
+                                ),
+                              ),
+                            ],
                           ),
-                        Stack(
-                          children: [
+                          SizedBox(height: 16.h),
+                          SecondButton(
+                            gradient: CustomColor.dung,
+                            width: MediaQuery.of(context).size.width * 0.70,
+                            onTap: () async {
+                              final checkQuestion = await checkHasQuestion();
+                              if (!context.mounted) return;
+                              if (!checkQuestion) {
+                                cubit.initQuestion();
+                                ShowMessageInternal.showOverlay(
+                                    context, "Vui lòng thử lại sau!");
+                                return;
+                              }
+                              AnalyticsManager.sendAnalyticsEvent(
+                                  'The_user_want_to_play_game');
+
+                              if (state.hasDataLocal) {
+                                if (state.user == null) {
+                                  ShowMessageInternal.showOverlay(context,
+                                      "Hệ thống tạm thời không tính điểm");
+                                }
+                                await context.pushRoute(PlayGameViewRoute(
+                                  isMute: state.isMute,
+                                  mc: state.chooseMC,
+                                  user: state.user,
+                                  questionModelHive: question[0],
+                                  cubit: cubit,
+                                ));
+                                return;
+                              }
+                              if (state.hasUser) {
+                                if (state.user == null) {
+                                  ShowMessageInternal.showOverlay(context,
+                                      "Hệ thống tạm thời không tính điểm");
+                                }
+                                await context.pushRoute(PlayGameViewRoute(
+                                  mc: state.chooseMC,
+                                  isMute: state.isMute,
+                                  user: state.user,
+                                  cubit: cubit,
+                                ));
+                              } else {
+                                await _showdialog(context, cubit);
+                              }
+                            },
+                            text: !state.hasDataLocal ? "Bắt đầu" : "Tiếp tục",
+                          ),
+                          if (state.hasDataLocal)
                             SecondButton(
                               width: MediaQuery.of(context).size.width * 0.55,
-                              text: "Cửa hàng",
+                              text: "Chơi lại",
                               onTap: () {
+                                AnalyticsManager.sendAnalyticsEvent(
+                                    'The_user_want_to_play_game_again');
+                                cubit.updatePoint(getQuestionByLevel(
+                                    question[0].currentLevel - 1,
+                                    state.chooseMC));
                                 if (state.user == null) {
-                                  ShowMessageInternal.showOverlay(
-                                      context, "Vui lòng thử lại sau!");
-                                  return;
+                                  ShowMessageInternal.showOverlay(context,
+                                      "Hệ thống tạm thời không tính điểm");
                                 }
-                                AnalyticsManager.sendAnalyticsEvent(
-                                    'The_user_want_to_purchase');
-                                context.pushRoute(StoreViewRoute(
-                                    cubit: cubit, user: state.user!));
+                                context.pushRoute(PlayGameViewRoute(
+                                  isMute: state.isMute,
+                                  mc: state.chooseMC,
+                                  user: state.user,
+                                  cubit: cubit,
+                                ));
                               },
                             ),
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              child: CircleAvatar(
-                                radius: 8.r,
-                                backgroundColor: AppColors.colorFFB20000,
+                          Stack(
+                            children: [
+                              SecondButton(
+                                width: MediaQuery.of(context).size.width * 0.55,
+                                text: "Cửa hàng",
+                                onTap: () {
+                                  if (state.user == null) {
+                                    ShowMessageInternal.showOverlay(
+                                        context, "Vui lòng thử lại sau!");
+                                    return;
+                                  }
+                                  AnalyticsManager.sendAnalyticsEvent(
+                                      'The_user_want_to_purchase');
+                                  context.pushRoute(StoreViewRoute(
+                                      cubit: cubit, user: state.user!));
+                                },
                               ),
-                            )
-                          ],
-                        ),
-                        SecondButton(
-                          width: MediaQuery.of(context).size.width * 0.55,
-                          onTap: () async {
-                            AnalyticsManager.sendAnalyticsEvent(
-                                'The_user_want_to_watch_ranking_view');
-                            if (state.hasUser) {
-                              await context.pushRoute(const RankingViewRoute());
-                            } else {
-                              await _showdialog(context, cubit);
-                            }
-                          },
-                          text: "Bảng xếp hạng",
-                        ),
-                        SizedBox(height: 16.h),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ButtonItem(
-                              onTap: () => _showDevelop(context),
-                              color: AppColors.colorFF3AA33A,
-                              iconData: Icons.developer_mode_sharp,
-                            ),
-                            const SizedBox(width: 24),
-                            ButtonItem(
-                              onTap: () => _showSetting(context, cubit),
-                              color: AppColors.colorFF375193,
-                              iconData: Icons.settings,
-                            ),
-                            const SizedBox(width: 24),
-                            ButtonItem(
-                              onTap: () => _showRole(context),
-                              color: AppColors.colorFFd1b037,
-                              iconData: Icons.info_outline,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ButtonItem(
-                              onTap: () {
-                                AnalyticsManager.sendAnalyticsEvent(
-                                    'The_user_want_to_review_app');
-                                _showdialogRating(context, cubit);
-                              },
-                              color: AppColors.colorFFAF4848,
-                              iconData: Icons.star,
-                            ),
-                            const SizedBox(width: 24),
-                            ButtonItem(
-                              onTap: () => cubit.feedBack(),
-                              color: AppColors.colorFF424242,
-                              iconData: Icons.rate_review_outlined,
-                            ),
-                          ],
-                        ),
-                      ],
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: CircleAvatar(
+                                  radius: 8.r,
+                                  backgroundColor: AppColors.colorFFB20000,
+                                ),
+                              )
+                            ],
+                          ),
+                          SecondButton(
+                            width: MediaQuery.of(context).size.width * 0.55,
+                            onTap: () async {
+                              AnalyticsManager.sendAnalyticsEvent(
+                                  'The_user_want_to_watch_ranking_view');
+                              if (state.hasUser) {
+                                await context
+                                    .pushRoute(const RankingViewRoute());
+                              } else {
+                                await _showdialog(context, cubit);
+                              }
+                            },
+                            text: "Bảng xếp hạng",
+                          ),
+                          SizedBox(height: 16.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ButtonItem(
+                                onTap: () => _showDevelop(context),
+                                color: AppColors.colorFF3AA33A,
+                                iconData: Icons.developer_mode_sharp,
+                              ),
+                              const SizedBox(width: 24),
+                              ButtonItem(
+                                onTap: () => _showSetting(context, cubit),
+                                color: AppColors.colorFF375193,
+                                iconData: Icons.settings,
+                              ),
+                              const SizedBox(width: 24),
+                              ButtonItem(
+                                onTap: () => _showRole(context),
+                                color: AppColors.colorFFd1b037,
+                                iconData: Icons.info_outline,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ButtonItem(
+                                onTap: () {
+                                  AnalyticsManager.sendAnalyticsEvent(
+                                      'The_user_want_to_review_app');
+                                  _showdialogRating(context, cubit);
+                                },
+                                color: AppColors.colorFFAF4848,
+                                iconData: Icons.star,
+                              ),
+                              const SizedBox(width: 24),
+                              ButtonItem(
+                                onTap: () => cubit.feedBack(),
+                                color: AppColors.colorFF424242,
+                                iconData: Icons.rate_review_outlined,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SkyBannerAnchorAdWidget(),
-              ],
+                  const SkyBannerAnchorAdWidget(),
+                ],
+              ),
             ),
           ),
         );
@@ -459,7 +492,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         return PopupPrimary(
           onTap: () {
             Navigator.of(context).pop();
-            cubit.updateUser(_nameController.text);
+            cubit.updateUser(_nameController.text.trim());
           },
           title: "Bạn hãy điền tên để tiếp tục:",
           titleButton1: 'Tiếp tục',

@@ -1,5 +1,4 @@
 import 'package:path/path.dart';
-import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
@@ -21,16 +20,13 @@ class DatabaseHelper {
 
   Future<Database> initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path,
-        'question.db'); // Thay 'your_database_name' bằng tên tệp SQLite của bạn
+    String path = join(documentsDirectory.path, 'question.db');
 
-    // Kiểm tra xem tệp đã tồn tại trong thư mục local chưa
-    if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound) {
-      // Nếu chưa tồn tại, sao chép từ tệp asset vào thư mục local
-      ByteData data = await rootBundle.load('assets/Question.sqlite');
-      List<int> bytes = data.buffer.asUint8List();
-      await File(path).writeAsBytes(bytes);
-    }
+    // if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound) {
+    //   ByteData data = await rootBundle.load('assets/Question.sqlite');
+    //   List<int> bytes = data.buffer.asUint8List();
+    //   await File(path).writeAsBytes(bytes);
+    // }
 
     return await openDatabase(path);
   }

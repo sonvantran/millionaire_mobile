@@ -59,7 +59,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
   @override
   void initState() {
     _loadRewardedAd();
-    widget.cubit.playBG();
+    Future.delayed(const Duration(seconds: 2), () => widget.cubit.playBG());
     super.initState();
   }
 
@@ -154,10 +154,9 @@ class _PlayAgainViewState extends State<PlayAgainView>
                                 if (_rewardedAd != null && isRewardAdReady) {
                                   _rewardedAd?.show(
                                     onUserEarnedReward: (_, __) {
-                                      widget.cubit.updatePoint(
-                                          score <= 100000000
-                                              ? widget.point
-                                              : "100.000.000");
+                                      widget.cubit.updatePoint(score <= 20000000
+                                          ? widget.point
+                                          : "20.000.000");
                                       ShowMessageInternal.showOverlay(
                                           context, "Bạn đã thành công");
                                       Future.delayed(
@@ -168,11 +167,11 @@ class _PlayAgainViewState extends State<PlayAgainView>
                                   );
                                 } else {
                                   ShowMessageInternal.showOverlay(
-                                      context, "Đã có lỗi xảy ra");
+                                      context, "Vui lòng thử lại sau");
                                 }
                               },
                               text:
-                                  "Xem Video Để ${score <= 100000000 ? 'X2 Điểm' : "+100.000.000 Đ"}",
+                                  "Xem Video Để ${score <= 20000000 ? 'X2 Điểm' : "+20.000.000 đ"}",
                             ),
                             SizedBox(height: 20.h),
                             SecondButton(

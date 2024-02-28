@@ -135,7 +135,6 @@ class StoreCubit extends Cubit<StoreState> {
         playDate: Timestamp.now(),
       );
       emit(state.copyWith(user: x));
-      await _repo.updateUser(user: x);
     } catch (e) {
       if (e is BadRequestException) {
         emit(state.copyWith(message: e.message));
