@@ -32,7 +32,7 @@ class PopupNotice extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvoked: (didPop) {
-        if(didPop){
+        if (didPop) {
           onCall?.call();
         }
       },

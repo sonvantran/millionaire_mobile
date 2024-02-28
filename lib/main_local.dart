@@ -7,6 +7,7 @@ import 'app/flavors/env_config.dart';
 import 'app/flavors/environment.dart';
 import 'app/my_app.dart';
 import 'app/core/config/app_bloc_observer.dart';
+
 Future<void> main() async {
   Bloc.observer = AppBlocObserver();
 

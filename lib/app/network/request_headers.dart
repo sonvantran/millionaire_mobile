@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 
-
 class RequestHeaderInterceptor extends InterceptorsWrapper {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
@@ -12,7 +11,7 @@ class RequestHeaderInterceptor extends InterceptorsWrapper {
 
   Future<Map<String, String>> getCustomHeaders() async {
     // final secureStorage = FlutterSecureStorage();
-    // final accessToken = 
+    // final accessToken =
     // await secureStorage.read(key: SecureKeyConstants.accessToken);
     var customHeaders = {
       'content-type': 'application/json',

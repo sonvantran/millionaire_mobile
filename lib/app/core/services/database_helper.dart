@@ -4,7 +4,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
   factory DatabaseHelper() => _instance;
@@ -22,7 +21,8 @@ class DatabaseHelper {
 
   Future<Database> initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, 'question.db'); // Thay 'your_database_name' bằng tên tệp SQLite của bạn
+    String path = join(documentsDirectory.path,
+        'question.db'); // Thay 'your_database_name' bằng tên tệp SQLite của bạn
 
     // Kiểm tra xem tệp đã tồn tại trong thư mục local chưa
     if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound) {

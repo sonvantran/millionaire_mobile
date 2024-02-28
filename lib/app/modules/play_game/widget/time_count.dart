@@ -17,7 +17,7 @@ class TimeCount extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         Container(
-          padding:  EdgeInsets.all(18.r),
+          padding: EdgeInsets.all(18.r),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: const LinearGradient(

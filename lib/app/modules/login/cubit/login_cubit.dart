@@ -107,6 +107,7 @@ class LoginCubit extends Cubit<LoginState> {
         emit(state.copyWith(message: "Hệ thống đang gặp lỗi"));
         return;
       }
+      if (e is StateError) return;
       rethrow;
     }
   }
@@ -129,6 +130,7 @@ class LoginCubit extends Cubit<LoginState> {
         emit(state.copyWith(hasUser: false, message: e.message));
         return;
       }
+      if (e is StateError) return;
       rethrow;
     }
   }
@@ -147,6 +149,7 @@ class LoginCubit extends Cubit<LoginState> {
         emit(state.copyWith(hasUser: true, message: e.message));
         return;
       }
+      if (e is StateError) return;
       rethrow;
     }
   }
@@ -167,6 +170,7 @@ class LoginCubit extends Cubit<LoginState> {
         clearQuestionLocal();
       }
     } catch (e) {
+      if (e is StateError) return;
       rethrow;
     }
   }
@@ -179,9 +183,13 @@ class LoginCubit extends Cubit<LoginState> {
   Future<void> stopAudio() async {
     try {
       final player = state.player;
-      if (player != null) await player.stop();
+      if (player != null && player.state == PlayerState.playing) {
+        await player.stop();
+      }
       final player2 = state.player2;
-      if (player2 != null) await player2.stop();
+      if (player2 != null && player2.state == PlayerState.playing) {
+        await player2.stop();
+      }
     } catch (e) {
       if (e is StateError) {
         return;

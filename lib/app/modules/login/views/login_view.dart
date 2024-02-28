@@ -222,7 +222,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                         if (state.user != null)
                           CustomAppbarItem(
                             onPressed: () async {
-                              _nameController.text = state.user!.name;
+                              _nameController.text = state.user?.name ?? '';
                               await _showdialogEdit(context, cubit);
                             },
                             icon: Icons.edit,
@@ -387,7 +387,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                             ButtonItem(
                               onTap: () {
                                 AnalyticsManager.sendAnalyticsEvent(
-                                    'The_user_want_to_review_app!');
+                                    'The_user_want_to_review_app');
                                 _showdialogRating(context, cubit);
                               },
                               color: AppColors.colorFFAF4848,
@@ -417,17 +417,12 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   Future<void> _showdialog(BuildContext context, LoginCubit cubit) async {
     await showDialog(
       context: context,
-      builder: (BuildContext _) {
+      builder: (BuildContext context) {
         return PopupPrimary(
           onTap: () {
             Navigator.of(context).pop();
             cubit.updateUser(_nameController.text.trim());
             AnalyticsManager.signUp();
-          },
-          onTapCancel: () {
-            // cubit.setWatchRanking(false);
-            // cubit.setPlayGame(false);
-            Navigator.of(context).pop();
           },
           title: "Bạn hãy điền tên để tiếp tục:",
           titleButton1: 'Tiếp tục',
@@ -441,7 +436,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   Future<void> _showdialogDelete(BuildContext context, LoginCubit cubit) async {
     await showDialog(
       context: context,
-      builder: (BuildContext _) {
+      builder: (BuildContext context) {
         return PopupPrimary(
           onTap: () {
             Navigator.of(context).pop();
@@ -460,7 +455,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   Future<void> _showdialogEdit(BuildContext context, LoginCubit cubit) async {
     await showDialog(
       context: context,
-      builder: (BuildContext _) {
+      builder: (BuildContext context) {
         return PopupPrimary(
           onTap: () {
             Navigator.of(context).pop();

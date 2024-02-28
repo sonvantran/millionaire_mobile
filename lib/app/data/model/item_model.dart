@@ -19,7 +19,7 @@ class ItemModel {
     required this.image,
   });
 
- static List<ItemModel> fromMap(Map<String, dynamic> map) {
+  static List<ItemModel> fromMap(Map<String, dynamic> map) {
     List<ItemModel> tempt = [];
     map.forEach((key, value) {
       List<String> parts = key.split('-');

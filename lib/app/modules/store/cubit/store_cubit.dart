@@ -28,6 +28,7 @@ class StoreCubit extends Cubit<StoreState> {
       final changedStore = await resolve(li[0].store);
       emit(state.copyWith(store: Store(store: changedStore)));
     } catch (e) {
+      if (e is StateError) return;
       rethrow;
     }
   }
@@ -50,6 +51,7 @@ class StoreCubit extends Cubit<StoreState> {
       emit(state.copyWith(store: Store(store: handle(li))));
       StoreBox.setStore(Store(store: li));
     } catch (e) {
+      if (e is StateError) return;
       rethrow;
     }
   }
@@ -139,6 +141,7 @@ class StoreCubit extends Cubit<StoreState> {
         emit(state.copyWith(message: e.message));
         return;
       }
+      if (e is StateError) return;
       rethrow;
     }
   }

@@ -99,10 +99,9 @@ class _PlayAgainViewState extends State<PlayAgainView>
             children: [
               CustomAppBar(
                 leading: CustomAppbarItem(
-                    icon: Icons.arrow_back_outlined,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    }),
+                  icon: Icons.arrow_back_outlined,
+                  onPressed: () => context.router.pop(),
+                ),
                 title: "Ai là triệu phú",
                 top: 32,
               ),
@@ -291,15 +290,12 @@ class _PlayAgainViewState extends State<PlayAgainView>
       String tempPath = tempDir.path;
       File qrImageFile = File('$tempPath/qrcode.png');
       await qrImageFile.writeAsBytes(pngBytes!);
-      // ignore: use_build_context_synchronously
-      final RenderBox box = context.findRenderObject() as RenderBox;
       await Share.shareFiles(
         [qrImageFile.path],
         subject:
             'Tải ứng dụng trên cửa hàng: https://play.google.com/store/apps/dev?id=5241296680413671492',
         text:
             'Tải ứng dụng trên cửa hàng: https://play.google.com/store/apps/dev?id=5241296680413671492',
-        sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size,
       );
       await AnalyticsManager.share('share', '1 item', 'contentType');
     } catch (e) {

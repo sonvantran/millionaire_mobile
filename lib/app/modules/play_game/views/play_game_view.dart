@@ -140,8 +140,11 @@ class _PlayGamePageState extends State<PlayGamePage>
     isInterstitialAdLoaded = false;
     // final cubit = context.read<PlayGameCubit>();
     // cubit.dispose();
+    disposeCubit?.dispose();
     super.dispose();
   }
+
+  PlayGameCubit? disposeCubit;
 
   @override
   Widget build(BuildContext context1) {
@@ -191,11 +194,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 level = 10;
               }
               final point = getQuestionByLevel(level, state.chooseMC);
-              if (_interstitialAd != null && isInterstitialAdLoaded) {
-                await _interstitialAd?.show();
-              }
-              // ignore: use_build_context_synchronously
-              await context.router.replace(PlayAgainViewRoute(
+              context.router.replace(PlayAgainViewRoute(
                 caseResult: 0,
                 point: point,
                 isMute: widget.isMute,
@@ -203,6 +202,9 @@ class _PlayGamePageState extends State<PlayGamePage>
                 cubit: widget.cubit,
                 user: state.user,
               ));
+              if (_interstitialAd != null && isInterstitialAdLoaded) {
+                await _interstitialAd?.show();
+              }
             } else if (state.isFalse) {
               int level = 0;
               if (state.level >= 0 && state.level <= 5) {
@@ -215,19 +217,18 @@ class _PlayGamePageState extends State<PlayGamePage>
               final point = getQuestionByLevel(level, state.chooseMC);
               Future.delayed(const Duration(milliseconds: 1500), () async {
                 int randomValue = Random().nextInt(5);
-                if (_interstitialAd != null &&
-                    isInterstitialAdLoaded &&
-                    randomValue == 2) {
-                  await _interstitialAd?.show();
-                }
-                // ignore: use_build_context_synchronously
-                await context.router.replace(PlayAgainViewRoute(
+                context.router.replace(PlayAgainViewRoute(
                     caseResult: 1,
                     point: point,
                     isMute: widget.isMute,
                     mc: widget.mc,
                     cubit: widget.cubit,
                     user: state.user));
+                if (_interstitialAd != null &&
+                    isInterstitialAdLoaded &&
+                    randomValue == 2) {
+                  await _interstitialAd?.show();
+                }
               });
             } else if (state.isWin) {
               final point = getQuestionByLevel(state.level, state.chooseMC);
@@ -300,16 +301,14 @@ class _PlayGamePageState extends State<PlayGamePage>
             if (!state.isChart) {
               if (state.chooseMC == 0) {
                 final systemSound = await VolumeController().getVolume();
-                Future.delayed(
-                    Duration(
-                        seconds: state.isMute || systemSound <= 0.1 ? 2 : 10),
-                    () async {
-                  await _showAudienceHelp(
-                      context,
-                      state.questions[state.level - 1].rightAnswer ?? 1,
-                      context.read<PlayGameCubit>(),
-                      0);
-                });
+                await Future.delayed(Duration(
+                    seconds: state.isMute || systemSound <= 0.1 ? 2 : 10));
+                if (!context.mounted) return;
+                _showAudienceHelp(
+                    context,
+                    state.questions[state.level - 1].rightAnswer ?? 1,
+                    context.read<PlayGameCubit>(),
+                    0);
               } else {
                 await _showAudienceHelp(
                     context,
@@ -323,14 +322,14 @@ class _PlayGamePageState extends State<PlayGamePage>
         BlocListener<PlayGameCubit, PlayGameState>(
           listenWhen: (previous, current) =>
               previous.isConsultant != current.isConsultant,
-          listener: (context, state) {
+          listener: (context, state) async {
             if (!state.isConsultant) {
-              Future.delayed(const Duration(seconds: 3), () async {
-                await _showConsultantHelp(
-                    context,
-                    state.questions[state.level - 1].rightAnswer ?? 1,
-                    context.read<PlayGameCubit>());
-              });
+              await Future.delayed(const Duration(seconds: 3));
+              if (!context.mounted) return;
+              _showConsultantHelp(
+                  context,
+                  state.questions[state.level - 1].rightAnswer ?? 1,
+                  context.read<PlayGameCubit>());
             }
           },
         ),
@@ -338,6 +337,7 @@ class _PlayGamePageState extends State<PlayGamePage>
       child:
           BlocBuilder<PlayGameCubit, PlayGameState>(builder: (context, state) {
         final cubit = context.read<PlayGameCubit>();
+        disposeCubit ??= cubit;
         final checkExpireAnswer = !state.isChooseA &&
             !state.isChooseB &&
             !state.isChooseC &&
@@ -683,35 +683,37 @@ class _PlayGamePageState extends State<PlayGamePage>
             title: cubit.state.chooseMC == 0
                 ? 'TỔ TƯ VẪN TẠI CHỖ'
                 : 'CÁC NHÀ THÔNG THÁI',
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                cubit.state.chooseMC == 0
-                    ? ConsultantItem(
-                        answer: answers[Random().nextInt(6)],
-                        asset: 'superman',
-                      )
-                    : ConsultantItem(
-                        answer: answers[Random().nextInt(6)],
-                        asset: ntt[0].toString(),
-                        check: true,
-                      ),
-                cubit.state.chooseMC == 0
-                    ? ConsultantItem(
-                        answer: answers[Random().nextInt(6)],
-                        asset: 'deadpool',
-                      )
-                    : ConsultantItem(
-                        answer: answers[Random().nextInt(6)],
-                        asset: ntt[1].toString(),
-                        check: true,
-                      ),
-                if (cubit.state.chooseMC == 0)
-                  ConsultantItem(
-                    answer: answers[Random().nextInt(6)],
-                    asset: 'spiderman',
-                  ),
-              ],
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  cubit.state.chooseMC == 0
+                      ? ConsultantItem(
+                          answer: answers[Random().nextInt(6)],
+                          asset: 'superman',
+                        )
+                      : ConsultantItem(
+                          answer: answers[Random().nextInt(6)],
+                          asset: ntt[0].toString(),
+                          check: true,
+                        ),
+                  cubit.state.chooseMC == 0
+                      ? ConsultantItem(
+                          answer: answers[Random().nextInt(6)],
+                          asset: 'deadpool',
+                        )
+                      : ConsultantItem(
+                          answer: answers[Random().nextInt(6)],
+                          asset: ntt[1].toString(),
+                          check: true,
+                        ),
+                  if (cubit.state.chooseMC == 0)
+                    ConsultantItem(
+                      answer: answers[Random().nextInt(6)],
+                      asset: 'spiderman',
+                    ),
+                ],
+              ),
             ),
           ),
         );

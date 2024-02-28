@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../values/app_colors.dart';
 import '../../values/text_styles.dart';
@@ -25,7 +26,7 @@ class PopupPrimary extends StatelessWidget {
   final void Function()? onTap;
   final void Function()? onTapCancel;
   final TextEditingController? textController;
-  final _formKey = GlobalKey<FormState>();
+  static final _formKey = GlobalKey<FormState>();
 
   bool _validateUsername(String value) {
     if (validateName.isEmpty) return false;
@@ -70,9 +71,7 @@ class PopupPrimary extends StatelessWidget {
                   }
                   return null;
                 },
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(40),
-                ],
+                inputFormatters: [LengthLimitingTextInputFormatter(40)],
                 decoration: InputDecoration(
                   hintText: 'Phạm Văn A',
                   border: InputBorder.none,
@@ -134,13 +133,11 @@ class PopupPrimary extends StatelessWidget {
               title: titleButton1,
               backgroundColor: AppColors.colorFF03456e,
               textColor: AppColors.colorFFFFFFFF,
-              textSize: 16,
+              textSize: 16.sp,
               borderColor: AppColors.colorFF03456e,
               textWeight: FontWeight.w600,
             ),
-            const SizedBox(
-              height: 12,
-            ),
+            SizedBox(height: 12.h),
             PrimaryButton(
               onTap: onTapCancel ?? () => Navigator.of(context).pop(),
               title: titleButton2,

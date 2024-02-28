@@ -145,22 +145,26 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   }
 
   void setIsMute({bool? isMute}) async {
-    if (isMute != null && isMute) {
+    try {
+      if (isMute != null && isMute) {
+        final player = state.player;
+        if (player != null) {
+          await player.setVolume(0);
+          emit(state.copyWith(isMute: true));
+          return;
+        }
+      }
       final player = state.player;
       if (player != null) {
-        await player.setVolume(0);
-        emit(state.copyWith(isMute: true));
-        return;
+        if (state.isMute) {
+          await player.setVolume(1);
+        } else {
+          await player.setVolume(0);
+        }
+        emit(state.copyWith(isMute: !state.isMute));
       }
-    }
-    final player = state.player;
-    if (player != null) {
-      if (state.isMute) {
-        await player.setVolume(1);
-      } else {
-        await player.setVolume(0);
-      }
-      emit(state.copyWith(isMute: !state.isMute));
+    } catch (e) {
+      if (e is StateError) return;
     }
   }
 
@@ -475,6 +479,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
         stopAudio();
         return;
       }
+      if (e is PlatformException) return;
       rethrow;
     }
   }
@@ -645,31 +650,16 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       pref.setBool("isFirstPlay", false);
       emit(state.copyWith(isShowGameResult: true));
       int x = state.level;
-      Future.delayed(const Duration(seconds: 5))
-          .then((value) => emit(state.copyWith(
-                isShowGameResult: false,
-                isShowInstruction: true,
-              )));
-      Future.delayed(const Duration(seconds: 4)).then(
-        (value) {
-          emit(state.copyWith(level: 5));
-          Future.delayed(const Duration(milliseconds: 400)).then(
-            (value) {
-              emit(state.copyWith(level: 10));
-              Future.delayed(const Duration(milliseconds: 400)).then(
-                (value) {
-                  emit(state.copyWith(level: 15));
-                  Future.delayed(const Duration(milliseconds: 200)).then(
-                    (value) {
-                      emit(state.copyWith(level: x));
-                    },
-                  );
-                },
-              );
-            },
-          );
-        },
-      );
+      await Future.delayed(const Duration(seconds: 5));
+      emit(state.copyWith(isShowGameResult: false, isShowInstruction: true));
+      await Future.delayed(const Duration(seconds: 4));
+      emit(state.copyWith(level: 5));
+      await Future.delayed(const Duration(milliseconds: 400));
+      emit(state.copyWith(level: 10));
+      await Future.delayed(const Duration(milliseconds: 400));
+      emit(state.copyWith(level: 15));
+      await Future.delayed(const Duration(milliseconds: 200));
+      emit(state.copyWith(level: x));
       await playAudio(SoundManager.ruleGame(mc));
     } catch (e) {
       if (e is StateError) {
@@ -735,7 +725,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   String soundPath(String name) => 'audios/$name.mp3';
 
   void dispose() {
-    state.player?.dispose();
+    if (state.player?.state == PlayerState.playing) state.player?.stop();
     state.timer?.cancel();
   }
 

@@ -14,7 +14,7 @@ part 'main_router.gr.dart';
 
 @MaterialAutoRouter(
   routes: <AutoRoute>[
-    MaterialRoute(page: LoginView, path: Routes.login,initial: true),
+    MaterialRoute(page: LoginView, path: Routes.login, initial: true),
     MaterialRoute(page: PlayGameView, path: Routes.playGame),
     MaterialRoute(page: PlayAgainView, path: Routes.playAgain),
     MaterialRoute(page: RankingView, path: Routes.ranking),
@@ -26,5 +26,4 @@ class MainRouter extends _$MainRouter {
   MainRouter({
     GlobalKey<NavigatorState>? navigatorKey,
   }) : super(navigatorKey);
-
 }
