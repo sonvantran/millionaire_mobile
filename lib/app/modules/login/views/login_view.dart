@@ -78,6 +78,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           result != ConnectivityResult.ethernet) {
         if (!context.mounted) return;
         setState(() => isAppConnection = false);
+        originCubit?.stopAudio();
         context.pushRoute(const NoInternetPageRoute());
       } else {
         setState(() => isAppConnection = true);
@@ -93,6 +94,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         result != ConnectivityResult.ethernet) {
       if (!context.mounted) return;
       setState(() => isAppConnection = false);
+      originCubit?.stopAudio();
       context.pushRoute(const NoInternetPageRoute());
     } else {
       setState(() => isAppConnection = true);
@@ -151,11 +153,10 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  LoginCubit? originCubit;
+
   @override
   Widget build(BuildContext context) {
-    // return !_isConnected
-    //     ? const NoInternetPage()
-    //     :
     return MultiBlocListener(
       listeners: [
         BlocListener<LoginCubit, LoginState>(
@@ -182,7 +183,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
               context.read<LoginCubit>().stopAudio();
             } else {
               await Future.delayed(const Duration(milliseconds: 500));
-              if (!context.mounted) return;
+              if (!context.mounted || !isAppConnection) return;
               context.read<LoginCubit>().isBG
                   ? context.read<LoginCubit>().playBG()
                   : context.read<LoginCubit>().playAudio();
@@ -201,6 +202,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       ],
       child: BlocBuilder<LoginCubit, LoginState>(builder: (context, state) {
         final cubit = context.read<LoginCubit>();
+        originCubit ??= cubit;
         final question = QuestionBox.getQuestions();
         return Scaffold(
           resizeToAvoidBottomInset: false,
