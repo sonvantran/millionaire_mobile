@@ -14,8 +14,6 @@ class LoginState with _$LoginState {
     @Default(true) bool hasUser,
     @Default(false) bool hasDataLocal,
     String? validateName,
-    // @Default(false) bool playGame,
-    // @Default(false) bool watchRanking,
     User? user,
     @Default(0) int chooseMC,
     AudioPlayer? player,

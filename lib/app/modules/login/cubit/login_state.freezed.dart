@@ -20,9 +20,7 @@ mixin _$LoginState {
   bool get isMuteCheckAgain => throw _privateConstructorUsedError;
   bool get hasUser => throw _privateConstructorUsedError;
   bool get hasDataLocal => throw _privateConstructorUsedError;
-  String? get validateName =>
-      throw _privateConstructorUsedError; // @Default(false) bool playGame,
-// @Default(false) bool watchRanking,
+  String? get validateName => throw _privateConstructorUsedError;
   User? get user => throw _privateConstructorUsedError;
   int get chooseMC => throw _privateConstructorUsedError;
   AudioPlayer? get player => throw _privateConstructorUsedError;
@@ -254,8 +252,6 @@ class _$_LoginState extends _LoginState {
   final bool hasDataLocal;
   @override
   final String? validateName;
-// @Default(false) bool playGame,
-// @Default(false) bool watchRanking,
   @override
   final User? user;
   @override
@@ -344,8 +340,7 @@ abstract class _LoginState extends LoginState {
   bool get hasDataLocal;
   @override
   String? get validateName;
-  @override // @Default(false) bool playGame,
-// @Default(false) bool watchRanking,
+  @override
   User? get user;
   @override
   int get chooseMC;

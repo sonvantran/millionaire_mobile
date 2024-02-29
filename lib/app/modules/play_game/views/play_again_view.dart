@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -19,6 +21,7 @@ import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/appBar/custom_appbar.dart';
 import '../../../core/widgets/button/ads_button.dart';
 import '../../../core/widgets/button/second_button.dart';
+import '../../../data/local_saver/sound_manager.dart';
 import '../../../data/model/user.dart';
 import '../../../main_router.dart';
 import '../../login/cubit/login_cubit.dart';
@@ -59,6 +62,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
   @override
   void initState() {
     _loadRewardedAd();
+    chiatay();
     Future.delayed(const Duration(seconds: 2), () => widget.cubit.playBG());
     super.initState();
   }
@@ -69,6 +73,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
     _rewardedAd?.dispose();
     // isBannerAdReady = false;
     isRewardAdReady = false;
+    if (player.state == PlayerState.playing) player.stop();
     super.dispose();
   }
 
@@ -78,6 +83,21 @@ class _PlayAgainViewState extends State<PlayAgainView>
       value: widget.cubit..clearQuestionLocal(),
       child: _buildPage(context),
     );
+  }
+
+  final AudioPlayer player = AudioPlayer();
+  String soundPath(String name) => 'audios/$name.mp3';
+  void chiatay() async {
+    try {
+      final assetSource = soundPath(widget.isMute
+          ? SoundManager.muteSound
+          : SoundManager.chiatay(widget.mc)[Random().nextInt(2)]);
+      final source = AssetSource(assetSource);
+      await player.play(source);
+      await player.onPlayerComplete.first;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Widget _buildPage(BuildContext context) {
@@ -252,10 +272,9 @@ class _PlayAgainViewState extends State<PlayAgainView>
                 ad.dispose();
                 _rewardedAd = null;
               });
-              _loadRewardedAd();
             },
             onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
-              ad.dispose;
+              ad.dispose();
               debugPrint('Ad failed to show: $error');
             },
           );
@@ -266,7 +285,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
           });
         },
         onAdFailedToLoad: (err) {
-          if (dem == 5) return;
+          if (dem >= 5) return;
           dem++;
           _loadRewardedAd();
           debugPrint('Failed to load a rewarded ad: ${err.message}');

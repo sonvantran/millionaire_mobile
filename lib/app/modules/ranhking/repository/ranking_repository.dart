@@ -28,4 +28,12 @@ class RankingRepository {
       rethrow;
     }
   }
+
+  Future<User> updateUser({required User user}) {
+    try {
+      return _api.updateUser(user: user);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

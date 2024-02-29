@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../data/model/user.dart';
 import '../repository/ranking_repository.dart';
 import 'ranking_state.dart';
 
@@ -48,7 +50,17 @@ class RankingCubit extends Cubit<RankingState> {
     getUsers(filter);
   }
 
-  void init() {
+  void init(User user) async {
+    await updateLast(user);
     getUsers(false);
+  }
+
+  Future<void> updateLast(User user) async {
+    final pre = await SharedPreferences.getInstance();
+    final x = pre.getInt("lastPoint");
+    final y = pre.getString("lastName");
+    if (x != user.point || y != user.name) {
+      await _rankingRepository.updateUser(user: user);
+    }
   }
 }

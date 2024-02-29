@@ -38,6 +38,7 @@ class PlayGameState with _$PlayGameState {
     @Default(false) bool isAccessAnswer,
     @Default(false) bool saveDone,
     @Default(false) bool loadingDh,
+    @Default(false) bool isShowWrongAds,
     int? chooseDh,
     @Default(0) int chooseMC,
     @Default(1) int level,

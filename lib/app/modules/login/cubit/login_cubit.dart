@@ -34,10 +34,12 @@ class LoginCubit extends Cubit<LoginState> {
       Directory documentsDirectory = await getApplicationDocumentsDirectory();
       String path = join(documentsDirectory.path, 'question.db');
 
+      final prefs = await SharedPreferences.getInstance();
       if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound ||
           File(path).lengthSync() == 0) {
         Reference ref = FirebaseStorage.instance.ref("Question.sqlite");
         await ref.writeToFile(File(path));
+        await prefs.setBool("isSaveQuestionDone", true);
       }
     } catch (e) {
       rethrow;
@@ -155,7 +157,12 @@ class LoginCubit extends Cubit<LoginState> {
     final name = pre.getString("userName");
     final point = pre.getInt("point");
     if (name == null || point == null) return null;
-    return User(name: name, point: point, deviceId: deviceId);
+    return User(
+      name: name,
+      point: point,
+      deviceId: deviceId,
+      playDate: Timestamp.now(),
+    );
   }
 
   Future<String> getBadWordsLocal() async {
@@ -181,7 +188,7 @@ class LoginCubit extends Cubit<LoginState> {
           deviceId: deviceId,
           playDate: userState?.playDate ?? Timestamp.now());
       emit(state.copyWith(hasUser: true, user: x));
-      await _loginRepository.updateUser(user: x);
+      // await _loginRepository.updateUser(user: x);
       final pre = await SharedPreferences.getInstance();
       await pre.setString("userName", username);
     } catch (e) {
@@ -227,7 +234,7 @@ class LoginCubit extends Cubit<LoginState> {
             deviceId: userState.deviceId,
             playDate: Timestamp.now());
         emit(state.copyWith(user: x));
-        await _loginRepository.updateUser(user: x);
+        // await _loginRepository.updateUser(user: x);
         final pre = await SharedPreferences.getInstance();
         await pre.setInt("point", x.point);
         AnalyticsManager.postScore(score, null);
@@ -332,13 +339,6 @@ class LoginCubit extends Cubit<LoginState> {
 }
 
 Future<bool> checkHasQuestion() async {
-  try {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, 'question.db');
-
-    return !(FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound ||
-        File(path).lengthSync() == 0);
-  } catch (e) {
-    rethrow;
-  }
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getBool("isSaveQuestionDone") ?? false;
 }

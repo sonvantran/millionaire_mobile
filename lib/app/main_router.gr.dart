@@ -53,9 +53,13 @@ class _$MainRouter extends RootStackRouter {
       );
     },
     RankingViewRoute.name: (routeData) {
+      final args = routeData.argsAs<RankingViewRouteArgs>();
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const RankingView(),
+        child: RankingView(
+          key: args.key,
+          user: args.user,
+        ),
       );
     },
     StoreViewRoute.name: (routeData) {
@@ -239,14 +243,36 @@ class PlayAgainViewRouteArgs {
 
 /// generated route for
 /// [RankingView]
-class RankingViewRoute extends PageRouteInfo<void> {
-  const RankingViewRoute()
-      : super(
+class RankingViewRoute extends PageRouteInfo<RankingViewRouteArgs> {
+  RankingViewRoute({
+    Key? key,
+    required User user,
+  }) : super(
           RankingViewRoute.name,
           path: 'ranking',
+          args: RankingViewRouteArgs(
+            key: key,
+            user: user,
+          ),
         );
 
   static const String name = 'RankingViewRoute';
+}
+
+class RankingViewRouteArgs {
+  const RankingViewRouteArgs({
+    this.key,
+    required this.user,
+  });
+
+  final Key? key;
+
+  final User user;
+
+  @override
+  String toString() {
+    return 'RankingViewRouteArgs{key: $key, user: $user}';
+  }
 }
 
 /// generated route for

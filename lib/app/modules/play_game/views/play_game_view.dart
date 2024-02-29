@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
 import 'package:sky_ads/sky_ads.dart';
 import 'package:volume_controller/volume_controller.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/extension/integer_extension.dart';
+import '../../../core/services/ads_manager.dart';
 import '../../../core/values/app_colors.dart';
+import '../../../core/values/show_message_internal.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/popup/popup_notice.dart';
 import '../../../core/widgets/popup/popup_play_again.dart';
@@ -32,6 +35,7 @@ import '../widget/game_point.dart';
 import '../widget/point_item.dart';
 import '../widget/question.dart';
 import '../widget/time_count.dart';
+import '../widget/view_ads_fail.dart';
 
 class PlayGameView extends StatefulWidget {
   const PlayGameView(
@@ -108,11 +112,52 @@ class _PlayGamePageState extends State<PlayGamePage>
     with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
+  RewardedAd? _rewardedAd;
+  bool isRewardAdReady = false;
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
+    _loadRewardedAd();
     super.initState();
   }
+
+  void _loadRewardedAd() {
+    RewardedAd.load(
+      adUnitId: AdsManager.rewardedAdUnitId,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              context.read<PlayGameCubit>().playAgainAds();
+              setState(() {
+                ad.dispose();
+                _rewardedAd = null;
+              });
+            },
+            onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
+              ad.dispose();
+              debugPrint('Ad failed to show: $error');
+            },
+          );
+
+          setState(() {
+            _rewardedAd = ad;
+            isRewardAdReady = true;
+          });
+        },
+        onAdFailedToLoad: (err) {
+          if (dem >= 5) return;
+          dem++;
+          _loadRewardedAd();
+          debugPrint('Failed to load a rewarded ad: ${err.message}');
+        },
+      ),
+    );
+  }
+
+  int dem = 0;
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -132,6 +177,20 @@ class _PlayGamePageState extends State<PlayGamePage>
   }
 
   PlayGameCubit? disposeCubit;
+  bool isBlock = false;
+
+  void popView(BuildContext context, int caseResult, String point, User? user) {
+    setState(() => isBlock = false);
+    EasyLoading.dismiss();
+    context.router.replace(PlayAgainViewRoute(
+      caseResult: caseResult,
+      point: point,
+      isMute: widget.isMute,
+      mc: widget.mc,
+      cubit: widget.cubit,
+      user: user,
+    ));
+  }
 
   @override
   Widget build(BuildContext context1) {
@@ -182,41 +241,15 @@ class _PlayGamePageState extends State<PlayGamePage>
               }
               final point = getQuestionByLevel(level, state.chooseMC);
               EasyLoading.show(status: 'Loading Ads...');
+              setState(() => isBlock = true);
               SkyAds.instance.showInterstitialAd(
                 forceShow: true,
-                onAdDismissedFullScreenContent: () {
-                  EasyLoading.dismiss();
-                  context.router.replace(PlayAgainViewRoute(
-                    caseResult: 0,
-                    point: point,
-                    isMute: widget.isMute,
-                    mc: widget.mc,
-                    cubit: widget.cubit,
-                    user: state.user,
-                  ));
-                },
-                onAdFailedToLoad: () {
-                  EasyLoading.dismiss();
-                  context.router.replace(PlayAgainViewRoute(
-                    caseResult: 0,
-                    point: point,
-                    isMute: widget.isMute,
-                    mc: widget.mc,
-                    cubit: widget.cubit,
-                    user: state.user,
-                  ));
-                },
+                onAdDismissedFullScreenContent: () =>
+                    popView(context, 0, point, state.user),
+                onAdFailedToLoad: () => popView(context, 0, point, state.user),
                 onStartLoading: (canShowAd) {
                   if (!canShowAd) {
-                    EasyLoading.dismiss();
-                    context.router.replace(PlayAgainViewRoute(
-                      caseResult: 0,
-                      point: point,
-                      isMute: widget.isMute,
-                      mc: widget.mc,
-                      cubit: widget.cubit,
-                      user: state.user,
-                    ));
+                    popView(context, 0, point, state.user);
                   }
                 },
               );
@@ -230,56 +263,26 @@ class _PlayGamePageState extends State<PlayGamePage>
                 level = 10;
               }
               final point = getQuestionByLevel(level, state.chooseMC);
-              Future.delayed(const Duration(milliseconds: 1500), () async {
-                int randomValue = Random().nextInt(5);
+              int randomValue = Random().nextInt(5);
 
-                if (randomValue == 2) {
-                  EasyLoading.show(status: 'Loading Ads...');
-                  SkyAds.instance.showInterstitialAd(
-                    forceShow: true,
-                    onAdDismissedFullScreenContent: () {
-                      EasyLoading.dismiss();
-                      context.router.replace(PlayAgainViewRoute(
-                          caseResult: 1,
-                          point: point,
-                          isMute: widget.isMute,
-                          mc: widget.mc,
-                          cubit: widget.cubit,
-                          user: state.user));
-                    },
-                    onAdFailedToLoad: () {
-                      EasyLoading.dismiss();
-                      context.router.replace(PlayAgainViewRoute(
-                          caseResult: 1,
-                          point: point,
-                          isMute: widget.isMute,
-                          mc: widget.mc,
-                          cubit: widget.cubit,
-                          user: state.user));
-                    },
-                    onStartLoading: (canShowAd) {
-                      if (!canShowAd) {
-                        EasyLoading.dismiss();
-                        context.router.replace(PlayAgainViewRoute(
-                            caseResult: 1,
-                            point: point,
-                            isMute: widget.isMute,
-                            mc: widget.mc,
-                            cubit: widget.cubit,
-                            user: state.user));
-                      }
-                    },
-                  );
-                } else {
-                  context.router.replace(PlayAgainViewRoute(
-                      caseResult: 1,
-                      point: point,
-                      isMute: widget.isMute,
-                      mc: widget.mc,
-                      cubit: widget.cubit,
-                      user: state.user));
-                }
-              });
+              if (randomValue == 2) {
+                EasyLoading.show(status: 'Loading Ads...');
+                setState(() => isBlock = true);
+                SkyAds.instance.showInterstitialAd(
+                  forceShow: true,
+                  onAdDismissedFullScreenContent: () =>
+                      popView(context, 1, point, state.user),
+                  onAdFailedToLoad: () =>
+                      popView(context, 1, point, state.user),
+                  onStartLoading: (canShowAd) {
+                    if (!canShowAd) {
+                      popView(context, 1, point, state.user);
+                    }
+                  },
+                );
+              } else {
+                popView(context, 1, point, state.user);
+              }
             } else if (state.isWin) {
               final point = getQuestionByLevel(state.level, state.chooseMC);
               await context.router.replace(PlayAgainViewRoute(
@@ -397,294 +400,328 @@ class _PlayGamePageState extends State<PlayGamePage>
             !state.isTrueC &&
             !state.isTrueD &&
             state.isAccessAnswer;
-        return PopScope(
-          canPop: false,
-          onPopInvoked: (didPop) {
-            if (didPop) {
-              return;
-            }
-            context.read<PlayGameCubit>().quesionStop();
-            _showPlaycConfirm(context,
-                getQuestionByLevel(state.level - 1, state.chooseMC), cubit);
-          },
-          child: Scaffold(
-            key: _key,
-            endDrawer: GamePoint(level: state.level, mc: state.chooseMC),
-            onEndDrawerChanged: (isOpened) {
-              if (state.isShowGameResult != isOpened) {
-                cubit.openGameResult(isOpened);
+        return AbsorbPointer(
+          absorbing: isBlock,
+          child: PopScope(
+            canPop: false,
+            onPopInvoked: (didPop) {
+              if (didPop || state.isShowWrongAds) {
+                return;
               }
+              context.read<PlayGameCubit>().quesionStop();
+              _showPlaycConfirm(context,
+                  getQuestionByLevel(state.level - 1, state.chooseMC), cubit);
             },
-            body: Builder(builder: (context) {
-              return Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/background.jpg'),
-                      fit: BoxFit.cover,
+            child: Scaffold(
+              key: _key,
+              endDrawer: GamePoint(level: state.level, mc: state.chooseMC),
+              onEndDrawerChanged: (isOpened) {
+                if (state.isShowGameResult != isOpened) {
+                  cubit.openGameResult(isOpened);
+                }
+              },
+              body: Builder(builder: (context) {
+                return Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/background.jpg'),
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          AppBarItem(
-                            onTap: () {
-                              context.read<PlayGameCubit>().quesionStop();
-                              _showPlaycConfirm(
-                                  context,
-                                  getQuestionByLevel(
-                                      state.level - 1, state.chooseMC),
-                                  cubit);
-                            },
-                            isCheck: false,
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: const Icon(
-                              Icons.assignment_return_outlined,
-                              size: 32,
-                              color: AppColors.colorFFFFFFFF,
-                            ),
-                          ),
-                          BlocSelector<LoginCubit, LoginState, bool>(
-                              selector: (state) => state.isMute,
-                              builder: (contextLogin, isMute) {
-                                return InkWell(
+                    child: Stack(
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                AppBarItem(
                                   onTap: () {
-                                    contextLogin
-                                        .read<LoginCubit>()
-                                        .setIsMute(!isMute);
-                                    contextLogin
-                                        .read<LoginCubit>()
-                                        .setIsMuteCheckAgain(!isMute);
-                                    cubit.setIsMute();
+                                    context.read<PlayGameCubit>().quesionStop();
+                                    _showPlaycConfirm(
+                                        context,
+                                        getQuestionByLevel(
+                                            state.level - 1, state.chooseMC),
+                                        cubit);
                                   },
+                                  isCheck: false,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4),
+                                  child: const Icon(
+                                    Icons.assignment_return_outlined,
+                                    size: 32,
+                                    color: AppColors.colorFFFFFFFF,
+                                  ),
+                                ),
+                                BlocSelector<LoginCubit, LoginState, bool>(
+                                    selector: (state) => state.isMute,
+                                    builder: (contextLogin, isMute) {
+                                      return InkWell(
+                                        onTap: () {
+                                          contextLogin
+                                              .read<LoginCubit>()
+                                              .setIsMute(!isMute);
+                                          contextLogin
+                                              .read<LoginCubit>()
+                                              .setIsMuteCheckAgain(!isMute);
+                                          cubit.setIsMute();
+                                        },
+                                        child: Container(
+                                            margin:
+                                                const EdgeInsets.only(top: 8),
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color:
+                                                      AppColors.colorFF77dbe5,
+                                                  width: 2),
+                                              shape: BoxShape.circle,
+                                              gradient: const LinearGradient(
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter,
+                                                colors: [
+                                                  AppColors.colorFF57B9FB,
+                                                  AppColors.colorFF03456e,
+                                                  AppColors.colorFF57B9FB,
+                                                ],
+                                              ),
+                                            ),
+                                            child: Icon(
+                                              !state.isMute
+                                                  ? Icons.volume_up_rounded
+                                                  : Icons.volume_off,
+                                              color: AppColors.colorFFFFFFFF,
+                                            )),
+                                      );
+                                    }),
+                                AppBarItem(
+                                  onTap: () => cubit.openGameResult(true),
+                                  isCheck: true,
+                                  child: Text(
+                                    "${state.level} / 15",
+                                    style: TextStyles.mediumMWhiteS20,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
                                   child: Container(
-                                      margin: const EdgeInsets.only(top: 8),
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: AppColors.colorFF77dbe5,
-                                            width: 2),
-                                        shape: BoxShape.circle,
-                                        gradient: const LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                          colors: [
-                                            AppColors.colorFF57B9FB,
-                                            AppColors.colorFF03456e,
-                                            AppColors.colorFF57B9FB,
-                                          ],
+                                    color: AppColors.colorFFd1b037,
+                                    height: 2,
+                                  ),
+                                ),
+                                PointItem(
+                                  text:
+                                      '${getQuestionByLevel(state.level, state.chooseMC)} đ',
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    color: AppColors.colorFFd1b037,
+                                    height: 2,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Expanded(child: SizedBox.shrink()),
+                                TimeCount(
+                                  text: state.timeCounter.toString(),
+                                  isLoading: state.isLoading,
+                                ),
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () {
+                                      _showRole(context, null);
+                                    },
+                                    child: const Stack(
+                                      children: [
+                                        SpinKitPulse(
+                                          color: AppColors.colorFFf78f2b,
+                                          duration: Duration(seconds: 4),
                                         ),
-                                      ),
-                                      child: Icon(
-                                        !state.isMute
-                                            ? Icons.volume_up_rounded
-                                            : Icons.volume_off,
+                                        Positioned.fill(
+                                            child: Icon(
+                                          Icons.info_outline,
+                                          color: AppColors.colorFFFFFFFF,
+                                        ))
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Question(
+                                  text: !state.isLoading
+                                      ? state.questions[state.level - 1]
+                                              .question ??
+                                          ''
+                                      : state.startCounter?.toString() ?? '',
+                                ),
+                                AnswerItem(
+                                  checkExpire: checkExpireAnswer,
+                                  isHide: state.isHideA || state.isLoading,
+                                  isChoose: state.isChooseA,
+                                  isTrue: state.isTrueA,
+                                  onTap: () => cubit.chooseAnswer(
+                                      'A',
+                                      state.questions[state.level - 1]
+                                              .rightAnswer ??
+                                          1),
+                                  text: !state.isLoading
+                                      ? (state.questions[state.level - 1]
+                                              .answers?[0] ??
+                                          '')
+                                      : '',
+                                  type: 'A',
+                                ),
+                                AnswerItem(
+                                  checkExpire: checkExpireAnswer,
+                                  isHide: state.isHideB || state.isLoading,
+                                  isChoose: state.isChooseB,
+                                  isTrue: state.isTrueB,
+                                  onTap: () => cubit.chooseAnswer(
+                                      'B',
+                                      state.questions[state.level - 1]
+                                              .rightAnswer ??
+                                          1),
+                                  text: !state.isLoading
+                                      ? (state.questions[state.level - 1]
+                                              .answers?[1] ??
+                                          '')
+                                      : '',
+                                  type: 'B',
+                                ),
+                                AnswerItem(
+                                  checkExpire: checkExpireAnswer,
+                                  isHide: state.isHideC || state.isLoading,
+                                  isChoose: state.isChooseC,
+                                  isTrue: state.isTrueC,
+                                  onTap: () => cubit.chooseAnswer(
+                                      'C',
+                                      state.questions[state.level - 1]
+                                              .rightAnswer ??
+                                          1),
+                                  text: !state.isLoading
+                                      ? (state.questions[state.level - 1]
+                                              .answers?[2] ??
+                                          '')
+                                      : '',
+                                  type: 'C',
+                                ),
+                                AnswerItem(
+                                  checkExpire: checkExpireAnswer,
+                                  isHide: state.isHideD || state.isLoading,
+                                  isChoose: state.isChooseD,
+                                  isTrue: state.isTrueD,
+                                  onTap: () => cubit.chooseAnswer(
+                                      'D',
+                                      state.questions[state.level - 1]
+                                              .rightAnswer ??
+                                          1),
+                                  text: !state.isLoading
+                                      ? (state.questions[state.level - 1]
+                                              .answers?[3] ??
+                                          '')
+                                      : '',
+                                  type: 'D',
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                HelpItem(
+                                  checkExpire: state.isDelete2Answers &&
+                                      state.isAccessAnswer,
+                                  isHide: state.isDelete2Answers,
+                                  onTap: () => cubit.delete2Answers(state
+                                          .questions[state.level - 1]
+                                          .rightAnswer ??
+                                      1),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 10),
+                                  child: Text(
+                                    "50 : 50",
+                                    style: TextStyles.mediumWhiteS16,
+                                  ),
+                                ),
+                                HelpItem(
+                                  checkExpire:
+                                      state.isCall && state.isAccessAnswer,
+                                  isHide: state.isCall,
+                                  onTap: () => cubit.call(state
+                                          .questions[state.level - 1]
+                                          .rightAnswer ??
+                                      1),
+                                  child: const Icon(
+                                    Icons.phone_in_talk_outlined,
+                                    color: AppColors.colorFFFFFFFF,
+                                  ),
+                                ),
+                                HelpItem(
+                                  checkExpire: state.isConsultant &&
+                                      state.isAccessAnswer,
+                                  isHide: state.isConsultant,
+                                  onTap: () => cubit.consultant(),
+                                  padding: const EdgeInsets.all(4),
+                                  child: SizedBox(
+                                      width: 32,
+                                      child: Image.asset(
+                                        state.chooseMC == 0
+                                            ? 'assets/images/ic_team_person.png'
+                                            : 'assets/images/dh.png',
                                         color: AppColors.colorFFFFFFFF,
                                       )),
-                                );
-                              }),
-                          AppBarItem(
-                            onTap: () => cubit.openGameResult(true),
-                            isCheck: true,
-                            child: Text(
-                              "${state.level} / 15",
-                              style: TextStyles.mediumMWhiteS20,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              color: AppColors.colorFFd1b037,
-                              height: 2,
-                            ),
-                          ),
-                          PointItem(
-                            text:
-                                '${getQuestionByLevel(state.level, state.chooseMC)} đ',
-                          ),
-                          Expanded(
-                            child: Container(
-                              color: AppColors.colorFFd1b037,
-                              height: 2,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Expanded(child: SizedBox.shrink()),
-                          TimeCount(
-                            text: state.timeCounter.toString(),
-                            isLoading: state.isLoading,
-                          ),
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {
-                                _showRole(context, null);
-                              },
-                              child: const Stack(
-                                children: [
-                                  SpinKitPulse(
-                                    color: AppColors.colorFFf78f2b,
-                                    duration: Duration(seconds: 4),
-                                  ),
-                                  Positioned.fill(
-                                      child: Icon(
-                                    Icons.info_outline,
+                                ),
+                                HelpItem(
+                                  checkExpire:
+                                      state.isChart && state.isAccessAnswer,
+                                  isHide: state.isChart,
+                                  onTap: () => cubit.chart(),
+                                  child: Icon(
+                                    // Icons.bar_chart_outlined,
+                                    state.chooseMC == 0
+                                        ? Icons.bar_chart_outlined
+                                        : Icons.person_add,
                                     color: AppColors.colorFFFFFFFF,
-                                  ))
-                                ],
-                              ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          )
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Question(
-                            text: !state.isLoading
-                                ? state.questions[state.level - 1].question ??
-                                    ''
-                                : state.startCounter?.toString() ?? '',
+                            const SizedBox(height: 40),
+                          ],
+                        ),
+                        if (state.isShowWrongAds)
+                          ViewAdsFail(
+                            onClose: () => cubit.wrongAnswer(),
+                            onViewAds: () {
+                              if (_rewardedAd != null && isRewardAdReady) {
+                                _rewardedAd?.show(
+                                  onUserEarnedReward: (_, __) =>
+                                      cubit.playAgainAds(),
+                                );
+                              } else {
+                                ShowMessageInternal.showOverlay(
+                                    context, "Vui lòng thử lại sau");
+                              }
+                            },
                           ),
-                          AnswerItem(
-                            checkExpire: checkExpireAnswer,
-                            isHide: state.isHideA || state.isLoading,
-                            isChoose: state.isChooseA,
-                            isTrue: state.isTrueA,
-                            onTap: () => cubit.chooseAnswer(
-                                'A',
-                                state.questions[state.level - 1].rightAnswer ??
-                                    1),
-                            text: !state.isLoading
-                                ? (state.questions[state.level - 1]
-                                        .answers?[0] ??
-                                    '')
-                                : '',
-                            type: 'A',
-                          ),
-                          AnswerItem(
-                            checkExpire: checkExpireAnswer,
-                            isHide: state.isHideB || state.isLoading,
-                            isChoose: state.isChooseB,
-                            isTrue: state.isTrueB,
-                            onTap: () => cubit.chooseAnswer(
-                                'B',
-                                state.questions[state.level - 1].rightAnswer ??
-                                    1),
-                            text: !state.isLoading
-                                ? (state.questions[state.level - 1]
-                                        .answers?[1] ??
-                                    '')
-                                : '',
-                            type: 'B',
-                          ),
-                          AnswerItem(
-                            checkExpire: checkExpireAnswer,
-                            isHide: state.isHideC || state.isLoading,
-                            isChoose: state.isChooseC,
-                            isTrue: state.isTrueC,
-                            onTap: () => cubit.chooseAnswer(
-                                'C',
-                                state.questions[state.level - 1].rightAnswer ??
-                                    1),
-                            text: !state.isLoading
-                                ? (state.questions[state.level - 1]
-                                        .answers?[2] ??
-                                    '')
-                                : '',
-                            type: 'C',
-                          ),
-                          AnswerItem(
-                            checkExpire: checkExpireAnswer,
-                            isHide: state.isHideD || state.isLoading,
-                            isChoose: state.isChooseD,
-                            isTrue: state.isTrueD,
-                            onTap: () => cubit.chooseAnswer(
-                                'D',
-                                state.questions[state.level - 1].rightAnswer ??
-                                    1),
-                            text: !state.isLoading
-                                ? (state.questions[state.level - 1]
-                                        .answers?[3] ??
-                                    '')
-                                : '',
-                            type: 'D',
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          HelpItem(
-                            checkExpire:
-                                state.isDelete2Answers && state.isAccessAnswer,
-                            isHide: state.isDelete2Answers,
-                            onTap: () => cubit.delete2Answers(
-                                state.questions[state.level - 1].rightAnswer ??
-                                    1),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 10),
-                            child: Text(
-                              "50 : 50",
-                              style: TextStyles.mediumWhiteS16,
-                            ),
-                          ),
-                          HelpItem(
-                            checkExpire: state.isCall && state.isAccessAnswer,
-                            isHide: state.isCall,
-                            onTap: () => cubit.call(
-                                state.questions[state.level - 1].rightAnswer ??
-                                    1),
-                            child: const Icon(
-                              Icons.phone_in_talk_outlined,
-                              color: AppColors.colorFFFFFFFF,
-                            ),
-                          ),
-                          HelpItem(
-                            checkExpire:
-                                state.isConsultant && state.isAccessAnswer,
-                            isHide: state.isConsultant,
-                            onTap: () => cubit.consultant(),
-                            padding: const EdgeInsets.all(4),
-                            child: SizedBox(
-                                width: 32,
-                                child: Image.asset(
-                                  state.chooseMC == 0
-                                      ? 'assets/images/ic_team_person.png'
-                                      : 'assets/images/dh.png',
-                                  color: AppColors.colorFFFFFFFF,
-                                )),
-                          ),
-                          HelpItem(
-                            checkExpire: state.isChart && state.isAccessAnswer,
-                            isHide: state.isChart,
-                            onTap: () => cubit.chart(),
-                            child: Icon(
-                              // Icons.bar_chart_outlined,
-                              state.chooseMC == 0
-                                  ? Icons.bar_chart_outlined
-                                  : Icons.person_add,
-                              color: AppColors.colorFFFFFFFF,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 40),
-                    ],
-                  ));
-            }),
-            bottomSheet: const SkyBannerAnchorAdWidget(),
+                      ],
+                    ));
+              }),
+              bottomSheet: const SkyBannerAnchorAdWidget(),
+            ),
           ),
         );
       }),
@@ -852,16 +889,12 @@ class _PlayGamePageState extends State<PlayGamePage>
           return PopupPlayConfirm(
             onTap: () async {
               cubit.updatePoint(point);
-              // if (_interstitialAd != null && isInterstitialAdLoaded) {
-              //   await _interstitialAd?.show();
-              // }
-              // if (!context.mounted) return;
-              EasyLoading.show(
-                status: 'Loading Ads...',
-              );
+              EasyLoading.show(status: 'Loading Ads...');
+              setState(() => isBlock = true);
               SkyAds.instance.showInterstitialAd(
                 forceShow: true,
                 onAdDismissedFullScreenContent: () {
+                  setState(() => isBlock = false);
                   EasyLoading.dismiss();
                   context.router.replace(PlayAgainViewRoute(
                     caseResult: 1,
@@ -874,6 +907,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 },
                 onAdFailedToLoad: () {
                   EasyLoading.dismiss();
+                  setState(() => isBlock = false);
                   context.router.replace(PlayAgainViewRoute(
                     caseResult: 1,
                     point: point,
@@ -886,6 +920,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 onStartLoading: (canShowAd) {
                   if (!canShowAd) {
                     EasyLoading.dismiss();
+                    setState(() => isBlock = false);
                     context.router.replace(PlayAgainViewRoute(
                       caseResult: 1,
                       point: point,

@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -62,56 +63,43 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   final _nameController = TextEditingController();
-  // BannerAd? _bannerAd;
-  // bool isBannerAdReady = false;
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    // createBannerAd();
-    // initConnectionListen();
+    initConnectionListen();
     super.initState();
   }
 
-  // bool _isConnected = false;
-  // void initConnectionListen() {
-  //   Connectivity().onConnectivityChanged.listen((result) {
-  //     if (result != ConnectivityResult.mobile &&
-  //         result != ConnectivityResult.wifi &&
-  //         result != ConnectivityResult.ethernet) {
-  //       if (!_isConnected) return;
-  //       _isConnected = false;
-  //       if (!context.mounted) return;
-  //       context.pushRoute(const NoInternetPageRoute());
-  //     } else {
-  //       if (_isConnected) return;
-  //       _isConnected = true;
-  //       if (!context.mounted) return;
-  //       context.router.pushAndPopUntil(
-  //         const LoginViewRoute(),
-  //         predicate: (_) => false,
-  //       );
-  //     }
-  //   });
-  //   _checkInternetConnection();
-  // }
+  void initConnectionListen() {
+    Connectivity().onConnectivityChanged.listen((result) {
+      if (result != ConnectivityResult.mobile &&
+          result != ConnectivityResult.wifi &&
+          result != ConnectivityResult.ethernet) {
+        if (!context.mounted) return;
+        setState(() => isAppConnection = false);
+        context.pushRoute(const NoInternetPageRoute());
+      } else {
+        setState(() => isAppConnection = true);
+      }
+    });
+    _checkInternetConnection();
+  }
 
-  // Future<void> _checkInternetConnection() async {
-  //   var result = await Connectivity().checkConnectivity();
-  //   if (result != ConnectivityResult.mobile &&
-  //       result != ConnectivityResult.wifi &&
-  //       result != ConnectivityResult.ethernet) {
-  //     if (!_isConnected) return;
-  //     setState(() {
-  //       _isConnected = false;
-  //     });
-  //   } else {
-  //     if (_isConnected) return;
-  //     setState(() {
-  //       _isConnected = true;
-  //     });
-  //   }
-  // }
+  Future<void> _checkInternetConnection() async {
+    var result = await Connectivity().checkConnectivity();
+    if (result != ConnectivityResult.mobile &&
+        result != ConnectivityResult.wifi &&
+        result != ConnectivityResult.ethernet) {
+      if (!context.mounted) return;
+      setState(() => isAppConnection = false);
+      context.pushRoute(const NoInternetPageRoute());
+    } else {
+      setState(() => isAppConnection = true);
+    }
+  }
+
+  bool isAppConnection = true;
 
   bool isAppHiden = false;
   bool isBlock = false;
@@ -120,28 +108,33 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     final cubit = context.read<LoginCubit>();
     if (state == AppLifecycleState.resumed) {
       if (isAppHiden) {
+        if (!isAppConnection) return;
         EasyLoading.show(status: 'Loading Ads...');
-        setState(() {
-          isBlock = true;
-        });
+        setState(() => isBlock = true);
         SkyAds.instance.showAppOpenAd(
           forceShow: true,
           onAdDismissedFullScreenContent: () {
-            isBlock = false;
+            setState(() => isBlock = false);
             EasyLoading.dismiss();
           },
           onAdFailedToLoad: () {
-            isBlock = false;
+            setState(() => isBlock = false);
             EasyLoading.dismiss();
           },
           onStartLoading: (canShowAd) {
             if (!canShowAd) {
-              isBlock = false;
+              setState(() => isBlock = false);
               EasyLoading.dismiss();
             }
           },
         );
       }
+      Future.delayed(const Duration(seconds: 10), () {
+        if (isBlock) {
+          setState(() => isBlock = false);
+          EasyLoading.dismiss();
+        }
+      });
       isAppHiden = false;
     } else if (state == AppLifecycleState.hidden) {
       isAppHiden = true;
@@ -380,9 +373,10 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                             onTap: () async {
                               AnalyticsManager.sendAnalyticsEvent(
                                   'The_user_want_to_watch_ranking_view');
-                              if (state.hasUser) {
-                                await context
-                                    .pushRoute(const RankingViewRoute());
+                              if (state.hasUser && state.user != null) {
+                                await context.pushRoute(RankingViewRoute(
+                                  user: state.user!,
+                                ));
                               } else {
                                 await _showdialog(context, cubit);
                               }

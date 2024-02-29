@@ -119,11 +119,19 @@ class PlayGameCubit extends Cubit<PlayGameState> {
                   : emit(state.copyWith(isTrueD: true));
       await trueAnswer(type);
     } else {
-      emit(state.copyWith(isFalse: true));
-      await wrongAnswer(rightAnswer);
+      rightAnswer == 1
+          ? emit(state.copyWith(isTrueA: true))
+          : rightAnswer == 2
+              ? emit(state.copyWith(isTrueB: true))
+              : rightAnswer == 3
+                  ? emit(state.copyWith(isTrueC: true))
+                  : emit(state.copyWith(isTrueD: true));
+      await playAudio(SoundManager.falseAnswer(mc, rightAnswer));
+      await wrongAnswer();
     }
     if (!state.isFalse &&
-        (state.isTrueA || state.isTrueB || state.isTrueC || state.isTrueD)) {
+        (state.isTrueA || state.isTrueB || state.isTrueC || state.isTrueD) &&
+        !state.isShowWrongAds) {
       if (state.level < 15) {
         emit(state.copyWith(isShowGameResult: true));
         emit(state.copyWith(level: state.level + 1));
@@ -540,9 +548,20 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     }
   }
 
-  Future<void> wrongAnswer(int type) async {
+  bool firsrWrong = false;
+  bool isCallOnce = false;
+
+  Future<void> wrongAnswer() async {
     try {
       clearDataLocal();
+      if (!firsrWrong) {
+        firsrWrong = true;
+        emit(state.copyWith(isShowWrongAds: true));
+        return;
+      }
+      if (isCallOnce) return;
+      isCallOnce = true;
+      emit(state.copyWith(isFalse: true));
       int level = 0;
       if (state.level >= 0 && state.level <= 5) {
         level = state.level - 1;
@@ -552,15 +571,28 @@ class PlayGameCubit extends Cubit<PlayGameState> {
         level = 10;
       }
       updatePoint(getQuestionByLevel(level));
-      type == 1
-          ? emit(state.copyWith(isTrueA: true))
-          : type == 2
-              ? emit(state.copyWith(isTrueB: true))
-              : type == 3
-                  ? emit(state.copyWith(isTrueC: true))
-                  : emit(state.copyWith(isTrueD: true));
-      await playAudio(SoundManager.falseAnswer(mc, type));
-      await chiatay();
+    } catch (e) {
+      if (e is StateError) {
+        cancelCountDown();
+        // stopAudio();
+        return;
+      }
+      rethrow;
+    }
+  }
+
+  bool isCallOnce2 = false;
+  void playAgainAds() async {
+    try {
+      if (isCallOnce2) return;
+      isCallOnce2 = true;
+      emit(state.copyWith(isShowWrongAds: false));
+      final response = await _playGameRepository.getQuestions();
+      final questions = shuffleAnswer(response);
+      emit(state.copyWith(questions: questions));
+      saveQuestionLocal();
+      reset();
+      countDown();
     } catch (e) {
       if (e is StateError) {
         cancelCountDown();
@@ -584,19 +616,6 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     }
   }
 
-  Future<void> chiatay() async {
-    try {
-      await playAudio(SoundManager.chiatay(mc)[Random().nextInt(2)]);
-    } catch (e) {
-      if (e is StateError) {
-        cancelCountDown();
-        stopAudio();
-        return;
-      }
-      rethrow;
-    }
-  }
-
   void outTime() async {
     try {
       clearDataLocal();
@@ -610,7 +629,6 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       }
       updatePoint(getQuestionByLevel(level));
       await playAudio(SoundManager.outTime());
-      await chiatay();
     } catch (e) {
       if (e is StateError) {
         cancelCountDown();
@@ -682,7 +700,6 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       updatePoint(getQuestionByLevel(state.level));
       clearDataLocal();
       await playAudio(SoundManager.win(mc));
-      await chiatay();
     } catch (e) {
       if (e is StateError) {
         cancelCountDown();

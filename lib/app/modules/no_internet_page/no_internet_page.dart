@@ -1,7 +1,10 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:millionaire_mobile/app/main_router.dart';
 
 import '../../core/values/app_colors.dart';
 import '../../core/values/text_styles.dart';
@@ -9,8 +12,32 @@ import '../../core/widgets/button/primary_button.dart';
 
 const platform = MethodChannel('congthiep');
 
-class NoInternetPage extends StatelessWidget {
+class NoInternetPage extends StatefulWidget {
   const NoInternetPage({super.key});
+
+  @override
+  State<NoInternetPage> createState() => _NoInternetPageState();
+}
+
+class _NoInternetPageState extends State<NoInternetPage> {
+  void initConnectionListen() {
+    Connectivity().onConnectivityChanged.listen((result) {
+      if (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi ||
+          result == ConnectivityResult.ethernet) {
+        context.router.pushAndPopUntil(
+          const LoginViewRoute(),
+          predicate: (_) => false,
+        );
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    initConnectionListen();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +45,6 @@ class NoInternetPage extends StatelessWidget {
       backgroundColor: AppColors.colorFFFFFFFF,
       body: PopScope(
         canPop: false,
-        onPopInvoked: (e) {
-          return;
-        },
         child: SizedBox(
           width: double.infinity,
           child: Column(

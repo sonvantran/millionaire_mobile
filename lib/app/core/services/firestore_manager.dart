@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/model/user.dart';
 
@@ -9,6 +10,9 @@ class FirestoreManager {
 
   Future<User?> updateUser(User user) async {
     await firestore.collection("users").doc(user.deviceId).set(user.toMap());
+    final pre = await SharedPreferences.getInstance();
+    await pre.setInt("lastPoint", user.point);
+    await pre.setString("lastName", user.name);
     return user;
   }
 
@@ -71,7 +75,7 @@ class FirestoreManager {
             isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
         .where("play_date", isLessThan: Timestamp.fromDate(endDate))
         .orderBy("play_date", descending: true)
-        .limit(100)
+        .limit(60)
         .get();
 
     List<User> users = qs.docs
@@ -87,7 +91,7 @@ class FirestoreManager {
     QuerySnapshot qs = await firestore
         .collection("users")
         .orderBy("score", descending: true)
-        .limit(100)
+        .limit(60)
         .get();
 
     List<User> users = qs.docs

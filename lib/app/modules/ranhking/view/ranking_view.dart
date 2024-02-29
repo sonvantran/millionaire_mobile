@@ -21,7 +21,9 @@ import '../widget/title_ranking.dart';
 import '../widget/user_ranking_item.dart';
 
 class RankingView extends StatefulWidget {
-  const RankingView({super.key});
+  const RankingView({super.key, required this.user});
+
+  final User user;
 
   @override
   State<RankingView> createState() => _RankingViewState();
@@ -36,7 +38,8 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => RankingCubit(context.read<RankingRepository>())..init(),
+      create: (_) =>
+          RankingCubit(context.read<RankingRepository>())..init(widget.user),
       child: _buildPage(context),
     );
   }

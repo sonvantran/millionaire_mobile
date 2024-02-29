@@ -139,13 +139,12 @@ class _CategoryState extends State<Category> {
                     if (index == randomIndex)
                       !isLoadFail
                           ? Container(
-                              width: 160.w,
+                              width: 200.w,
                               height: 160.h,
                               decoration: BoxDecoration(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(8.r)),
                               ),
-                              padding: EdgeInsets.symmetric(vertical: 8.h),
                               margin: EdgeInsets.symmetric(horizontal: 4.w),
                               child: SkyNativeAdWidget(
                                 onAdFailedToLoad: () => setState(() {
