@@ -35,16 +35,18 @@ class TitleRanking extends StatelessWidget {
       ),
       child: check
           ? Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   "Hạng",
                   style: TextStyles.mediumWhiteS14,
                 ),
                 SizedBox(width: 8.h),
-                Text(
-                  "Người chơi",
-                  style: TextStyles.mediumWhiteS14,
+                Expanded(
+                  child: Text(
+                    "Người chơi",
+                    textAlign: TextAlign.center,
+                    style: TextStyles.mediumWhiteS14,
+                  ),
                 ),
               ],
             )

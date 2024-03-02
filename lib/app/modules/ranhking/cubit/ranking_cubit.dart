@@ -59,7 +59,8 @@ class RankingCubit extends Cubit<RankingState> {
     final pre = await SharedPreferences.getInstance();
     final x = pre.getInt("lastPoint");
     final y = pre.getString("lastName");
-    if (x != user.point || y != user.name) {
+    final z = pre.getString("imageUser");
+    if (x != user.point || y != user.name || z != user.image) {
       await _rankingRepository.updateUser(user: user);
     }
   }

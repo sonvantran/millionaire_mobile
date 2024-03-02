@@ -8,6 +8,7 @@ import 'package:sky_ads/sky_ads.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/values/app_colors.dart';
+import '../../../core/values/show_message_internal.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/appBar/custom_appbar.dart';
 import '../../../data/model/user.dart';
@@ -49,13 +50,26 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
     "Tỷ phú",
   ];
   Widget _buildPage(BuildContext context) {
-    return BlocListener<StoreCubit, StoreState>(
-      listenWhen: (previous, current) => previous.user != current.user,
-      listener: (context, state) {
-        if (state.user != null) {
-          widget.cubit.setUser(state.user!);
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<StoreCubit, StoreState>(
+          listenWhen: (previous, current) => previous.user != current.user,
+          listener: (context, state) {
+            if (state.user != null) {
+              widget.cubit.setUser(state.user!);
+            }
+          },
+        ),
+        BlocListener<StoreCubit, StoreState>(
+          listenWhen: (previous, current) =>
+              previous.message != current.message,
+          listener: (context, state) {
+            if (state.message != null) {
+              ShowMessageInternal.showOverlay(context, state.message!);
+            }
+          },
+        ),
+      ],
       child: BlocBuilder<StoreCubit, StoreState>(builder: (context, state) {
         final store = state.store?.store;
         return Scaffold(

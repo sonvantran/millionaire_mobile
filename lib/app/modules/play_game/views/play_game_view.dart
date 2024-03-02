@@ -124,7 +124,7 @@ class _PlayGamePageState extends State<PlayGamePage>
 
   void _loadRewardedAd() {
     RewardedAd.load(
-      adUnitId: AdsManager.rewardedAdUnitId,
+      adUnitId: AdsManager.rewardedAdUnitId2,
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {

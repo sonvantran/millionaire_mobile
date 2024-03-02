@@ -175,10 +175,9 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                                           (BuildContext context, int index) {
                                         if ((index - 2) % 10 != 0) {
                                           return UserRankingItem(
-                                            name: users![index].name,
+                                            user: users![index],
+                                            // name: users![index].name,
                                             number: index + 1,
-                                            point:
-                                                '${formatNumber(users[index].point)} đ',
                                           );
                                         } else {
                                           return Column(
@@ -187,10 +186,8 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                                               const SkyNativeAdWidget(
                                                   size: NativeAdSize.small),
                                               UserRankingItem(
-                                                name: users![index].name,
+                                                user: users![index],
                                                 number: index + 1,
-                                                point:
-                                                    '${formatNumber(users[index].point)} đ',
                                               ),
                                             ],
                                           );
@@ -220,32 +217,6 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
       }),
     );
   }
-
-  // void createBannerAd() {
-  //   try {
-  //     _bannerAd = BannerAd(
-  //       size: AdSize.banner,
-  //       adUnitId: AdsManager.bannerAdUnitId,
-  //       listener: BannerAdListener(
-  //         onAdLoaded: (ad) {
-  //           setState(() {
-  //             isBannerAdReady = true;
-  //           });
-  //         },
-  //         onAdFailedToLoad: (ad, err) {
-  //           ad.dispose();
-  //           debugPrint('Failed to load a banner ad: ${err.message}');
-  //         },
-  //         onAdOpened: (ad) => debugPrint('Ad opened'),
-  //         onAdClosed: (ad) => debugPrint('Ad closed'),
-  //         onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
-  //       ),
-  //       request: const AdRequest(),
-  //     )..load();
-  //   } catch (e) {
-  //     _bannerAd = null;
-  //   }
-  // }
 
   String formatNumber(int i) {
     String formatted = "";

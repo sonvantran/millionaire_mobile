@@ -96,6 +96,18 @@ class StoreCubit extends Cubit<StoreState> {
     getStore();
   }
 
+  void selectAvatar(String image) async {
+    emit(state.copyWith(message: null));
+    if (state.user?.image == image) {
+      emit(state.copyWith(message: 'Đã chọn rồi!'));
+    } else {
+      emit(state.copyWith(user: state.user?.copyWith(image: image)));
+      final pre = await SharedPreferences.getInstance();
+      pre.setString("imageUser", image);
+      emit(state.copyWith(message: 'Chọn Avatar thành công!'));
+    }
+  }
+
   Future<void> buy(ItemModel item) async {
     if (state.store == null) return;
     SharedPreferences pre = await SharedPreferences.getInstance();

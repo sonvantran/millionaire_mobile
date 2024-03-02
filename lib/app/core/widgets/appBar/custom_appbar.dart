@@ -21,13 +21,14 @@ class CustomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.9,
+      width: MediaQuery.of(context).size.width * 0.98,
       margin: EdgeInsets.only(top: top ?? 0, bottom: bottom ?? 0),
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       decoration: BoxDecoration(
-          border: Border.all(color: AppColors.colorFF77dbe5),
-          color: AppColors.colorFF2a0e5c,
-          borderRadius: const BorderRadius.all(Radius.circular(16))),
+        border: Border.all(color: AppColors.colorFF77dbe5),
+        color: AppColors.colorFF2a0e5c,
+        borderRadius: BorderRadius.all(Radius.circular(16.r)),
+      ),
       child: Row(
         children: [
           if (leading != null) leading!,

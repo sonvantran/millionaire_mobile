@@ -1,0 +1,64 @@
+import 'dart:math';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+import '../../../data/model/user.dart';
+import '../../values/app_colors.dart';
+import '../../values/text_styles.dart';
+
+class Avatar extends StatelessWidget {
+  const Avatar({super.key, required this.user, this.radius});
+
+  final User user;
+  final double? radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: radius ?? 40.w,
+      height: radius ?? 40.h,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: generateRandomDarkColor(),
+        border: Border.all(color: AppColors.colorFF77dbe5),
+      ),
+      child: user.image != null
+          ? ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(100.r)),
+              child: CachedNetworkImage(
+                colorBlendMode: BlendMode.darken,
+                width: radius ?? 40.w,
+                height: radius ?? 40.h,
+                fit: BoxFit.cover,
+                imageUrl: user.image!,
+                placeholder: (context, url) =>
+                    const SpinKitFadingCircle(color: AppColors.colorFF57B9FB),
+                errorWidget: (context, url, error) {
+                  return const Icon(Icons.error);
+                },
+              ),
+            )
+          : Text(
+              (user.name.isEmpty ? '' : user.name[0]).toUpperCase(),
+              textAlign: TextAlign.center,
+              style: TextStyles.mediumWhiteS14,
+            ),
+    );
+  }
+
+  Color generateRandomDarkColor() {
+    Random random = Random();
+
+    int red = random.nextInt(128);
+    int green = random.nextInt(128);
+    int blue = random.nextInt(128);
+
+    Color color = Color.fromARGB(255, red, green, blue);
+
+    return color;
+  }
+}

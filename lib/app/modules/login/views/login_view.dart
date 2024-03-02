@@ -12,10 +12,12 @@ import '../../../core/values/custom_color.dart';
 import '../../../core/values/show_message_internal.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/appBar/custom_appbar.dart';
+import '../../../core/widgets/avatar/avatar.dart';
 import '../../../core/widgets/popup/popup_notice.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/widgets/popup/popup_primary.dart';
 import '../../../data/local_saver/question_level.dart';
+import '../../../data/model/questions_model_hive.dart';
 import '../../../main_router.dart';
 import '../cubit/login_cubit.dart';
 import '../cubit/login_state.dart';
@@ -72,16 +74,19 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   }
 
   void initConnectionListen() {
+    if (!mounted) return;
     Connectivity().onConnectivityChanged.listen((result) {
+      if (!mounted) return;
       if (result != ConnectivityResult.mobile &&
           result != ConnectivityResult.wifi &&
           result != ConnectivityResult.ethernet) {
         if (!context.mounted) return;
         setState(() => isAppConnection = false);
-        originCubit?.stopAudio();
         context.pushRoute(const NoInternetPageRoute());
       } else {
         setState(() => isAppConnection = true);
+        if (!context.mounted) return;
+        context.read<LoginCubit>().login();
       }
     });
     _checkInternetConnection();
@@ -89,15 +94,16 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
   Future<void> _checkInternetConnection() async {
     var result = await Connectivity().checkConnectivity();
+    if (!mounted) return;
     if (result != ConnectivityResult.mobile &&
         result != ConnectivityResult.wifi &&
         result != ConnectivityResult.ethernet) {
       if (!context.mounted) return;
       setState(() => isAppConnection = false);
-      originCubit?.stopAudio();
       context.pushRoute(const NoInternetPageRoute());
     } else {
       setState(() => isAppConnection = true);
+      if (!context.mounted) return;
     }
   }
 
@@ -111,6 +117,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       if (isAppHiden) {
         if (!isAppConnection) return;
+        if (!mounted) return;
         EasyLoading.show(status: 'Loading Ads...');
         setState(() => isBlock = true);
         SkyAds.instance.showAppOpenAd(
@@ -133,6 +140,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       }
       Future.delayed(const Duration(seconds: 10), () {
         if (isBlock) {
+          if (!mounted) return;
           setState(() => isBlock = false);
           EasyLoading.dismiss();
         }
@@ -150,6 +158,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   void dispose() {
     _nameController.dispose();
     WidgetsBinding.instance.removeObserver(this);
+    originCubit?.dispose();
     super.dispose();
   }
 
@@ -225,6 +234,9 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                     children: [
                       CustomAppBar(
                         top: 32.h,
+                        leading: state.user != null
+                            ? Avatar(user: state.user!)
+                            : null,
                         title: state.user != null
                             ? state.user!.name
                             : 'Ai là triệu phú',
@@ -278,47 +290,12 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                           SecondButton(
                             gradient: CustomColor.dung,
                             width: MediaQuery.of(context).size.width * 0.70,
-                            onTap: () async {
-                              final checkQuestion = await checkHasQuestion();
-                              if (!context.mounted) return;
-                              if (!checkQuestion) {
-                                cubit.initQuestion();
-                                ShowMessageInternal.showOverlay(
-                                    context, "Vui lòng thử lại sau!");
-                                return;
-                              }
-                              AnalyticsManager.sendAnalyticsEvent(
-                                  'The_user_want_to_play_game');
-
-                              if (state.hasDataLocal) {
-                                if (state.user == null) {
-                                  ShowMessageInternal.showOverlay(context,
-                                      "Hệ thống tạm thời không tính điểm");
-                                }
-                                await context.pushRoute(PlayGameViewRoute(
-                                  isMute: state.isMute,
-                                  mc: state.chooseMC,
-                                  user: state.user,
-                                  questionModelHive: question[0],
-                                  cubit: cubit,
-                                ));
-                                return;
-                              }
-                              if (state.hasUser) {
-                                if (state.user == null) {
-                                  ShowMessageInternal.showOverlay(context,
-                                      "Hệ thống tạm thời không tính điểm");
-                                }
-                                await context.pushRoute(PlayGameViewRoute(
-                                  mc: state.chooseMC,
-                                  isMute: state.isMute,
-                                  user: state.user,
-                                  cubit: cubit,
-                                ));
-                              } else {
-                                await _showdialog(context, cubit);
-                              }
-                            },
+                            onTap: () => playGame(
+                              context,
+                              cubit,
+                              state,
+                              question,
+                            ),
                             text: !state.hasDataLocal ? "Bắt đầu" : "Tiếp tục",
                           ),
                           if (state.hasDataLocal)
@@ -441,6 +418,51 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         );
       }),
     );
+  }
+
+  bool canPlay = true;
+  void playGame(BuildContext context, LoginCubit cubit, LoginState state,
+      List<QuestionModelHive> questions) async {
+    if (!canPlay) return;
+    canPlay = false;
+    final checkQuestion = await checkHasQuestion();
+    canPlay = true;
+    if (!mounted) return;
+    if (!checkQuestion) {
+      cubit.callQuestionAgain();
+      ShowMessageInternal.showOverlay(context, "Vui lòng chờ tải bộ câu hỏi!");
+      return;
+    }
+    AnalyticsManager.sendAnalyticsEvent('The_user_want_to_play_game');
+
+    if (state.hasDataLocal) {
+      if (state.user == null) {
+        ShowMessageInternal.showOverlay(
+            context, "Hệ thống tạm thời không tính điểm");
+      }
+      await context.pushRoute(PlayGameViewRoute(
+        isMute: state.isMute,
+        mc: state.chooseMC,
+        user: state.user,
+        questionModelHive: questions[0],
+        cubit: cubit,
+      ));
+      return;
+    }
+    if (state.hasUser) {
+      if (state.user == null) {
+        ShowMessageInternal.showOverlay(
+            context, "Hệ thống tạm thời không tính điểm");
+      }
+      await context.pushRoute(PlayGameViewRoute(
+        mc: state.chooseMC,
+        isMute: state.isMute,
+        user: state.user,
+        cubit: cubit,
+      ));
+    } else {
+      await _showdialog(context, cubit);
+    }
   }
 
   Future<void> _showdialog(BuildContext context, LoginCubit cubit) async {

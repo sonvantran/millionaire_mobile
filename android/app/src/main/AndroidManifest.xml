@@ -14,8 +14,10 @@
 
     <application
         android:label="Ai là triệu phú"
+        android:hardwareAccelerated="false"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
+        android:largeHeap="true"
         android:requestLegacyExternalStorage="true">
 
         <activity

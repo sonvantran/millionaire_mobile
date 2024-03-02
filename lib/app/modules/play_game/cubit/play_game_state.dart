@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../data/model/question.dart';
 import '../../../data/model/user.dart';
@@ -46,7 +45,6 @@ class PlayGameState with _$PlayGameState {
     int? startCounter,
     Timer? timer,
     String? point,
-    AudioPlayer? player,
     User? user,
     Error? error,
   }) = _PlayGameState;

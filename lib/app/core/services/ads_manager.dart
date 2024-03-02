@@ -26,4 +26,12 @@ class AdsManager {
       return 'ca-app-pub-9696384850738948/7654904404';
     }
   }
+
+  static String get rewardedAdUnitId2 {
+    if (environment == Environment.DEVELOPMENT) {
+      return 'ca-app-pub-3940256099942544/5224354917';
+    } else {
+      return 'ca-app-pub-9696384850738948/7154101051';
+    }
+  }
 }

@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:math';
-
-import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volume_controller/volume_controller.dart';
 import '../../../core/analytics/analytics_manager.dart';
@@ -28,6 +27,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   final int mc;
   final bool isMute;
   final User? user;
+  AudioPlayer player = AudioPlayer();
 
   void reset() {
     try {
@@ -155,22 +155,16 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   void setIsMute({bool? isMute}) async {
     try {
       if (isMute != null && isMute) {
-        final player = state.player;
-        if (player != null) {
-          await player.setVolume(0);
-          emit(state.copyWith(isMute: true));
-          return;
-        }
+        await player.setVolume(0);
+        emit(state.copyWith(isMute: true));
+        return;
       }
-      final player = state.player;
-      if (player != null) {
-        if (state.isMute) {
-          await player.setVolume(1);
-        } else {
-          await player.setVolume(0);
-        }
-        emit(state.copyWith(isMute: !state.isMute));
+      if (state.isMute) {
+        await player.setVolume(1);
+      } else {
+        await player.setVolume(0);
       }
+      emit(state.copyWith(isMute: !state.isMute));
     } catch (e) {
       if (e is StateError) return;
     }
@@ -321,6 +315,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
 
   void updatePoint(String point) async {
     try {
+      cancelCountDown();
       emit(state.copyWith(saveDone: false));
       final score = int.parse(point.replaceAll('.', ''));
       if (user == null) {
@@ -328,16 +323,22 @@ class PlayGameCubit extends Cubit<PlayGameState> {
         return;
       }
       final x = User(
-          name: state.user?.name ?? "",
-          point: (state.user?.point ?? 0) + score,
-          deviceId: user!.deviceId,
-          playDate: Timestamp.now());
+        name: state.user?.name ?? "",
+        point: (state.user?.point ?? 0) + score,
+        deviceId: user!.deviceId,
+        playDate: Timestamp.now(),
+        image: state.user?.image,
+      );
       emit(state.copyWith(user: x));
       await _playGameRepository.updateUser(user: x);
       AnalyticsManager.postScore(score, state.level);
       emit(state.copyWith(saveDone: true));
     } catch (e) {
       if (e is StateError) return;
+      if (e is BadRequestException) {
+        emit(state.copyWith(saveDone: true));
+        return;
+      }
       rethrow;
     }
   }
@@ -345,21 +346,18 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   void init(QuestionModelHive? questionModelHive) async {
     try {
       setIsLoading(true);
-      final player = AudioPlayer();
       final response = questionModelHive == null
           ? await _playGameRepository.getQuestions()
           : questionModelHive.questions;
       final questions = shuffleAnswer(response);
       emit(state.copyWith(
         questions: questions,
-        player: player,
         isMute: isMute,
         user: user,
         chooseMC: mc,
       ));
       if (isMute) {
-        final player = state.player;
-        if (player != null) player.setVolume(0);
+        player.setVolume(0);
       }
       if (questionModelHive != null) {
         emit(state.copyWith(
@@ -375,9 +373,8 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     } catch (e) {
       if (e is BadRequestException) {
         setIsLoading(true);
-        final player = AudioPlayer();
         final questions = QuestionLevel.questionPoints(mc);
-        emit(state.copyWith(questions: questions, player: player));
+        emit(state.copyWith(questions: questions));
 
         await playAudio(SoundManager.startGame(mc));
         await startFirstQuestion();
@@ -421,9 +418,8 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     } catch (e) {
       if (e is BadRequestException) {
         setIsLoading(true);
-        final player = AudioPlayer();
         final questions = QuestionLevel.questionPoints(mc);
-        emit(state.copyWith(questions: questions, player: player));
+        emit(state.copyWith(questions: questions));
 
         await playAudio(SoundManager.startGame(mc));
         await startFirstQuestion();
@@ -442,8 +438,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
 
   void stopAudio() {
     try {
-      final player = state.player;
-      if (player != null) player.stop();
+      player.stop();
     } catch (e) {
       if (e is StateError) return;
       rethrow;
@@ -452,18 +447,15 @@ class PlayGameCubit extends Cubit<PlayGameState> {
 
   Future<Duration?> getDuration(String name) async {
     try {
-      final player = state.player;
-      if (player != null) {
-        setIsAccessAnswer(false);
-        final assetSource =
-            soundPath(state.isMute ? SoundManager.muteSound : name);
-        final source = AssetSource(assetSource);
-        await player.setSource(source);
-        final duration = await player.getDuration();
-        setIsAccessAnswer(true);
-        return duration;
-      }
-      return null;
+      setIsAccessAnswer(false);
+      final assetSource =
+          soundPath(state.isMute ? SoundManager.muteSound : name);
+      // final source = AssetSource(assetSource);
+      final duration = await player.setAsset(assetSource);
+      // await player.setSource(source);
+      // final duration = await player.getDuration();
+      setIsAccessAnswer(true);
+      return duration;
     } catch (e) {
       rethrow;
     }
@@ -471,17 +463,16 @@ class PlayGameCubit extends Cubit<PlayGameState> {
 
   Future<void> playAudio(String name) async {
     try {
-      final player = state.player;
-      if (player != null) {
-        setIsAccessAnswer(false);
-        final systemSound = await VolumeController().getVolume();
-        final assetSource = soundPath(
-            state.isMute || systemSound <= 0.1 ? SoundManager.muteSound : name);
-        final source = AssetSource(assetSource);
-        await player.play(source);
-        await player.onPlayerComplete.first;
-        setIsAccessAnswer(true);
-      }
+      setIsAccessAnswer(false);
+      final systemSound = await VolumeController().getVolume();
+      final assetSource = soundPath(
+          state.isMute || systemSound <= 0.1 ? SoundManager.muteSound : name);
+      // final source = AssetSource(assetSource);
+      await player.setAsset(assetSource);
+      await player.play();
+      await player.playerStateStream.firstWhere(
+          (state) => state.processingState == ProcessingState.completed);
+      setIsAccessAnswer(true);
     } catch (e) {
       if (e is StateError) {
         stopAudio();
@@ -745,10 +736,12 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     });
   }
 
-  String soundPath(String name) => 'audios/$name.mp3';
+  String soundPath(String name) => 'assets/audios/$name.mp3';
 
   void dispose() {
-    if (state.player?.state == PlayerState.playing) state.player?.stop();
+    player.stop();
+    player.dispose();
+
     state.timer?.cancel();
   }
 

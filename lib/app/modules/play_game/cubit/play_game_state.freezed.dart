@@ -51,7 +51,6 @@ mixin _$PlayGameState {
   int? get startCounter => throw _privateConstructorUsedError;
   Timer? get timer => throw _privateConstructorUsedError;
   String? get point => throw _privateConstructorUsedError;
-  AudioPlayer? get player => throw _privateConstructorUsedError;
   User? get user => throw _privateConstructorUsedError;
   Error? get error => throw _privateConstructorUsedError;
 
@@ -102,7 +101,6 @@ abstract class $PlayGameStateCopyWith<$Res> {
       int? startCounter,
       Timer? timer,
       String? point,
-      AudioPlayer? player,
       User? user,
       Error? error});
 }
@@ -155,7 +153,6 @@ class _$PlayGameStateCopyWithImpl<$Res, $Val extends PlayGameState>
     Object? startCounter = freezed,
     Object? timer = freezed,
     Object? point = freezed,
-    Object? player = freezed,
     Object? user = freezed,
     Object? error = freezed,
   }) {
@@ -300,10 +297,6 @@ class _$PlayGameStateCopyWithImpl<$Res, $Val extends PlayGameState>
           ? _value.point
           : point // ignore: cast_nullable_to_non_nullable
               as String?,
-      player: freezed == player
-          ? _value.player
-          : player // ignore: cast_nullable_to_non_nullable
-              as AudioPlayer?,
       user: freezed == user
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
@@ -360,7 +353,6 @@ abstract class _$$_PlayGameStateCopyWith<$Res>
       int? startCounter,
       Timer? timer,
       String? point,
-      AudioPlayer? player,
       User? user,
       Error? error});
 }
@@ -411,7 +403,6 @@ class __$$_PlayGameStateCopyWithImpl<$Res>
     Object? startCounter = freezed,
     Object? timer = freezed,
     Object? point = freezed,
-    Object? player = freezed,
     Object? user = freezed,
     Object? error = freezed,
   }) {
@@ -556,10 +547,6 @@ class __$$_PlayGameStateCopyWithImpl<$Res>
           ? _value.point
           : point // ignore: cast_nullable_to_non_nullable
               as String?,
-      player: freezed == player
-          ? _value.player
-          : player // ignore: cast_nullable_to_non_nullable
-              as AudioPlayer?,
       user: freezed == user
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
@@ -611,7 +598,6 @@ class _$_PlayGameState extends _PlayGameState {
       this.startCounter,
       this.timer,
       this.point,
-      this.player,
       this.user,
       this.error})
       : _questions = questions,
@@ -725,15 +711,13 @@ class _$_PlayGameState extends _PlayGameState {
   @override
   final String? point;
   @override
-  final AudioPlayer? player;
-  @override
   final User? user;
   @override
   final Error? error;
 
   @override
   String toString() {
-    return 'PlayGameState(questions: $questions, isShowInstruction: $isShowInstruction, isDelete2Answers: $isDelete2Answers, isCall: $isCall, isShowCall: $isShowCall, isConsultant: $isConsultant, isChart: $isChart, isFalse: $isFalse, isWin: $isWin, isChooseA: $isChooseA, isTrueA: $isTrueA, isChooseB: $isChooseB, isTrueB: $isTrueB, isChooseC: $isChooseC, isTrueC: $isTrueC, isChooseD: $isChooseD, isTrueD: $isTrueD, isHideA: $isHideA, isHideB: $isHideB, isHideC: $isHideC, isHideD: $isHideD, isShowGameResult: $isShowGameResult, isMute: $isMute, isLoading: $isLoading, isAccessAnswer: $isAccessAnswer, saveDone: $saveDone, loadingDh: $loadingDh, isShowWrongAds: $isShowWrongAds, chooseDh: $chooseDh, chooseMC: $chooseMC, level: $level, timeCounter: $timeCounter, startCounter: $startCounter, timer: $timer, point: $point, player: $player, user: $user, error: $error)';
+    return 'PlayGameState(questions: $questions, isShowInstruction: $isShowInstruction, isDelete2Answers: $isDelete2Answers, isCall: $isCall, isShowCall: $isShowCall, isConsultant: $isConsultant, isChart: $isChart, isFalse: $isFalse, isWin: $isWin, isChooseA: $isChooseA, isTrueA: $isTrueA, isChooseB: $isChooseB, isTrueB: $isTrueB, isChooseC: $isChooseC, isTrueC: $isTrueC, isChooseD: $isChooseD, isTrueD: $isTrueD, isHideA: $isHideA, isHideB: $isHideB, isHideC: $isHideC, isHideD: $isHideD, isShowGameResult: $isShowGameResult, isMute: $isMute, isLoading: $isLoading, isAccessAnswer: $isAccessAnswer, saveDone: $saveDone, loadingDh: $loadingDh, isShowWrongAds: $isShowWrongAds, chooseDh: $chooseDh, chooseMC: $chooseMC, level: $level, timeCounter: $timeCounter, startCounter: $startCounter, timer: $timer, point: $point, user: $user, error: $error)';
   }
 
   @override
@@ -795,7 +779,6 @@ class _$_PlayGameState extends _PlayGameState {
                 other.startCounter == startCounter) &&
             (identical(other.timer, timer) || other.timer == timer) &&
             (identical(other.point, point) || other.point == point) &&
-            (identical(other.player, player) || other.player == player) &&
             (identical(other.user, user) || other.user == user) &&
             (identical(other.error, error) || other.error == error));
   }
@@ -838,7 +821,6 @@ class _$_PlayGameState extends _PlayGameState {
         startCounter,
         timer,
         point,
-        player,
         user,
         error
       ]);
@@ -887,7 +869,6 @@ abstract class _PlayGameState extends PlayGameState {
       final int? startCounter,
       final Timer? timer,
       final String? point,
-      final AudioPlayer? player,
       final User? user,
       final Error? error}) = _$_PlayGameState;
   const _PlayGameState._() : super._();
@@ -962,8 +943,6 @@ abstract class _PlayGameState extends PlayGameState {
   Timer? get timer;
   @override
   String? get point;
-  @override
-  AudioPlayer? get player;
   @override
   User? get user;
   @override

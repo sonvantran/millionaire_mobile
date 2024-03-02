@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:millionaire_mobile/app/main_router.dart';
 
 import '../../core/values/app_colors.dart';
 import '../../core/values/text_styles.dart';
@@ -21,14 +20,14 @@ class NoInternetPage extends StatefulWidget {
 
 class _NoInternetPageState extends State<NoInternetPage> {
   void initConnectionListen() {
+    if (!mounted) return;
     Connectivity().onConnectivityChanged.listen((result) {
+      if(!mounted) return;
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi ||
           result == ConnectivityResult.ethernet) {
-        context.router.pushAndPopUntil(
-          const LoginViewRoute(),
-          predicate: (_) => false,
-        );
+        if (!context.mounted) return;
+        context.router.popUntilRoot();
       }
     });
   }

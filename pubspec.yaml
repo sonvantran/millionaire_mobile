@@ -1,7 +1,7 @@
 name: millionaire_mobile
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.0.16+34
+version: 1.0.17+35
 # flutter pub run build_runner build --delete-conflicting-outputs
 # dart run flutter_native_splash:create
 # flutter build appbundle --flavor prod lib/main_prod.dart --release./gradlew build
@@ -25,7 +25,6 @@ dependencies:
     sdk: flutter
   json_serializable: 6.6.0
   share: 2.0.4
-  audioplayers: 5.2.1
   fl_chart: 0.63.0
   google_mobile_ads: 4.0.0
   path_provider: 2.1.0
@@ -55,6 +54,7 @@ dependencies:
   flutter_easyloading: 3.0.5
   firebase_storage: 11.2.7
   connectivity_plus: 5.0.2
+  just_audio: 0.9.36
 
 dev_dependencies:
   flutter_test:

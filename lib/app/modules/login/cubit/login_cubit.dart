@@ -2,10 +2,11 @@ import 'dart:io';
 import 'dart:math';
 import 'package:android_id/android_id.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +14,7 @@ import 'package:in_app_review/in_app_review.dart';
 import 'package:millionaire_mobile/app/data/model/user.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/analytics/analytics_manager.dart';
+import '../../../core/services/question_handle.dart';
 import '../../../network/exceptions/bad_request_exception.dart';
 import '../../../core/services/question_box.dart';
 import '../../../data/local_saver/sound_manager.dart';
@@ -24,6 +26,8 @@ class LoginCubit extends Cubit<LoginState> {
 
   final LoginRepository _loginRepository;
   bool isBG = false;
+  AudioPlayer player = AudioPlayer();
+  AudioPlayer player2 = AudioPlayer();
 
   void setIsMute(bool isMute) {
     emit(state.copyWith(isMute: isMute));
@@ -33,14 +37,24 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       Directory documentsDirectory = await getApplicationDocumentsDirectory();
       String path = join(documentsDirectory.path, 'question.db');
-
-      final prefs = await SharedPreferences.getInstance();
       if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound ||
-          File(path).lengthSync() == 0) {
+          await File(path).length() == 0) {
         Reference ref = FirebaseStorage.instance.ref("Question.sqlite");
         await ref.writeToFile(File(path));
-        await prefs.setBool("isSaveQuestionDone", true);
+        emit(state.copyWith(message: "Tải xong câu hỏi"));
       }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  void callQuestionAgain() async {
+    try {
+      Directory documentsDirectory = await getApplicationDocumentsDirectory();
+      String path = join(documentsDirectory.path, 'question.db');
+      Reference ref = FirebaseStorage.instance.ref("Question.sqlite");
+      await ref.writeToFile(File(path));
+      emit(state.copyWith(message: "Tải xong câu hỏi"));
     } catch (e) {
       rethrow;
     }
@@ -97,9 +111,7 @@ class LoginCubit extends Cubit<LoginState> {
       }),
     );
     try {
-      // if (await canLaunchUrl(emailLaunchUri)) {
       await launchUrl(emailLaunchUri);
-      // }
     } catch (e) {
       rethrow;
     }
@@ -107,7 +119,11 @@ class LoginCubit extends Cubit<LoginState> {
 
   void login() async {
     try {
-      emit(state.copyWith(player: AudioPlayer(), player2: AudioPlayer()));
+      player.playerStateStream.listen((e) {
+        if (e.processingState == ProcessingState.completed) {
+          player.seek(const Duration(seconds: 0));
+        }
+      });
       playBG();
       setHasDataLocal();
       initQuestion();
@@ -156,11 +172,13 @@ class LoginCubit extends Cubit<LoginState> {
     final deviceId = await getId();
     final name = pre.getString("userName");
     final point = pre.getInt("point");
-    if (name == null || point == null) return null;
+    final image = pre.getString("imageUser");
+    if (name == null || point == null || name.isEmpty) return null;
     return User(
       name: name,
       point: point,
       deviceId: deviceId,
+      image: image,
       playDate: Timestamp.now(),
     );
   }
@@ -178,6 +196,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   void updateUser(String username) async {
     try {
+      if (username.isEmpty) return;
       emit(state.copyWith(message: null));
       final userState = state.user;
 
@@ -188,7 +207,6 @@ class LoginCubit extends Cubit<LoginState> {
           deviceId: deviceId,
           playDate: userState?.playDate ?? Timestamp.now());
       emit(state.copyWith(hasUser: true, user: x));
-      // await _loginRepository.updateUser(user: x);
       final pre = await SharedPreferences.getInstance();
       await pre.setString("userName", username);
     } catch (e) {
@@ -253,12 +271,10 @@ class LoginCubit extends Cubit<LoginState> {
 
   Future<void> stopAudio() async {
     try {
-      final player = state.player;
-      if (player != null && player.state == PlayerState.playing) {
+      if (player.playing) {
         await player.stop();
       }
-      final player2 = state.player2;
-      if (player2 != null && player2.state == PlayerState.playing) {
+      if (player2.playing) {
         await player2.stop();
       }
     } catch (e) {
@@ -271,13 +287,10 @@ class LoginCubit extends Cubit<LoginState> {
 
   void playBG() async {
     try {
-      final player = state.player;
-      if (player != null && !state.isMute) {
+      if (!state.isMute) {
         await stopAudio();
-        final source = AssetSource(soundPath(SoundManager.bgGame));
-        await player.setSource(source);
-        await player.setReleaseMode(ReleaseMode.loop);
-        await player.play(source);
+        await player.setAsset(soundPath(SoundManager.bgGame));
+        await player.play();
         isBG = true;
       }
     } catch (e) {
@@ -292,14 +305,10 @@ class LoginCubit extends Cubit<LoginState> {
 
   void playAudio() async {
     try {
-      final player = state.player;
-      if (player != null && !state.isMute) {
+      if (!state.isMute) {
         await stopAudio();
-        final source =
-            AssetSource(soundPath(SoundManager.bg[Random().nextInt(3)]));
-        await player.setSource(source);
-        await player.setReleaseMode(ReleaseMode.loop);
-        await player.play(source);
+        await player.setAsset(soundPath(SoundManager.bg[Random().nextInt(3)]));
+        await player.play();
         isBG = false;
       }
     } catch (e) {
@@ -318,12 +327,10 @@ class LoginCubit extends Cubit<LoginState> {
 
   Future<void> playAudioo(String name) async {
     try {
-      final player = state.player2;
-      if (player != null && !state.isMute) {
+      if (!state.isMute) {
         final assetSource = soundPath(name);
-        final source = AssetSource(assetSource);
-        await player.play(source);
-        await player.onPlayerComplete.first;
+        await player2.setAsset(assetSource);
+        await player2.play();
       }
     } catch (e) {
       rethrow;
@@ -335,10 +342,22 @@ class LoginCubit extends Cubit<LoginState> {
     setHasDataLocal();
   }
 
-  String soundPath(String name) => 'audios/$name.mp3';
+  String soundPath(String name) => 'assets/audios/$name.mp3';
+
+  void dispose() {
+    player.stop();
+    player.dispose();
+    player2.stop();
+    player2.dispose();
+  }
 }
 
 Future<bool> checkHasQuestion() async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getBool("isSaveQuestionDone") ?? false;
+  try {
+    final x = await QuestionHandle().getQuestionItemFromDatabase(1);
+    debugPrint(x.toString());
+    return true;
+  } catch (e) {
+    return false;
+  }
 }

@@ -23,8 +23,6 @@ mixin _$LoginState {
   String? get validateName => throw _privateConstructorUsedError;
   User? get user => throw _privateConstructorUsedError;
   int get chooseMC => throw _privateConstructorUsedError;
-  AudioPlayer? get player => throw _privateConstructorUsedError;
-  AudioPlayer? get player2 => throw _privateConstructorUsedError;
   String? get message => throw _privateConstructorUsedError;
   Error? get error => throw _privateConstructorUsedError;
 
@@ -47,8 +45,6 @@ abstract class $LoginStateCopyWith<$Res> {
       String? validateName,
       User? user,
       int chooseMC,
-      AudioPlayer? player,
-      AudioPlayer? player2,
       String? message,
       Error? error});
 }
@@ -73,8 +69,6 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
     Object? validateName = freezed,
     Object? user = freezed,
     Object? chooseMC = null,
-    Object? player = freezed,
-    Object? player2 = freezed,
     Object? message = freezed,
     Object? error = freezed,
   }) {
@@ -107,14 +101,6 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
           ? _value.chooseMC
           : chooseMC // ignore: cast_nullable_to_non_nullable
               as int,
-      player: freezed == player
-          ? _value.player
-          : player // ignore: cast_nullable_to_non_nullable
-              as AudioPlayer?,
-      player2: freezed == player2
-          ? _value.player2
-          : player2 // ignore: cast_nullable_to_non_nullable
-              as AudioPlayer?,
       message: freezed == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
@@ -143,8 +129,6 @@ abstract class _$$_LoginStateCopyWith<$Res>
       String? validateName,
       User? user,
       int chooseMC,
-      AudioPlayer? player,
-      AudioPlayer? player2,
       String? message,
       Error? error});
 }
@@ -167,8 +151,6 @@ class __$$_LoginStateCopyWithImpl<$Res>
     Object? validateName = freezed,
     Object? user = freezed,
     Object? chooseMC = null,
-    Object? player = freezed,
-    Object? player2 = freezed,
     Object? message = freezed,
     Object? error = freezed,
   }) {
@@ -201,14 +183,6 @@ class __$$_LoginStateCopyWithImpl<$Res>
           ? _value.chooseMC
           : chooseMC // ignore: cast_nullable_to_non_nullable
               as int,
-      player: freezed == player
-          ? _value.player
-          : player // ignore: cast_nullable_to_non_nullable
-              as AudioPlayer?,
-      player2: freezed == player2
-          ? _value.player2
-          : player2 // ignore: cast_nullable_to_non_nullable
-              as AudioPlayer?,
       message: freezed == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
@@ -232,8 +206,6 @@ class _$_LoginState extends _LoginState {
       this.validateName,
       this.user,
       this.chooseMC = 0,
-      this.player,
-      this.player2,
       this.message,
       this.error})
       : super._();
@@ -258,17 +230,13 @@ class _$_LoginState extends _LoginState {
   @JsonKey()
   final int chooseMC;
   @override
-  final AudioPlayer? player;
-  @override
-  final AudioPlayer? player2;
-  @override
   final String? message;
   @override
   final Error? error;
 
   @override
   String toString() {
-    return 'LoginState(isMute: $isMute, isMuteCheckAgain: $isMuteCheckAgain, hasUser: $hasUser, hasDataLocal: $hasDataLocal, validateName: $validateName, user: $user, chooseMC: $chooseMC, player: $player, player2: $player2, message: $message, error: $error)';
+    return 'LoginState(isMute: $isMute, isMuteCheckAgain: $isMuteCheckAgain, hasUser: $hasUser, hasDataLocal: $hasDataLocal, validateName: $validateName, user: $user, chooseMC: $chooseMC, message: $message, error: $error)';
   }
 
   @override
@@ -287,26 +255,13 @@ class _$_LoginState extends _LoginState {
             (identical(other.user, user) || other.user == user) &&
             (identical(other.chooseMC, chooseMC) ||
                 other.chooseMC == chooseMC) &&
-            (identical(other.player, player) || other.player == player) &&
-            (identical(other.player2, player2) || other.player2 == player2) &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.error, error) || other.error == error));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      isMute,
-      isMuteCheckAgain,
-      hasUser,
-      hasDataLocal,
-      validateName,
-      user,
-      chooseMC,
-      player,
-      player2,
-      message,
-      error);
+  int get hashCode => Object.hash(runtimeType, isMute, isMuteCheckAgain,
+      hasUser, hasDataLocal, validateName, user, chooseMC, message, error);
 
   @JsonKey(ignore: true)
   @override
@@ -324,8 +279,6 @@ abstract class _LoginState extends LoginState {
       final String? validateName,
       final User? user,
       final int chooseMC,
-      final AudioPlayer? player,
-      final AudioPlayer? player2,
       final String? message,
       final Error? error}) = _$_LoginState;
   const _LoginState._() : super._();
@@ -344,10 +297,6 @@ abstract class _LoginState extends LoginState {
   User? get user;
   @override
   int get chooseMC;
-  @override
-  AudioPlayer? get player;
-  @override
-  AudioPlayer? get player2;
   @override
   String? get message;
   @override

@@ -68,6 +68,8 @@ class _CategoryState extends State<Category> {
                         widget.user.point >= int.parse(item.price),
                         onError: () => context.read<StoreCubit>().call(),
                         onBuy: () => context.read<StoreCubit>().buy(item),
+                        onSelectAvatar: () =>
+                            context.read<StoreCubit>().selectAvatar(item.image),
                       ),
                       child: Container(
                         width: 110.w,
@@ -170,6 +172,7 @@ void showBuyPopup(
   bool canBuy, {
   VoidCallback? onError,
   VoidCallback? onBuy,
+  VoidCallback? onSelectAvatar,
 }) {
   showDialog(
     context: context,
@@ -178,6 +181,7 @@ void showBuyPopup(
       model: model,
       onBuy: onBuy,
       onError: onError,
+      onSelectAvatar: onSelectAvatar,
     ),
   );
 }

@@ -1,4 +1,3 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../data/model/user.dart';
 
@@ -16,8 +15,6 @@ class LoginState with _$LoginState {
     String? validateName,
     User? user,
     @Default(0) int chooseMC,
-    AudioPlayer? player,
-    AudioPlayer? player2,
     String? message,
     Error? error,
   }) = _LoginState;

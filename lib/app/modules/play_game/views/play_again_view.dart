@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
@@ -73,7 +73,10 @@ class _PlayAgainViewState extends State<PlayAgainView>
     _rewardedAd?.dispose();
     // isBannerAdReady = false;
     isRewardAdReady = false;
-    if (player.state == PlayerState.playing) player.stop();
+    if (player.playing){
+      player.stop();
+      player.dispose();
+    } 
     super.dispose();
   }
 
@@ -86,15 +89,15 @@ class _PlayAgainViewState extends State<PlayAgainView>
   }
 
   final AudioPlayer player = AudioPlayer();
-  String soundPath(String name) => 'audios/$name.mp3';
+  String soundPath(String name) => 'assets/audios/$name.mp3';
   void chiatay() async {
     try {
       final assetSource = soundPath(widget.isMute
           ? SoundManager.muteSound
           : SoundManager.chiatay(widget.mc)[Random().nextInt(2)]);
-      final source = AssetSource(assetSource);
-      await player.play(source);
-      await player.onPlayerComplete.first;
+      // final source = AssetSource(assetSource);
+      await player.setAsset(assetSource);
+      await player.play();
     } catch (e) {
       rethrow;
     }

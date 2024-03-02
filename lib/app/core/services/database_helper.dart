@@ -21,13 +21,6 @@ class DatabaseHelper {
   Future<Database> initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, 'question.db');
-
-    // if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound) {
-    //   ByteData data = await rootBundle.load('assets/Question.sqlite');
-    //   List<int> bytes = data.buffer.asUint8List();
-    //   await File(path).writeAsBytes(bytes);
-    // }
-
     return await openDatabase(path);
   }
 }

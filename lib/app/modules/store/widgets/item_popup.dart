@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,11 +17,13 @@ class ItemPopup extends StatefulWidget {
     required this.canBuy,
     this.onError,
     this.onBuy,
+    this.onSelectAvatar,
   });
   final ItemModel model;
   final bool canBuy;
   final VoidCallback? onError;
   final VoidCallback? onBuy;
+  final VoidCallback? onSelectAvatar;
 
   @override
   State<ItemPopup> createState() => _ItemPopupState();
@@ -27,6 +31,34 @@ class ItemPopup extends StatefulWidget {
 
 class _ItemPopupState extends State<ItemPopup> {
   bool isMua = false;
+  double _vertical = 15.r;
+  double _horizontal = 15.r;
+  Timer? timer;
+  @override
+  void dispose() {
+    timer?.cancel();
+    timer = null;
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      if (_vertical == 15.r) {
+        setState(() {
+          _vertical = 20.r;
+          _horizontal = 20.r;
+        });
+      } else {
+        setState(() {
+          _vertical = 15.r;
+          _horizontal = 15.r;
+        });
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -59,21 +91,57 @@ class _ItemPopupState extends State<ItemPopup> {
                 overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: 12.h),
-              ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                child: CachedNetworkImage(
-                  fit: BoxFit.cover,
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  imageUrl: widget.model.image,
-                  placeholder: (context, url) => SpinKitFadingCircle(
-                    color: AppColors.colorFF57B9FB,
-                    size: 32.sp,
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                    child: CachedNetworkImage(
+                      fit: BoxFit.cover,
+                      height: MediaQuery.of(context).size.height * 0.4,
+                      imageUrl: widget.model.image,
+                      placeholder: (context, url) => SpinKitFadingCircle(
+                        color: AppColors.colorFF57B9FB,
+                        size: 32.sp,
+                      ),
+                      errorWidget: (context, url, error) {
+                        widget.onError?.call();
+                        return const Icon(Icons.error);
+                      },
+                    ),
                   ),
-                  errorWidget: (context, url, error) {
-                    widget.onError?.call();
-                    return const Icon(Icons.error);
-                  },
-                ),
+                  if (widget.model.isBuy || isMua)
+                    Positioned.fill(
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: InkWell(
+                          onTap: () => widget.onSelectAvatar?.call(),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 500),
+                            padding: EdgeInsets.symmetric(
+                              vertical: _vertical,
+                              horizontal: _horizontal,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.colorFF000000.withOpacity(0.5),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.r)),
+                              border: Border.all(
+                                color: AppColors.colorFFd1b037,
+                                width: 4.r,
+                              ),
+                            ),
+                            child: Text(
+                              "Chọn Avatar",
+                              textAlign: TextAlign.center,
+                              style: TextStyles.boldWhiteS20,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                ],
               ),
               SizedBox(height: 16.h),
               Text(
