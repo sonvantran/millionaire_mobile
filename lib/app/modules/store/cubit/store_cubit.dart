@@ -103,7 +103,7 @@ class StoreCubit extends Cubit<StoreState> {
     } else {
       emit(state.copyWith(user: state.user?.copyWith(image: image)));
       final pre = await SharedPreferences.getInstance();
-      pre.setString("imageUser", image);
+      await pre.setString("imageUser", image);
       emit(state.copyWith(message: 'Chọn Avatar thành công!'));
     }
   }
@@ -145,6 +145,7 @@ class StoreCubit extends Cubit<StoreState> {
         point: userState.point - price,
         deviceId: userState.deviceId,
         playDate: Timestamp.now(),
+        image: userState.image,
       );
       emit(state.copyWith(user: x));
     } catch (e) {

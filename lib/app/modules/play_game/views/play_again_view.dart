@@ -10,6 +10,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
 import 'dart:ui' as ui;
 import '../../../core/analytics/analytics_manager.dart';
@@ -25,6 +26,7 @@ import '../../../data/local_saver/sound_manager.dart';
 import '../../../data/model/user.dart';
 import '../../../main_router.dart';
 import '../../login/cubit/login_cubit.dart';
+import '../../login/widgets/rating_dialog.dart';
 
 class PlayAgainView extends StatefulWidget {
   const PlayAgainView(
@@ -63,7 +65,11 @@ class _PlayAgainViewState extends State<PlayAgainView>
   void initState() {
     _loadRewardedAd();
     chiatay();
-    Future.delayed(const Duration(seconds: 2), () => widget.cubit.playBG());
+    if (mounted) {
+      Future.delayed(const Duration(seconds: 1),
+          () => _showdialogRating(context, widget.cubit));
+      Future.delayed(const Duration(seconds: 2), () => widget.cubit.playBG());
+    }
     super.initState();
   }
 
@@ -73,10 +79,10 @@ class _PlayAgainViewState extends State<PlayAgainView>
     _rewardedAd?.dispose();
     // isBannerAdReady = false;
     isRewardAdReady = false;
-    if (player.playing){
+    if (player.playing) {
       player.stop();
       player.dispose();
-    } 
+    }
     super.dispose();
   }
 
@@ -95,7 +101,6 @@ class _PlayAgainViewState extends State<PlayAgainView>
       final assetSource = soundPath(widget.isMute
           ? SoundManager.muteSound
           : SoundManager.chiatay(widget.mc)[Random().nextInt(2)]);
-      // final source = AssetSource(assetSource);
       await player.setAsset(assetSource);
       await player.play();
     } catch (e) {
@@ -237,32 +242,6 @@ class _PlayAgainViewState extends State<PlayAgainView>
     );
   }
 
-  // void createBannerAd() {
-  //   try {
-  //     _bannerAd = BannerAd(
-  //       size: AdSize.banner,
-  //       adUnitId: AdsManager.bannerAdUnitId,
-  //       listener: BannerAdListener(
-  //         onAdLoaded: (ad) {
-  //           setState(() {
-  //             isBannerAdReady = true;
-  //           });
-  //         },
-  //         onAdFailedToLoad: (ad, err) {
-  //           ad.dispose();
-  //           debugPrint('Failed to load a banner ad: ${err.message}');
-  //         },
-  //         onAdOpened: (ad) => debugPrint('Ad opened'),
-  //         onAdClosed: (ad) => debugPrint('Ad closed'),
-  //         onAdClicked: (ad) => AnalyticsManager.logAdImpression(),
-  //       ),
-  //       request: const AdRequest(),
-  //     )..load();
-  //   } catch (e) {
-  //     _bannerAd = null;
-  //   }
-  // }
-
   void _loadRewardedAd() {
     RewardedAd.load(
       adUnitId: AdsManager.rewardedAdUnitId,
@@ -271,6 +250,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
         onAdLoaded: (ad) {
           ad.fullScreenContentCallback = FullScreenContentCallback(
             onAdDismissedFullScreenContent: (ad) {
+              if (!mounted) return;
               setState(() {
                 ad.dispose();
                 _rewardedAd = null;
@@ -281,7 +261,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
               debugPrint('Ad failed to show: $error');
             },
           );
-
+          if (!mounted) return;
           setState(() {
             _rewardedAd = ad;
             isRewardAdReady = true;
@@ -322,5 +302,22 @@ class _PlayAgainViewState extends State<PlayAgainView>
     } catch (e) {
       rethrow;
     }
+  }
+
+  void _showdialogRating(BuildContext context, LoginCubit cubit) async {
+    final pre = await SharedPreferences.getInstance();
+    final isRating = pre.getBool("isRating") ?? false;
+    if (isRating || !context.mounted) return;
+    await showDialog(
+      context: context,
+      builder: (BuildContext _) {
+        return RatingPopup(
+          onPressed: () {
+            cubit.reviewApp();
+            pre.setBool("isRating", true);
+          },
+        );
+      },
+    );
   }
 }

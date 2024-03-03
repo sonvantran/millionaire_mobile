@@ -43,11 +43,19 @@ class Avatar extends StatelessWidget {
               ),
             )
           : Text(
-              (user.name.isEmpty ? '' : user.name[0]).toUpperCase(),
+              runeSubstring(user.name, 0, 1),
               textAlign: TextAlign.center,
               style: TextStyles.mediumWhiteS14,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 10,
             ),
     );
+  }
+
+  String runeSubstring(String input, int start, int end) {
+    if (input.isEmpty) return '';
+    return String.fromCharCodes(input.runes.toList().sublist(start, end))
+        .toUpperCase();
   }
 
   Color generateRandomDarkColor() {

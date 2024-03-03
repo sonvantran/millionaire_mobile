@@ -141,7 +141,7 @@ class _PlayGamePageState extends State<PlayGamePage>
               debugPrint('Ad failed to show: $error');
             },
           );
-
+          if (!mounted) return;
           setState(() {
             _rewardedAd = ad;
             isRewardAdReady = true;

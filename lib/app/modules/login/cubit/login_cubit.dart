@@ -151,6 +151,7 @@ class LoginCubit extends Cubit<LoginState> {
       ));
       await prefs.setInt("point", user.point);
       await prefs.setString("userName", user.name);
+      if (user.image != null) await prefs.setString("imageUser", user.image!);
       final validateName = await getBadWordsLocal();
       emit(state.copyWith(validateName: validateName));
     } catch (e) {
@@ -202,10 +203,12 @@ class LoginCubit extends Cubit<LoginState> {
 
       final deviceId = await getId();
       final x = User(
-          name: username,
-          point: userState?.point ?? 0,
-          deviceId: deviceId,
-          playDate: userState?.playDate ?? Timestamp.now());
+        name: username,
+        point: userState?.point ?? 0,
+        deviceId: deviceId,
+        playDate: userState?.playDate ?? Timestamp.now(),
+        image: userState?.image,
+      );
       emit(state.copyWith(hasUser: true, user: x));
       final pre = await SharedPreferences.getInstance();
       await pre.setString("userName", username);
@@ -247,10 +250,12 @@ class LoginCubit extends Cubit<LoginState> {
       final userState = state.user;
       if (userState != null) {
         final x = User(
-            name: userState.name,
-            point: (userState.point) + score,
-            deviceId: userState.deviceId,
-            playDate: Timestamp.now());
+          name: userState.name,
+          point: (userState.point) + score,
+          deviceId: userState.deviceId,
+          playDate: Timestamp.now(),
+          image: userState.image,
+        );
         emit(state.copyWith(user: x));
         // await _loginRepository.updateUser(user: x);
         final pre = await SharedPreferences.getInstance();

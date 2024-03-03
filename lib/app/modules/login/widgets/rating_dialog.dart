@@ -52,7 +52,7 @@ class _RatingPopupState extends State<RatingPopup> {
                         : "assets/icons/ic_star_non.svg"));
               },
             ),
-          )
+          ),
         ],
       ),
       actionsAlignment: MainAxisAlignment.center,
