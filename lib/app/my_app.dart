@@ -1,8 +1,8 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sky_ads/sky_ads.dart';
+import 'core/services/ads_manager.dart';
 import 'route_app.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -35,7 +35,13 @@ class _MyAppState extends State<MyApp> {
     } else {
       final remoteConfig = FirebaseRemoteConfig.instance;
       final isFirstAOA = remoteConfig.getBool("isFirstAOA");
-      if (isFirstAOA) SkyAds.instance.showAppOpenAd(forceShow: true);
+      if (isFirstAOA && context.mounted) {
+        SkyAds.instance.showAppOpenAd(
+          context: context,
+          placement: AdsId.adsOpenApp,
+          forceShow: true,
+        );
+      }
     }
   }
 
@@ -50,7 +56,6 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           title: 'First Method',
           home: child,
-          builder: EasyLoading.init(),
         );
       },
       child: const RouteApp(),

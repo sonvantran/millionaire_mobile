@@ -7,6 +7,7 @@ import 'package:sky_ads/sky_ads.dart';
 
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
+import '../../../core/services/ads_manager.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/show_message_internal.dart';
 import '../../../core/values/text_styles.dart';
@@ -126,7 +127,10 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
                                 ),
                               ),
                       ),
-                const SkyNativeAdWidget(size: NativeAdSize.small),
+                const SkyNativeAdWidget(
+                  placement: AdsId.nativeStoreBottom,
+                  size: NativeAdSize.small,
+                ),
               ],
             ),
           ),

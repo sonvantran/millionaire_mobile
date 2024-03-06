@@ -6,6 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sky_ads/native_ad_widget.dart';
+import 'package:sky_ads/sky_ads.dart';
+import '../../../core/services/ads_manager.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../data/model/item_model.dart';
@@ -143,15 +145,17 @@ class _CategoryState extends State<Category> {
                           ? Container(
                               width: 200.w,
                               height: 160.h,
-                              decoration: BoxDecoration(
+                              margin: EdgeInsets.symmetric(horizontal: 4.w),
+                              child: ClipRRect(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(8.r)),
-                              ),
-                              margin: EdgeInsets.symmetric(horizontal: 4.w),
-                              child: SkyNativeAdWidget(
-                                onAdFailedToLoad: () => setState(() {
-                                  isLoadFail = true;
-                                }),
+                                child: SkyNativeAdWidget(
+                                  placement: AdsId.nativeCategory,
+                                  size: NativeAdSize.regular,
+                                  onAdFailedToLoad: () => setState(() {
+                                    isLoadFail = true;
+                                  }),
+                                ),
                               ),
                             )
                           : const SizedBox.shrink(),

@@ -7,6 +7,7 @@ import 'package:sky_ads/native_ad_widget.dart';
 import 'package:sky_ads/sky_ads.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
+import '../../../core/services/ads_manager.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/show_message_internal.dart';
 import '../../../core/values/text_styles.dart';
@@ -184,7 +185,9 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               const SkyNativeAdWidget(
-                                                  size: NativeAdSize.small),
+                                                placement: AdsId.nativeRanking,
+                                                size: NativeAdSize.small,
+                                              ),
                                               UserRankingItem(
                                                 user: users![index],
                                                 number: index + 1,
@@ -212,7 +215,9 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
               ],
             ),
           ),
-          bottomSheet: const SkyBannerAnchorAdWidget(),
+          bottomSheet: const SkyBannerAnchorAdWidget(
+            placement: AdsId.bannerRanking,
+          ),
         );
       }),
     );

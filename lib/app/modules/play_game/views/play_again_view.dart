@@ -66,9 +66,10 @@ class _PlayAgainViewState extends State<PlayAgainView>
     _loadRewardedAd();
     chiatay();
     if (mounted) {
-      Future.delayed(const Duration(seconds: 1),
-          () => _showdialogRating(context, widget.cubit));
-      Future.delayed(const Duration(seconds: 2), () => widget.cubit.playBG());
+      Future.delayed(const Duration(seconds: 1), () {
+        if (!mounted) return;
+        _showdialogRating(context, widget.cubit);
+      });
     }
     super.initState();
   }
@@ -103,6 +104,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
           : SoundManager.chiatay(widget.mc)[Random().nextInt(2)]);
       await player.setAsset(assetSource);
       await player.play();
+      widget.cubit.playBG();
     } catch (e) {
       rethrow;
     }
@@ -234,7 +236,9 @@ class _PlayAgainViewState extends State<PlayAgainView>
                   ),
                 ),
               ),
-              const SkyBannerAnchorAdWidget(),
+              const SkyBannerAnchorAdWidget(
+                placement: AdsId.bannerPlayAgain,
+              ),
             ],
           ),
         ),

@@ -35,3 +35,18 @@ class AdsManager {
     }
   }
 }
+
+abstract class AdsId {
+  static const String adsOpenApp = 'app_open_ads';
+
+  static const String nativeRanking = 'native_raking';
+  static const String nativeStoreBottom = 'native_store_bottom';
+  static const String nativeCategory = 'native_category';
+
+  static const String inter= 'inter';
+
+  static const String bannerHome = 'banner_home';
+  static const String bannerRanking = 'banner_ranking';
+  static const String bannerPlay = 'banner_play';
+  static const String bannerPlayAgain = 'banner_play_again';
+}

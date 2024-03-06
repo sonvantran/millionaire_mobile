@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sky_ads/sky_ads.dart';
 import 'package:volume_controller/volume_controller.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/extension/integer_extension.dart';
@@ -330,6 +331,10 @@ class PlayGameCubit extends Cubit<PlayGameState> {
         image: state.user?.image,
       );
       emit(state.copyWith(user: x));
+      if (SkyAds.instance.isAdDisable) {
+        emit(state.copyWith(saveDone: true));
+        return;
+      }
       await _playGameRepository.updateUser(user: x);
       AnalyticsManager.postScore(score, state.level);
       emit(state.copyWith(saveDone: true));

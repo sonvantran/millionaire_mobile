@@ -1,7 +1,7 @@
 name: millionaire_mobile
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.0.17+36
+version: 1.0.17+38
 # flutter pub run build_runner build --delete-conflicting-outputs
 # dart run flutter_native_splash:create
 # flutter build appbundle --flavor prod lib/main_prod.dart --release./gradlew build
@@ -51,10 +51,10 @@ dependencies:
   flutter_screenutil: 5.9.0
   cached_network_image: 3.3.1
   firebase_crashlytics: 3.3.6
-  flutter_easyloading: 3.0.5
   firebase_storage: 11.2.7
   connectivity_plus: 5.0.2
   just_audio: 0.9.36
+  flutter_dotenv: 5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -85,6 +85,8 @@ flutter:
     - assets/audios/lvs/
     - assets/audios/gsx/
     - assets/audios/pd/
+    - environment_dev.env
+    - environment_prod.env
   fonts:
     - family: SVN
       fonts:

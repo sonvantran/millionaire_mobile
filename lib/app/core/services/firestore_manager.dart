@@ -9,12 +9,16 @@ class FirestoreManager {
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<User?> updateUser(User user) async {
-    if (user.name.isEmpty) return null;
-    await firestore.collection("users").doc(user.deviceId).set(user.toMap());
-    final pre = await SharedPreferences.getInstance();
-    await pre.setInt("lastPoint", user.point);
-    await pre.setString("lastName", user.name);
-    return user;
+    try {
+      if (user.name.isEmpty) return null;
+      await firestore.collection("users").doc(user.deviceId).set(user.toMap());
+      final pre = await SharedPreferences.getInstance();
+      await pre.setInt("lastPoint", user.point);
+      await pre.setString("lastName", user.name);
+      return user;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<String?> deleteUser(String deviceId) async {

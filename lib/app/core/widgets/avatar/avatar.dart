@@ -35,8 +35,10 @@ class Avatar extends StatelessWidget {
                 height: radius ?? 40.h,
                 fit: BoxFit.cover,
                 imageUrl: user.image!,
-                placeholder: (context, url) =>
-                    const SpinKitFadingCircle(color: AppColors.colorFF57B9FB),
+                placeholder: (context, url) => SpinKitFadingCircle(
+                  color: AppColors.colorFF57B9FB,
+                  size: 25.r,
+                ),
                 errorWidget: (context, url, error) {
                   return const Icon(Icons.error);
                 },

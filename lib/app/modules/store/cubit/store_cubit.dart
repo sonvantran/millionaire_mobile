@@ -20,6 +20,7 @@ class StoreCubit extends Cubit<StoreState> {
       SharedPreferences pre = await SharedPreferences.getInstance();
       final x = pre.getInt("isLastCallStore") ?? 0;
       if (li.isEmpty ||
+          li[0].store.isEmpty ||
           (DateTime.now().millisecondsSinceEpoch) - x >
               1000 * 60 * 60 * 24 * 5) {
         getStore();

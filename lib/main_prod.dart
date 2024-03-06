@@ -7,9 +7,11 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sky_ads/sky_ads.dart';
+import 'app/core/services/ads_manager.dart';
 import 'app/core/services/init_helper.dart';
 import 'app/core/services/messaging_service.dart';
 import 'app/core/services/question_box.dart';
@@ -40,9 +42,9 @@ void main() async {
     envType: Environment.PRODUCTION,
     envConfig: devConfig,
   );
-
+  await dotenv.load(fileName: 'environment_prod.env');
   WidgetsFlutterBinding.ensureInitialized();
-
+  await Future.delayed(const Duration(milliseconds: 200));
   await Firebase.initializeApp();
   await MessagingService().initNotification();
   await Hive.initFlutter((await getApplicationDocumentsDirectory()).path);
@@ -54,13 +56,27 @@ void main() async {
   await QuestionBox.openBox();
   await StoreBox.openBox();
   await InitHelper().initialize();
+  
   SkyAds.instance.initialize(
     AdConstant(
-      interstitialId: 'ca-app-pub-9696384850738948/2367505434',
-      nativeId: 'ca-app-pub-9696384850738948/3539865110',
-      inlineId: 'ca-app-pub-3940256099942544/9214589741',
-      appOpenId: 'ca-app-pub-9696384850738948/1097480706',
-      bannerAnchorId: 'ca-app-pub-9696384850738948/1988867578',
+      interstitialId: {
+        AdsId.inter: dotenv.env[AdsId.inter] ?? "",
+      },
+      nativeId: {
+        AdsId.nativeRanking: dotenv.env[AdsId.nativeRanking] ?? "",
+        AdsId.nativeStoreBottom: dotenv.env[AdsId.nativeStoreBottom] ?? "",
+        AdsId.nativeCategory: dotenv.env[AdsId.nativeCategory] ?? "",
+      },
+      inlineId: {},
+      appOpenId: {
+        AdsId.adsOpenApp: dotenv.env[AdsId.adsOpenApp] ?? "",
+      },
+      bannerAnchorId: {
+        AdsId.bannerHome: dotenv.env[AdsId.bannerHome] ?? "",
+        AdsId.bannerPlay: dotenv.env[AdsId.bannerPlay] ?? "",
+        AdsId.bannerPlayAgain: dotenv.env[AdsId.bannerPlayAgain] ?? "",
+        AdsId.bannerRanking: dotenv.env[AdsId.bannerRanking] ?? "",
+      },
       interstitialOffsetTime: const Duration(seconds: 30),
       appOpenOffsetTime: const Duration(seconds: 30),
     ),
