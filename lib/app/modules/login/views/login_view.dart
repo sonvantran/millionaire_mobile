@@ -83,7 +83,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         if (!context.mounted) return;
         setState(() => isAppConnection = false);
         SkyAds.instance.isAdDisable = true;
-        ShowMessageInternal.showOverlay(context, "Không có Internet!");
+        ShowMessageInternal.showMessage("Không có Internet!");
         // context.pushRoute(const NoInternetPageRoute());
       } else {
         if (!context.mounted) return;
@@ -105,7 +105,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       setState(() => isAppConnection = false);
       // context.pushRoute(const NoInternetPageRoute());
       SkyAds.instance.isAdDisable = true;
-      ShowMessageInternal.showOverlay(context, "Không có Internet!");
+      ShowMessageInternal.showMessage("Không có Internet!");
     } else {
       if (!context.mounted) return;
       SkyAds.instance.isAdDisable = false;
@@ -158,7 +158,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
               previous.message != current.message,
           listener: (context, state) {
             if (state.message != null) {
-              ShowMessageInternal.showOverlay(context, state.message ?? '');
+              ShowMessageInternal.showMessage(state.message ?? '');
             }
           },
         ),
@@ -216,7 +216,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     CustomAppBar(
-                      top: 32.h,
+                      top: 24.h,
                       leading:
                           state.user != null ? Avatar(user: state.user!) : null,
                       title: state.user != null
@@ -291,7 +291,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                                   question[0].currentLevel - 1,
                                   state.chooseMC));
                               if (state.user == null) {
-                                ShowMessageInternal.showOverlay(context,
+                                ShowMessageInternal.showMessage(
                                     "Hệ thống tạm thời không tính điểm");
                               }
                               context.pushRoute(PlayGameViewRoute(
@@ -309,8 +309,8 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                               text: "Cửa hàng",
                               onTap: () {
                                 if (state.user == null) {
-                                  ShowMessageInternal.showOverlay(
-                                      context, "Vui lòng thử lại sau!");
+                                  ShowMessageInternal.showMessage(
+                                      "Vui lòng thử lại sau!");
                                   return;
                                 }
                                 AnalyticsManager.sendAnalyticsEvent(
@@ -373,8 +373,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                           children: [
                             ButtonItem(
                               onTap: () {
-                                AnalyticsManager.sendAnalyticsEvent(
-                                    'The_user_want_to_review_app');
                                 _showdialogRating(context, cubit);
                               },
                               color: AppColors.colorFFAF4848,
@@ -411,15 +409,14 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     if (!mounted) return;
     if (!checkQuestion) {
       cubit.callQuestionAgain();
-      ShowMessageInternal.showOverlay(context, "Vui lòng chờ tải bộ câu hỏi!");
+      ShowMessageInternal.showMessage("Vui lòng chờ tải bộ câu hỏi!");
       return;
     }
     AnalyticsManager.sendAnalyticsEvent('The_user_want_to_play_game');
 
     if (state.hasDataLocal) {
       if (state.user == null) {
-        ShowMessageInternal.showOverlay(
-            context, "Hệ thống tạm thời không tính điểm");
+        ShowMessageInternal.showMessage("Hệ thống tạm thời không tính điểm");
       }
       await context.pushRoute(PlayGameViewRoute(
         isMute: state.isMute,
@@ -432,8 +429,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     }
     if (state.hasUser) {
       if (state.user == null) {
-        ShowMessageInternal.showOverlay(
-            context, "Hệ thống tạm thời không tính điểm");
+        ShowMessageInternal.showMessage("Hệ thống tạm thời không tính điểm");
       }
       await context.pushRoute(PlayGameViewRoute(
         mc: state.chooseMC,

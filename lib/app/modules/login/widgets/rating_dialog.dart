@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/show_message_internal.dart';
 import '../../../core/values/text_styles.dart';
@@ -72,13 +74,20 @@ class _RatingPopupState extends State<RatingPopup> {
             SizedBox(width: 4.w),
             Expanded(
               child: RatingButton(
-                onPressed: () {
+                onPressed: () async {
                   Navigator.pop(context);
+                  final pre = await SharedPreferences.getInstance();
+                  final isRating = pre.getBool("isRating") ?? false;
+                  if (!isRating) await pre.setBool("isRating", true);
                   if (number == 4) {
                     widget.onPressed();
+                    ShowMessageInternal.showMessage(
+                        "Cảm ơn bạn! Bây giờ hãy đánh giá 5 sao trên Google Play nhé!");
                   } else {
-                    ShowMessageInternal.showOverlay(
-                        context, "Cảm ơn đánh giá của bạn");
+                    AnalyticsManager.sendAnalyticsEvent(
+                        'rating_${number + 1}');
+                    if (!mounted) return;
+                    ShowMessageInternal.showMessage("Cảm ơn đánh giá của bạn");
                   }
                 },
                 label: "Đánh giá",

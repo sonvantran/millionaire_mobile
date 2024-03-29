@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:sky_ads/banner_anchor_ad_widget.dart';
 import 'package:sky_ads/native_ad_widget.dart';
 import 'package:sky_ads/sky_ads.dart';
 
@@ -66,7 +67,7 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
               previous.message != current.message,
           listener: (context, state) {
             if (state.message != null) {
-              ShowMessageInternal.showOverlay(context, state.message!);
+              ShowMessageInternal.showMessage(state.message!);
             }
           },
         ),
@@ -86,7 +87,7 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
             child: Column(
               children: [
                 CustomAppBar(
-                  top: 32.h,
+                  top: 24.h,
                   leading: CustomAppbarItem(
                     icon: Icons.arrow_back_outlined,
                     onPressed: () => Navigator.of(context).pop(),
@@ -113,10 +114,20 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
                         child: store.isNotEmpty
                             ? ListView.builder(
                                 itemCount: store.length,
-                                itemBuilder: (context, index) => Category(
-                                  label: labels[index],
-                                  items: store[index],
-                                  user: state.user ?? widget.user,
+                                itemBuilder: (context, index) => Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Category(
+                                      label: labels[index],
+                                      items: store[index],
+                                      user: state.user ?? widget.user,
+                                    ),
+                                    if (index % 2 == 0)
+                                      const SkyNativeAdWidget(
+                                        placement: AdsId.nativeCategory,
+                                        size: NativeAdSize.small,
+                                      )
+                                  ],
                                 ),
                               )
                             : Center(
@@ -127,10 +138,7 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
                                 ),
                               ),
                       ),
-                const SkyNativeAdWidget(
-                  placement: AdsId.nativeStoreBottom,
-                  size: NativeAdSize.small,
-                ),
+                const SkyBannerAnchorAdWidget(placement: AdsId.bannerStore),
               ],
             ),
           ),

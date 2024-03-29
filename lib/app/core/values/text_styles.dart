@@ -333,4 +333,11 @@ abstract class TextStyles {
     fontSize: 14.sp,
     fontWeight: FontW.regular,
   );
+
+  static TextStyle smallGrayS12 = TextStyle(
+    fontFamily: "SVN",
+    color: AppColors.colorFFC5C5C5,
+    fontSize: 12.sp,
+    fontWeight: FontW.small,
+  );
 }

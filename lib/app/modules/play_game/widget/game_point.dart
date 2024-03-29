@@ -122,7 +122,7 @@ class GamePointItem extends StatelessWidget {
                 style: TextStyles.mediumMWhiteS18,
               ),
               Text(
-                "$point đ",
+                point.substring(0, point.length - 4),
                 style: TextStyles.mediumMWhiteS18,
               )
             ],
@@ -203,7 +203,7 @@ class GamePointItemNo1 extends StatelessWidget {
                       style: TextStyles.mediumMWhiteS18,
                     ),
                     Text(
-                      "150.000.000 đ",
+                      "150,000",
                       style: TextStyles.mediumMWhiteS18,
                     )
                   ],

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
@@ -307,9 +308,9 @@ class _PlayGamePageState extends State<PlayGamePage>
         BlocListener<PlayGameCubit, PlayGameState>(
           listener: (context, state) {
             if (state.isShowGameResult) {
-              _key.currentState!.openEndDrawer();
+              _key.currentState?.openEndDrawer();
             } else {
-              _key.currentState!.closeEndDrawer();
+              _key.currentState?.closeEndDrawer();
             }
           },
         ),
@@ -703,8 +704,8 @@ class _PlayGamePageState extends State<PlayGamePage>
                                     cubit.playAgainAds(),
                               );
                             } else {
-                              ShowMessageInternal.showOverlay(
-                                  context, "Vui lòng thử lại sau");
+                              ShowMessageInternal.showMessage(
+                                  "Vui lòng thử lại sau");
                             }
                           },
                         ),
@@ -806,7 +807,7 @@ class _PlayGamePageState extends State<PlayGamePage>
       context: context,
       builder: (BuildContext _) {
         final rd = Random().nextInt(6) + 1;
-        double len = MediaQuery.of(context).size.width * 0.5;
+        double len = mounted ? MediaQuery.of(context).size.width * 0.5 : 180.w;
         return BlocProvider.value(
           value: cubit,
           child: PopupNotice(

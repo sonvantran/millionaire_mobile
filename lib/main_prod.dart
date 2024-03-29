@@ -56,7 +56,7 @@ void main() async {
   await QuestionBox.openBox();
   await StoreBox.openBox();
   await InitHelper().initialize();
-  
+
   SkyAds.instance.initialize(
     AdConstant(
       interstitialId: {
@@ -76,6 +76,7 @@ void main() async {
         AdsId.bannerPlay: dotenv.env[AdsId.bannerPlay] ?? "",
         AdsId.bannerPlayAgain: dotenv.env[AdsId.bannerPlayAgain] ?? "",
         AdsId.bannerRanking: dotenv.env[AdsId.bannerRanking] ?? "",
+        AdsId.bannerStore: dotenv.env[AdsId.bannerStore] ?? "",
       },
       interstitialOffsetTime: const Duration(seconds: 30),
       appOpenOffsetTime: const Duration(seconds: 30),
@@ -86,6 +87,8 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+      overlays: [SystemUiOverlay.bottom]);
   try {
     await _initFirebaseCrashlytic();
     await _initFirebaseRemoteConfig();

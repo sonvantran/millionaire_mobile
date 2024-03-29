@@ -26,17 +26,4 @@ extension StringX on String {
         return 4;
     }
   }
-
-  // Gender getGender() {
-  //   switch (this) {
-  //     case "Nam":
-  //       return Gender.man;
-  //     case "Nữ":
-  //       return Gender.woman;
-  //     case "Khác":
-  //       return Gender.other;
-  //     default:
-  //       return Gender.man;
-  //   }
-  // }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:millionaire_mobile/app/core/extension/integer_extension.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 
@@ -32,27 +33,12 @@ class ScoreUser extends StatelessWidget {
             size: 36.r,
           ),
           Text(
-            '${formatNumber(text)} đ',
+            text.toPointDisplay(),
             style: TextStyles.mediumBlackS20,
           ),
           SizedBox(width: 8.w)
         ],
       ),
     );
-  }
-
-  String formatNumber(int i) {
-    String formatted = "";
-    String input = i.toString();
-    int length = input.length;
-
-    for (int i = length - 1, count = 0; i >= 0; i--, count++) {
-      if (count != 0 && count % 3 == 0) {
-        formatted = '.$formatted';
-      }
-      formatted = input[i] + formatted;
-    }
-
-    return formatted;
   }
 }

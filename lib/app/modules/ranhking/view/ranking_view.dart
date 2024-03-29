@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:millionaire_mobile/app/core/extension/integer_extension.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
 import 'package:sky_ads/native_ad_widget.dart';
 import 'package:sky_ads/sky_ads.dart';
@@ -66,7 +67,7 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
               previous.message != current.message,
           listener: (context, state) {
             if (state.message != null) {
-              ShowMessageInternal.showOverlay(context, state.message ?? '');
+              ShowMessageInternal.showMessage(state.message ?? '');
             }
           },
         ),
@@ -122,21 +123,24 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                           CupItem(
                             asset: 'sliver_cup',
                             name: users.length > 1 ? users[1].name : 'Chưa có',
-                            point:
-                                '${users.length > 1 ? formatNumber(users[1].point) : '0'} đ',
+                            point: users.length > 1
+                                ? users[1].point.toPointDisplay()
+                                : '0',
                           ),
                           CupItem(
                             // padding: const EdgeInsets.only(bottom: 32),
                             asset: 'gold_cup',
                             name: users.isNotEmpty ? users[0].name : 'Chưa có',
-                            point:
-                                '${users.isNotEmpty ? formatNumber(users[0].point) : '0'} đ',
+                            point: users.isNotEmpty
+                                ? users[0].point.toPointDisplay()
+                                : '0',
                           ),
                           CupItem(
                             asset: 'council_cup',
                             name: users.length > 2 ? users[2].name : 'Chưa có',
-                            point:
-                                '${users.length > 2 ? formatNumber(users[2].point) : '0'} đ',
+                            point: users.length > 2
+                                ? users[2].point.toPointDisplay()
+                                : '0',
                           ),
                         ],
                       )
@@ -174,10 +178,9 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                                       itemCount: users.length,
                                       itemBuilder:
                                           (BuildContext context, int index) {
-                                        if ((index - 2) % 10 != 0) {
+                                        if ((index - 2) % 6 != 0) {
                                           return UserRankingItem(
                                             user: users![index],
-                                            // name: users![index].name,
                                             number: index + 1,
                                           );
                                         } else {
@@ -221,20 +224,5 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
         );
       }),
     );
-  }
-
-  String formatNumber(int i) {
-    String formatted = "";
-    String input = i.toString();
-    int length = input.length;
-
-    for (int i = length - 1, count = 0; i >= 0; i--, count++) {
-      if (count != 0 && count % 3 == 0) {
-        formatted = '.$formatted';
-      }
-      formatted = input[i] + formatted;
-    }
-
-    return formatted;
   }
 }

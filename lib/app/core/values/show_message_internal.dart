@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:millionaire_mobile/app/core/values/text_styles.dart';
 
 import 'app_colors.dart';
@@ -36,15 +37,16 @@ class ShowMessageInternal {
     });
   }
 
-  // static void showMessage(String message) {
-  //   Fluttertoast.showToast(
-  //     msg: message,
-  //     toastLength: Toast.LENGTH_LONG,
-  //     gravity: ToastGravity.TOP,
-  //     timeInSecForIosWeb: 2,
-  //     backgroundColor: AppColors.colorFFFFFFFF,
-  //     textColor: AppColors.colorFFB20000,
-  //     fontSize: 20,
-  //   );
-  // }
+  static void showMessage(String message) async {
+    await Fluttertoast.cancel();
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+      timeInSecForIosWeb: 2,
+      backgroundColor: AppColors.colorFFFFFFFF.withOpacity(0.8),
+      textColor: AppColors.colorFF000000,
+      fontSize: 14,
+    );
+  }
 }

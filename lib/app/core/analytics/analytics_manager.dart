@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/cupertino.dart';
 
 class AnalyticsManager {
   static final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
@@ -15,9 +14,6 @@ class AnalyticsManager {
   }
 
   static Future<void> sendAnalyticsEvent(String name) async {
-    // Only strings and numbers (longs & doubles for android, ints and doubles for iOS) are supported for GA custom event parameters:
-    // https://firebase.google.com/docs/reference/ios/firebaseanalytics/api/reference/Classes/FIRAnalytics#+logeventwithname:parameters:
-    // https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics#public-void-logevent-string-name,-bundle-params
     await analytics.logEvent(
       name: name,
       parameters: <String, dynamic>{
@@ -25,19 +21,17 @@ class AnalyticsManager {
         'int': 42,
         'long': 12345678910,
         'double': 42.0,
-        // Only strings and numbers (ints & doubles) are supported for GA custom event parameters:
-        // https://developers.google.com/analytics/devguides/collection/analyticsjs/custom-dims-mets#overview
         'bool': true.toString(),
       },
     );
 
-    debugPrint('log event: $name');
+    // debugPrint('log event: $name');
   }
 
   static Future<void> setUserId(String id) async {
     await analytics.setUserId(id: id);
     await login();
-    debugPrint('set userId and login succeeded');
+    // debugPrint('set userId and login succeeded');
   }
 
   static Future<void> login() async {

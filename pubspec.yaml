@@ -1,10 +1,11 @@
 name: millionaire_mobile
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.0.17+38
+version: 1.0.18+40
 # flutter pub run build_runner build --delete-conflicting-outputs
 # dart run flutter_native_splash:create
 # flutter build appbundle --flavor prod lib/main_prod.dart --release./gradlew build
+# flutter run --flavor prod -t lib/main_prod.dart
 environment:
   sdk: '>=3.2.3 <4.0.0'
 
@@ -55,6 +56,7 @@ dependencies:
   connectivity_plus: 5.0.2
   just_audio: 0.9.36
   flutter_dotenv: 5.1.0
+  fluttertoast: 8.2.4
 
 dev_dependencies:
   flutter_test:

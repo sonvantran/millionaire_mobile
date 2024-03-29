@@ -1,4 +1,12 @@
 extension IntegerX on int {
+  String toPointDisplay() {
+    final value = this;
+    if (value < 1000000000) {
+      return '${(value / 1000000).toStringAsFixed(1)} Tr';
+    }
+    return '${formatNumber(value ~/ 1000000)} Tr';
+  }
+
   String intToAnswer() {
     switch (this) {
       case 1:
@@ -38,5 +46,20 @@ extension IntegerX on int {
       default:
         return 'year';
     }
+  }
+
+  String formatNumber(int i) {
+    String formatted = "";
+    String input = i.toString();
+    int length = input.length;
+
+    for (int i = length - 1, count = 0; i >= 0; i--, count++) {
+      if (count != 0 && count % 3 == 0) {
+        formatted = ',$formatted';
+      }
+      formatted = input[i] + formatted;
+    }
+
+    return formatted;
   }
 }

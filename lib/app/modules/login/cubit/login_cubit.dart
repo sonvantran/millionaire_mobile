@@ -246,7 +246,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   void updatePoint(String point) async {
     try {
-      final score = int.parse(point.replaceAll('.', ''));
+      final score = int.parse(point.replaceAll(',', ''));
       final userState = state.user;
       if (userState != null) {
         final x = User(
@@ -298,6 +298,12 @@ class LoginCubit extends Cubit<LoginState> {
         await player.play();
         isBG = true;
       }
+    } on PlayerException catch (e) {
+      AnalyticsManager.sendAnalyticsEvent(
+          "exception $e ${e.message}".replaceAll(' ', "_"));
+    } on PlayerInterruptedException catch (e) {
+      AnalyticsManager.sendAnalyticsEvent(
+          "exception $e ${e.message}".replaceAll(' ', "_"));
     } catch (e) {
       if (e is StateError) {
         stopAudio();
@@ -316,6 +322,12 @@ class LoginCubit extends Cubit<LoginState> {
         await player.play();
         isBG = false;
       }
+    } on PlayerException catch (e) {
+      AnalyticsManager.sendAnalyticsEvent(
+          "exception $e ${e.message}".replaceAll(' ', "_"));
+    } on PlayerInterruptedException catch (e) {
+      AnalyticsManager.sendAnalyticsEvent(
+          "exception $e ${e.message}".replaceAll(' ', "_"));
     } catch (e) {
       if (e is StateError) {
         stopAudio();
@@ -337,7 +349,18 @@ class LoginCubit extends Cubit<LoginState> {
         await player2.setAsset(assetSource);
         await player2.play();
       }
+    } on PlayerException catch (e) {
+      AnalyticsManager.sendAnalyticsEvent(
+          "exception $e ${e.message}".replaceAll(' ', "_"));
+    } on PlayerInterruptedException catch (e) {
+      AnalyticsManager.sendAnalyticsEvent(
+          "exception $e ${e.message}".replaceAll(' ', "_"));
     } catch (e) {
+      if (e is StateError) {
+        stopAudio();
+        return;
+      }
+      if (e is PlatformException) return;
       rethrow;
     }
   }

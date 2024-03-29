@@ -49,4 +49,5 @@ abstract class AdsId {
   static const String bannerRanking = 'banner_ranking';
   static const String bannerPlay = 'banner_play';
   static const String bannerPlayAgain = 'banner_play_again';
+  static const String bannerStore = 'banner_store';
 }

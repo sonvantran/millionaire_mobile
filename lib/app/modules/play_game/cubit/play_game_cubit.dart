@@ -318,7 +318,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     try {
       cancelCountDown();
       emit(state.copyWith(saveDone: false));
-      final score = int.parse(point.replaceAll('.', ''));
+      final score = int.parse(point.replaceAll(',', ''));
       if (user == null) {
         emit(state.copyWith(saveDone: true));
         return;
@@ -478,6 +478,12 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       await player.playerStateStream.firstWhere(
           (state) => state.processingState == ProcessingState.completed);
       setIsAccessAnswer(true);
+    } on PlayerException catch (e) {
+      AnalyticsManager.sendAnalyticsEvent(
+          "exception $e ${e.message}".replaceAll(' ', "_"));
+    } on PlayerInterruptedException catch (e) {
+      AnalyticsManager.sendAnalyticsEvent(
+          "exception $e ${e.message}".replaceAll(' ', "_"));
     } catch (e) {
       if (e is StateError) {
         stopAudio();

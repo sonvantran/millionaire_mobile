@@ -111,7 +111,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
   }
 
   Widget _buildPage(BuildContext context) {
-    final score = int.parse(widget.point.replaceAll('.', ''));
+    final score = int.parse(widget.point.replaceAll(',', ''));
     return Scaffold(
       body: RepaintBoundary(
         key: _key,
@@ -133,7 +133,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
                   onPressed: () => context.router.pop(),
                 ),
                 title: "Ai là triệu phú",
-                top: 32,
+                top: 24.h,
               ),
               Expanded(
                 child: SingleChildScrollView(
@@ -187,8 +187,8 @@ class _PlayAgainViewState extends State<PlayAgainView>
                                       widget.cubit.updatePoint(score <= 20000000
                                           ? widget.point
                                           : "20.000.000");
-                                      ShowMessageInternal.showOverlay(
-                                          context, "Bạn đã thành công");
+                                      ShowMessageInternal.showMessage(
+                                          "Bạn đã thành công");
                                       Future.delayed(
                                         const Duration(seconds: 1),
                                         () => context.router.pop(),
@@ -196,8 +196,8 @@ class _PlayAgainViewState extends State<PlayAgainView>
                                     },
                                   );
                                 } else {
-                                  ShowMessageInternal.showOverlay(
-                                      context, "Vui lòng thử lại sau");
+                                  ShowMessageInternal.showMessage(
+                                      "Vui lòng thử lại sau");
                                 }
                               },
                               text:
@@ -316,10 +316,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
       context: context,
       builder: (BuildContext _) {
         return RatingPopup(
-          onPressed: () {
-            cubit.reviewApp();
-            pre.setBool("isRating", true);
-          },
+          onPressed: () => cubit.reviewApp(),
         );
       },
     );

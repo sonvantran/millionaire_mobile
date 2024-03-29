@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:millionaire_mobile/app/core/extension/integer_extension.dart';
+import 'package:millionaire_mobile/app/core/extension/timestamp_extension.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/widgets/avatar/avatar.dart';
@@ -63,16 +64,27 @@ class UserRankingItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  user.name,
-                  style: TextStyles.mediumWhiteS16,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        user.name,
+                        style: TextStyles.mediumWhiteS16,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      user.point.toPointDisplay(),
+                      style: TextStyles.mediumWhiteS14,
+                    ),
+                  ],
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  '${formatNumber(user.point)} đ',
-                  style: TextStyles.mediumWhiteS14,
+                  user.playDate?.toLastest() ?? '',
+                  style: TextStyles.smallGrayS12,
                 ),
               ],
             ),
@@ -80,20 +92,5 @@ class UserRankingItem extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String formatNumber(int i) {
-    String formatted = "";
-    String input = i.toString();
-    int length = input.length;
-
-    for (int i = length - 1, count = 0; i >= 0; i--, count++) {
-      if (count != 0 && count % 3 == 0) {
-        formatted = '.$formatted';
-      }
-      formatted = input[i] + formatted;
-    }
-
-    return formatted;
   }
 }
