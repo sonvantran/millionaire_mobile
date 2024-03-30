@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:auto_route/auto_route.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -260,7 +261,9 @@ class _PlayGamePageState extends State<PlayGamePage>
                 level = 10;
               }
               final point = getQuestionByLevel(level, state.chooseMC);
-              int randomValue = Random().nextInt(5);
+              final remoteConfig = FirebaseRemoteConfig.instance;
+              int randomValue =
+                  Random().nextInt(remoteConfig.getInt('rateShowInter'));
 
               if (randomValue == 2) {
                 SkyAds.instance.showInterstitialAd(

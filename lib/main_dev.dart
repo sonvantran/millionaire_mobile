@@ -109,6 +109,7 @@ Future<void> _initFirebaseRemoteConfig() async {
   );
   await remoteConfig.setDefaults(const {
     "isFirstAOA": false,
+    'rateShowInter': 5,
   });
 
   await remoteConfig.fetchAndActivate();

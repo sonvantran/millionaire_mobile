@@ -318,7 +318,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     try {
       cancelCountDown();
       emit(state.copyWith(saveDone: false));
-      final score = int.parse(point.replaceAll(',', ''));
+      final score = int.parse(point.replaceAll(RegExp(r'[^0-9]'), ''));
       if (user == null) {
         emit(state.copyWith(saveDone: true));
         return;

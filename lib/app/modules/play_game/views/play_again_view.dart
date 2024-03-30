@@ -111,7 +111,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
   }
 
   Widget _buildPage(BuildContext context) {
-    final score = int.parse(widget.point.replaceAll(',', ''));
+    final score = int.parse(widget.point.replaceAll(RegExp(r'[^0-9]'), ''));
     return Scaffold(
       body: RepaintBoundary(
         key: _key,
@@ -186,7 +186,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
                                     onUserEarnedReward: (_, __) {
                                       widget.cubit.updatePoint(score <= 20000000
                                           ? widget.point
-                                          : "20.000.000");
+                                          : "20,000,000");
                                       ShowMessageInternal.showMessage(
                                           "Bạn đã thành công");
                                       Future.delayed(

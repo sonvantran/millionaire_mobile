@@ -246,7 +246,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   void updatePoint(String point) async {
     try {
-      final score = int.parse(point.replaceAll(',', ''));
+      final score = int.parse(point.replaceAll(RegExp(r'[^0-9]'), ''));
       final userState = state.user;
       if (userState != null) {
         final x = User(
