@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -24,6 +25,8 @@ import 'app/flavors/env_config.dart';
 import 'app/flavors/environment.dart';
 import 'app/my_app.dart';
 import 'app/core/config/app_bloc_observer.dart';
+import 'main_prod.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   Bloc.observer = AppBlocObserver();
@@ -44,6 +47,8 @@ void main() async {
   );
 
   WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
+  HttpOverrides.global = MyHttpOverrides();
   await Future.delayed(const Duration(milliseconds: 200));
   await Firebase.initializeApp();
   await MessagingService().initNotification();
@@ -87,8 +92,10 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-      overlays: [SystemUiOverlay.bottom]);
+  await SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.manual,
+    overlays: [],
+  );
   try {
     await _initFirebaseCrashlytic();
     await _initFirebaseRemoteConfig();
@@ -110,6 +117,10 @@ Future<void> _initFirebaseRemoteConfig() async {
   await remoteConfig.setDefaults(const {
     "isFirstAOA": false,
     'rateShowInter': 5,
+    'limitUserByCall': 60,
+    'optimizeUser': 90,
+    'adsRankingDistance': 10,
+    'messageNoti': "",
   });
 
   await remoteConfig.fetchAndActivate();

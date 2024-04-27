@@ -1,3 +1,4 @@
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -32,8 +33,6 @@ class RankingView extends StatefulWidget {
 }
 
 class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
-  // BannerAd? _bannerAd;
-  // bool isBannerAdReady = false;
   @override
   TrackingScreenViewType get route => TrackingScreenViewType.ranking;
 
@@ -44,19 +43,6 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
           RankingCubit(context.read<RankingRepository>())..init(widget.user),
       child: _buildPage(context),
     );
-  }
-
-  @override
-  void initState() {
-    // createBannerAd();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    // _bannerAd?.dispose();
-    // isBannerAdReady = false;
-    super.dispose();
   }
 
   Widget _buildPage(BuildContext context) {
@@ -178,7 +164,11 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                                       itemCount: users.length,
                                       itemBuilder:
                                           (BuildContext context, int index) {
-                                        if ((index - 2) % 6 != 0) {
+                                        if ((index - 2) %
+                                                (FirebaseRemoteConfig.instance
+                                                    .getInt(
+                                                        'adsRankingDistance')) !=
+                                            0) {
                                           return UserRankingItem(
                                             user: users![index],
                                             number: index + 1,

@@ -85,6 +85,9 @@ class LoginCubit extends Cubit<LoginState> {
 
   void reviewApp() async {
     try {
+      final pre = await SharedPreferences.getInstance();
+      final isRating = pre.getBool("isRating") ?? false;
+      if (!isRating) await pre.setBool("isRating", true);
       final InAppReview inAppReview = InAppReview.instance;
 
       if (await inAppReview.isAvailable()) {
@@ -111,7 +114,14 @@ class LoginCubit extends Cubit<LoginState> {
       }),
     );
     try {
-      await launchUrl(emailLaunchUri);
+      emit(state.copyWith(message: null));
+      bool canLaunchEmail = await canLaunchUrl(emailLaunchUri);
+      if (canLaunchEmail) {
+        await launchUrl(emailLaunchUri);
+      } else {
+        emit(state.copyWith(
+            message: 'Không tìm thấy ứng dụng email để gửi phản hồi'));
+      }
     } catch (e) {
       rethrow;
     }

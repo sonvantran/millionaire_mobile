@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/model/user.dart';
@@ -57,6 +58,8 @@ class FirestoreManager {
   }
 
   Future<List<User>> getRanking() async {
+    final limitUserByCall =
+        FirebaseRemoteConfig.instance.getInt('limitUserByCall');
     DateTime currentDate = DateTime.now();
 
     DateTime startDate =
@@ -80,7 +83,7 @@ class FirestoreManager {
             isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
         .where("play_date", isLessThan: Timestamp.fromDate(endDate))
         .orderBy("play_date", descending: true)
-        .limit(60)
+        .limit(limitUserByCall)
         .get();
 
     List<User> users = qs.docs
@@ -93,10 +96,12 @@ class FirestoreManager {
   }
 
   Future<List<User>> getAllRanking() async {
+    final limitUserByCall =
+        FirebaseRemoteConfig.instance.getInt('limitUserByCall');
     QuerySnapshot qs = await firestore
         .collection("users")
         .orderBy("score", descending: true)
-        .limit(60)
+        .limit(limitUserByCall)
         .get();
 
     List<User> users = qs.docs
@@ -107,7 +112,8 @@ class FirestoreManager {
   }
 
   Future<void> optimize() async {
-    DateTime endDate = DateTime.now().subtract(const Duration(days: 90));
+    final optimizeUser = FirebaseRemoteConfig.instance.getInt('optimizeUser');
+    DateTime endDate = DateTime.now().subtract(Duration(days: optimizeUser));
 
     QuerySnapshot qs = await firestore
         .collection("users")

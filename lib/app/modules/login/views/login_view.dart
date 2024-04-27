@@ -7,6 +7,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/services/ads_manager.dart';
+import '../../../core/services/messaging_service.dart';
 import '../../../core/services/question_box.dart';
 import '../../../core/values/custom_color.dart';
 import '../../../core/values/show_message_internal.dart';
@@ -133,9 +134,10 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       isAppHiden = false;
     } else if (state == AppLifecycleState.hidden) {
       isAppHiden = true;
+      MessagingService().scheduleMessage();
     }
     if (!cubit.state.isMuteCheckAgain) {
-      cubit.setIsMute(state != AppLifecycleState.resumed);
+      cubit.setIsMute(isAppHiden);
     }
   }
 
@@ -506,7 +508,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           value: cubit,
           child: const PopupNotice(
             isCountDown: false,
-            textButton: 'CANCEL',
+            textButton: 'ĐÓNG',
             title: 'CÀI ĐẶT',
             content: Setting(),
           ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/show_message_internal.dart';
@@ -17,7 +16,8 @@ class RatingPopup extends StatefulWidget {
 }
 
 class _RatingPopupState extends State<RatingPopup> {
-  int number = 4;
+  int number = -1;
+  bool isTapRate = false;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -33,11 +33,19 @@ class _RatingPopupState extends State<RatingPopup> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            "Bạn cảm thấy trải nghiệm với game như thế nào?",
-            style: TextStyles.mediumWhiteS16,
-            textAlign: TextAlign.center,
+            "Dành thời gian đánh giá 5 sao nếu bạn thích trò chơi 'Ai là Triệu phú' của chúng tôi. Đó là động lực lớn để chúng tôi tiếp tục cải thiện và mang đến trải nghiệm tốt nhất cho bạn!",
+            style: TextStyles.regularWhiteS12,
+            textAlign: TextAlign.justify,
           ),
-          SizedBox(height: 24.h),
+          SizedBox(height: 10.h),
+          (isTapRate && number == -1)
+              ? Text(
+                  "Chọn số sao dể đánh giá",
+                  style: TextStyles.regularWhiteS12
+                      .copyWith(color: AppColors.colorFF3CC03C),
+                )
+              : SizedBox(height: 14.h),
+          SizedBox(height: 10.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(
@@ -75,17 +83,21 @@ class _RatingPopupState extends State<RatingPopup> {
             Expanded(
               child: RatingButton(
                 onPressed: () async {
+                  if (!isTapRate) {
+                    setState(() {
+                      isTapRate = true;
+                    });
+                  }
+                  if (number == -1) return;
+
                   Navigator.pop(context);
-                  final pre = await SharedPreferences.getInstance();
-                  final isRating = pre.getBool("isRating") ?? false;
-                  if (!isRating) await pre.setBool("isRating", true);
-                  if (number == 4) {
+
+                  if (number >= 3) {
                     widget.onPressed();
                     ShowMessageInternal.showMessage(
-                        "Cảm ơn bạn! Bây giờ hãy đánh giá 5 sao trên Google Play nhé!");
+                        "Cảm ơn bạn! Bây giờ hãy đánh giá ${number + 1} sao trên Google Play nhé!");
                   } else {
-                    AnalyticsManager.sendAnalyticsEvent(
-                        'rating_${number + 1}');
+                    AnalyticsManager.sendAnalyticsEvent('rating_${number + 1}');
                     if (!mounted) return;
                     ShowMessageInternal.showMessage("Cảm ơn đánh giá của bạn");
                   }

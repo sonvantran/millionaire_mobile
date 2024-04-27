@@ -344,6 +344,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
         emit(state.copyWith(saveDone: true));
         return;
       }
+      emit(state.copyWith(saveDone: true));
       rethrow;
     }
   }
@@ -556,7 +557,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   Future<void> wrongAnswer() async {
     try {
       clearDataLocal();
-      if (!firsrWrong) {
+      if (!firsrWrong && !SkyAds.instance.isAdDisable) {
         firsrWrong = true;
         emit(state.copyWith(isShowWrongAds: true));
         return;

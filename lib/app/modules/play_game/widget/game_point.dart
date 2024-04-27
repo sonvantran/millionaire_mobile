@@ -22,7 +22,7 @@ class GamePoint extends StatelessWidget {
               image: AssetImage('assets/images/nav_bg.jpg'),
               fit: BoxFit.cover,
             ),
-            borderRadius: BorderRadius.all(Radius.circular(32.r))),
+            borderRadius: BorderRadius.all(Radius.circular(24.r))),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [

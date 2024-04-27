@@ -9,7 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
 import 'dart:ui' as ui;
@@ -67,7 +67,9 @@ class _PlayAgainViewState extends State<PlayAgainView>
     chiatay();
     if (mounted) {
       Future.delayed(const Duration(seconds: 1), () {
-        if (!mounted) return;
+        final x = Random().nextInt(3);
+        if (!mounted || x != 1) return;
+
         _showdialogRating(context, widget.cubit);
       });
     }
@@ -82,8 +84,8 @@ class _PlayAgainViewState extends State<PlayAgainView>
     isRewardAdReady = false;
     if (player.playing) {
       player.stop();
-      player.dispose();
     }
+    player.dispose();
     super.dispose();
   }
 
@@ -285,6 +287,10 @@ class _PlayAgainViewState extends State<PlayAgainView>
 
   Future<void> _share(BuildContext context) async {
     try {
+      if (_key.currentContext == null) {
+        ShowMessageInternal.showMessage("Vui lòng thử lại!");
+        return;
+      }
       RenderRepaintBoundary boundary =
           _key.currentContext!.findRenderObject() as RenderRepaintBoundary;
       ui.Image image = await boundary.toImage(pixelRatio: 3.0);
@@ -295,8 +301,8 @@ class _PlayAgainViewState extends State<PlayAgainView>
       String tempPath = tempDir.path;
       File qrImageFile = File('$tempPath/qrcode.png');
       await qrImageFile.writeAsBytes(pngBytes!);
-      await Share.shareFiles(
-        [qrImageFile.path],
+      await Share.shareXFiles(
+        [XFile(qrImageFile.path)],
         subject:
             'Tải ứng dụng trên cửa hàng: https://play.google.com/store/apps/dev?id=5241296680413671492',
         text:
@@ -304,6 +310,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
       );
       await AnalyticsManager.share('share', '1 item', 'contentType');
     } catch (e) {
+      ShowMessageInternal.showMessage("Vui lòng thử lại!");
       rethrow;
     }
   }
