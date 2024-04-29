@@ -128,6 +128,7 @@ Future<void> _initFirebaseRemoteConfig() async {
     'optimizeUser': 90,
     'adsRankingDistance': 10,
     'messageNoti': "",
+    'isScheduleMessage': true,
   });
 
   await remoteConfig.fetchAndActivate();

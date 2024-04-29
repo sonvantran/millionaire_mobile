@@ -6,6 +6,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import '../analytics/analytics_manager.dart';
+
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
   // if (message == null) return;
   developer.log(message.notification.toString());
@@ -77,31 +79,41 @@ class MessagingService {
   }
 
   void scheduleMessage() {
-    String messageNoti = FirebaseRemoteConfig.instance.getString("messageNoti");
-    List<String> message = messageNoti.split(';');
-    const String timeZoneName = 'Asia/Ho_Chi_Minh';
-    final tz.Location timeZone = tz.getLocation(timeZoneName);
-    DateTime scheduledDate = DateTime.now().add(const Duration(hours: 1));
-    tz.TZDateTime tzDateTime = tz.TZDateTime.from(scheduledDate, timeZone);
-    _localNoti.zonedSchedule(
-      14092002,
-      null,
-      message[Random().nextInt(message.length)],
-      tzDateTime,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          _androidChannel.id,
-          _androidChannel.name,
-          channelDescription: _androidChannel.description,
-          icon: "@mipmap/ic_launcher",
-          priority: Priority.high,
-          importance: Importance.max,
+    try {
+      final isScheduleMessage =
+          FirebaseRemoteConfig.instance.getBool("isScheduleMessage");
+      if (!isScheduleMessage) return;
+      String messageNoti =
+          FirebaseRemoteConfig.instance.getString("messageNoti");
+      List<String> message = messageNoti.split(';');
+      const String timeZoneName = 'Asia/Ho_Chi_Minh';
+      final tz.Location timeZone = tz.getLocation(timeZoneName);
+      DateTime scheduledDate = DateTime.now().add(const Duration(hours: 1));
+      tz.TZDateTime tzDateTime = tz.TZDateTime.from(scheduledDate, timeZone);
+      _localNoti.zonedSchedule(
+        14092002,
+        null,
+        message[Random().nextInt(message.length)],
+        tzDateTime,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            _androidChannel.id,
+            _androidChannel.name,
+            channelDescription: _androidChannel.description,
+            icon: "@mipmap/ic_launcher",
+            priority: Priority.high,
+            importance: Importance.max,
+          ),
         ),
-      ),
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.wallClockTime,
-      payload: jsonEncode(message),
-    );
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.wallClockTime,
+        payload: jsonEncode(message),
+      );
+    } catch (e) {
+      AnalyticsManager.sendAnalyticsEvent(
+          e.toString().replaceAll(RegExp(r'[^a-zA-Z]'), '_'));
+      return;
+    }
   }
 
   void showDailyMessage() {
