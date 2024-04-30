@@ -70,6 +70,7 @@ class MessagingService {
             icon: "@mipmap/ic_launcher",
             priority: Priority.high,
             importance: Importance.max,
+            styleInformation: const BigTextStyleInformation(''),
           ),
         ),
         payload: jsonEncode(message.toMap()),
@@ -103,6 +104,7 @@ class MessagingService {
             icon: "@mipmap/ic_launcher",
             priority: Priority.high,
             importance: Importance.max,
+            styleInformation: const BigTextStyleInformation(''),
           ),
         ),
         uiLocalNotificationDateInterpretation:
@@ -132,6 +134,7 @@ class MessagingService {
           icon: "@mipmap/ic_launcher",
           priority: Priority.high,
           importance: Importance.max,
+          styleInformation: const BigTextStyleInformation(''),
         ),
       ),
     );

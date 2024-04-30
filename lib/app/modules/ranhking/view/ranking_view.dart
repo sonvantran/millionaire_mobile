@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -177,9 +179,17 @@ class _RankingViewState extends State<RankingView> with RouteAwareAnalytics {
                                           return Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              const SkyNativeAdWidget(
+                                              SkyNativeAdWidget(
                                                 placement: AdsId.nativeRanking,
-                                                size: NativeAdSize.small,
+                                                size: Random().nextInt(
+                                                                FirebaseRemoteConfig
+                                                                    .instance
+                                                                    .getInt(
+                                                                        'storeNativeRandom')) ==
+                                                            1 &&
+                                                        index != 2
+                                                    ? NativeAdSize.medium
+                                                    : NativeAdSize.small,
                                               ),
                                               UserRankingItem(
                                                 user: users![index],

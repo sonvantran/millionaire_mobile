@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:android_id/android_id.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:just_audio/just_audio.dart';
@@ -161,6 +162,7 @@ class LoginCubit extends Cubit<LoginState> {
       ));
       await prefs.setInt("point", user.point);
       await prefs.setString("userName", user.name);
+      await prefs.setStringList('boughtItem', user.boughtItem ?? []);
       if (user.image != null) await prefs.setString("imageUser", user.image!);
       final validateName = await getBadWordsLocal();
       emit(state.copyWith(validateName: validateName));
@@ -198,9 +200,10 @@ class LoginCubit extends Cubit<LoginState> {
     final pre = await SharedPreferences.getInstance();
     final badWords = pre.getString("badWords");
     if (badWords == null) {
-      final validateName = await _loginRepository.getBad();
-      await pre.setString("badWords", validateName);
-      return validateName;
+      final badword = FirebaseRemoteConfig.instance.getString('badword');
+      // final validateName = await _loginRepository.getBad();
+      await pre.setString("badWords", badword);
+      return badword;
     }
     return badWords;
   }

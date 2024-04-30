@@ -12,8 +12,12 @@ class FirestoreManager {
   Future<User?> updateUser(User user) async {
     try {
       if (user.name.isEmpty) return null;
-      await firestore.collection("users").doc(user.deviceId).set(user.toMap());
-      final pre = await SharedPreferences.getInstance();
+      SharedPreferences pre = await SharedPreferences.getInstance();
+      List<String> preItems = pre.getStringList("boughtItem") ?? [];
+      await firestore
+          .collection("users")
+          .doc(user.deviceId)
+          .set(user.copyWith(boughtItem: preItems).toJson());
       await pre.setInt("lastPoint", user.point);
       await pre.setString("lastName", user.name);
       return user;

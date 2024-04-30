@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/services/store_box.dart';
 import '../../../data/model/item_model.dart';
 import '../../../data/model/user.dart';
@@ -43,6 +44,19 @@ class StoreCubit extends Cubit<StoreState> {
           List<ItemModel> j = ItemModel.fromMap(i.doc.data()!);
           li.add(j);
         }
+      }
+    List<List<ItemModel>> li2 = List.from(li);
+      try {
+        final conGiap = li.removeAt(5);
+        final trend = li.removeAt(5);
+        final thienNhien = li.removeAt(5);
+        li.insert(0, thienNhien);
+        li.insert(0, conGiap);
+        li.insert(0, trend);
+      } catch (e) {
+        AnalyticsManager.sendAnalyticsEvent(
+            e.toString().replaceAll(RegExp(r'[^a-zA-Z]'), '_'));
+        li = li2;
       }
       SharedPreferences pre = await SharedPreferences.getInstance();
       await pre.setInt(

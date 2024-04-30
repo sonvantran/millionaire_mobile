@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -43,14 +46,6 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
     );
   }
 
-  List<String> labels = [
-    "Tầng lớp trung lưu",
-    "Đẳng Cấp Thượng Lưu",
-    "Thượng Lưu Đích Thực",
-    "Thượng Đẳng Tài Phiệt",
-    "Thế Hệ Triệu Phú",
-    "Tỷ phú",
-  ];
   Widget _buildPage(BuildContext context) {
     return MultiBlocListener(
       listeners: [
@@ -74,6 +69,21 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
       ],
       child: BlocBuilder<StoreCubit, StoreState>(builder: (context, state) {
         final store = state.store?.store;
+        List<String> labels =
+            FirebaseRemoteConfig.instance.getString('storeLabels').split(',');
+        if (labels.isEmpty) {
+          labels = [
+            "Trending",
+            "12 Con giáp",
+            "Thiên nhiên",
+            "Tầng lớp trung lưu",
+            "Đẳng Cấp Thượng Lưu",
+            "Thượng Lưu Đích Thực",
+            "Thượng Đẳng Tài Phiệt",
+            "Thế Hệ Triệu Phú",
+            "Tỷ phú",
+          ];
+        }
         return Scaffold(
           body: Container(
             width: double.infinity,
@@ -101,7 +111,7 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
                   child: ScoreUser(text: state.user?.point ?? 0),
                 ),
                 const SizedBox(height: 8),
-                store == null
+                store == null || labels.isEmpty
                     ? Expanded(
                         child: Center(
                           child: SpinKitCircle(
@@ -123,9 +133,16 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
                                       user: state.user ?? widget.user,
                                     ),
                                     if (index % 2 == 0)
-                                      const SkyNativeAdWidget(
+                                      SkyNativeAdWidget(
                                         placement: AdsId.nativeCategory,
-                                        size: NativeAdSize.small,
+                                        size: Random().nextInt(FirebaseRemoteConfig
+                                                        .instance
+                                                        .getInt(
+                                                            'storeNativeRandom')) ==
+                                                    1 &&
+                                                index != 0
+                                            ? NativeAdSize.medium
+                                            : NativeAdSize.small,
                                       )
                                   ],
                                 ),

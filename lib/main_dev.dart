@@ -122,6 +122,9 @@ Future<void> _initFirebaseRemoteConfig() async {
     'adsRankingDistance': 10,
     'messageNoti': "",
     'isScheduleMessage': true,
+    'storeLabels': "",
+    'badword': "",
+    'storeNativeRandom': 5,
   });
 
   await remoteConfig.fetchAndActivate();
