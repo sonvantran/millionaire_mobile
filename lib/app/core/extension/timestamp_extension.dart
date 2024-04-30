@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 extension TimeStampX on Timestamp {
   String toLastest() {
-    final now = DateTime.now();
-    final difference = now.difference(toDate());
+    final now = Timestamp.now();
+    final difference = now.toDate().difference(toDate());
 
     if (difference.inSeconds < 60) {
       return '${difference.inSeconds} giây trước';

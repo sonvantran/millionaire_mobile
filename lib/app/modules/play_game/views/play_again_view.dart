@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
+import 'package:sky_ads/sky_ads.dart';
 import 'dart:ui' as ui;
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
@@ -52,18 +52,16 @@ class PlayAgainView extends StatefulWidget {
 class _PlayAgainViewState extends State<PlayAgainView>
     with RouteAwareAnalytics {
   final _key = GlobalKey();
-  // BannerAd? _bannerAd;
-  // bool isBannerAdReady = false;
 
-  RewardedAd? _rewardedAd;
-  bool isRewardAdReady = false;
+  // RewardedAd? _rewardedAd;
+  // bool isRewardAdReady = false;
 
   @override
   TrackingScreenViewType get route => TrackingScreenViewType.playAgain;
 
   @override
   void initState() {
-    _loadRewardedAd();
+    // _loadRewardedAd();
     chiatay();
     if (mounted) {
       Future.delayed(const Duration(seconds: 1), () {
@@ -79,9 +77,9 @@ class _PlayAgainViewState extends State<PlayAgainView>
   @override
   void dispose() {
     // _bannerAd?.dispose();
-    _rewardedAd?.dispose();
+    // _rewardedAd?.dispose();
     // isBannerAdReady = false;
-    isRewardAdReady = false;
+    // isRewardAdReady = false;
     if (player.playing) {
       player.stop();
     }
@@ -183,24 +181,44 @@ class _PlayAgainViewState extends State<PlayAgainView>
                                     color: AppColors.colorFF402744,
                                   )),
                               onTap: () {
-                                if (_rewardedAd != null && isRewardAdReady) {
-                                  _rewardedAd?.show(
-                                    onUserEarnedReward: (_, __) {
-                                      widget.cubit.updatePoint(score <= 20000000
-                                          ? widget.point
-                                          : "20,000,000");
-                                      ShowMessageInternal.showMessage(
-                                          "Bạn đã thành công");
-                                      Future.delayed(
-                                        const Duration(seconds: 1),
-                                        () => context.router.pop(),
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  ShowMessageInternal.showMessage(
-                                      "Vui lòng thử lại sau");
-                                }
+                                SkyAds.instance.showRewardedAd(
+                                  context: context,
+                                  placement: AdsId.rewardPlayAgain,
+                                  forceShow: true,
+                                  onUserEarnedReward: (p0, p1) {
+                                    widget.cubit.updatePoint(score <= 20000000
+                                        ? widget.point
+                                        : "20,000,000");
+                                    ShowMessageInternal.showMessage(
+                                        "Bạn đã thành công");
+                                    Future.delayed(
+                                      const Duration(seconds: 1),
+                                      () => context.router.pop(),
+                                    );
+                                  },
+                                  onAdFailedToLoad: () {
+                                    ShowMessageInternal.showMessage(
+                                        "Vui lòng thử lại sau");
+                                  },
+                                );
+                                // if (_rewardedAd != null && isRewardAdReady) {
+                                //   _rewardedAd?.show(
+                                //     onUserEarnedReward: (_, __) {
+                                //       widget.cubit.updatePoint(score <= 20000000
+                                //           ? widget.point
+                                //           : "20,000,000");
+                                //       ShowMessageInternal.showMessage(
+                                //           "Bạn đã thành công");
+                                //       Future.delayed(
+                                //         const Duration(seconds: 1),
+                                //         () => context.router.pop(),
+                                //       );
+                                //     },
+                                //   );
+                                // } else {
+                                //   ShowMessageInternal.showMessage(
+                                //       "Vui lòng thử lại sau");
+                                // }
                               },
                               text:
                                   "Xem Video Để ${score <= 20000000 ? 'X2 Điểm' : "+20.000.000 đ"}",
@@ -248,42 +266,42 @@ class _PlayAgainViewState extends State<PlayAgainView>
     );
   }
 
-  void _loadRewardedAd() {
-    RewardedAd.load(
-      adUnitId: AdsManager.rewardedAdUnitId,
-      request: const AdRequest(),
-      rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (ad) {
-          ad.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (ad) {
-              if (!mounted) return;
-              setState(() {
-                ad.dispose();
-                _rewardedAd = null;
-              });
-            },
-            onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
-              ad.dispose();
-              debugPrint('Ad failed to show: $error');
-            },
-          );
-          if (!mounted) return;
-          setState(() {
-            _rewardedAd = ad;
-            isRewardAdReady = true;
-          });
-        },
-        onAdFailedToLoad: (err) {
-          if (dem >= 5) return;
-          dem++;
-          _loadRewardedAd();
-          debugPrint('Failed to load a rewarded ad: ${err.message}');
-        },
-      ),
-    );
-  }
+  // void _loadRewardedAd() {
+  //   RewardedAd.load(
+  //     adUnitId: AdsManager.rewardedAdUnitId,
+  //     request: const AdRequest(),
+  //     rewardedAdLoadCallback: RewardedAdLoadCallback(
+  //       onAdLoaded: (ad) {
+  //         ad.fullScreenContentCallback = FullScreenContentCallback(
+  //           onAdDismissedFullScreenContent: (ad) {
+  //             if (!mounted) return;
+  //             setState(() {
+  //               ad.dispose();
+  //               _rewardedAd = null;
+  //             });
+  //           },
+  //           onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
+  //             ad.dispose();
+  //             debugPrint('Ad failed to show: $error');
+  //           },
+  //         );
+  //         if (!mounted) return;
+  //         setState(() {
+  //           _rewardedAd = ad;
+  //           isRewardAdReady = true;
+  //         });
+  //       },
+  //       onAdFailedToLoad: (err) {
+  //         if (dem >= 5) return;
+  //         dem++;
+  //         _loadRewardedAd();
+  //         debugPrint('Failed to load a rewarded ad: ${err.message}');
+  //       },
+  //     ),
+  //   );
+  // }
 
-  int dem = 0;
+  // int dem = 0;
 
   Future<void> _share(BuildContext context) async {
     try {

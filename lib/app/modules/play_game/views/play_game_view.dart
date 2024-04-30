@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
 import 'package:sky_ads/sky_ads.dart';
 import 'package:volume_controller/volume_controller.dart';
@@ -113,50 +112,50 @@ class _PlayGamePageState extends State<PlayGamePage>
     with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
-  RewardedAd? _rewardedAd;
-  bool isRewardAdReady = false;
+  // RewardedAd? _rewardedAd;
+  // bool isRewardAdReady = false;
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    _loadRewardedAd();
+    // _loadRewardedAd();
     super.initState();
   }
 
-  void _loadRewardedAd() {
-    RewardedAd.load(
-      adUnitId: AdsManager.rewardedAdUnitId2,
-      request: const AdRequest(),
-      rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (ad) {
-          ad.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (ad) {
-              context.read<PlayGameCubit>().playAgainAds();
-              setState(() {
-                ad.dispose();
-                _rewardedAd = null;
-              });
-            },
-            onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
-              ad.dispose();
-              debugPrint('Ad failed to show: $error');
-            },
-          );
-          if (!mounted) return;
-          setState(() {
-            _rewardedAd = ad;
-            isRewardAdReady = true;
-          });
-        },
-        onAdFailedToLoad: (err) {
-          if (dem >= 5) return;
-          dem++;
-          _loadRewardedAd();
-          debugPrint('Failed to load a rewarded ad: ${err.message}');
-        },
-      ),
-    );
-  }
+  // void _loadRewardedAd() {
+  //   RewardedAd.load(
+  //     adUnitId: AdsManager.rewardedAdUnitId2,
+  //     request: const AdRequest(),
+  //     rewardedAdLoadCallback: RewardedAdLoadCallback(
+  //       onAdLoaded: (ad) {
+  //         ad.fullScreenContentCallback = FullScreenContentCallback(
+  //           onAdDismissedFullScreenContent: (ad) {
+  //             context.read<PlayGameCubit>().playAgainAds();
+  //             setState(() {
+  //               ad.dispose();
+  //               _rewardedAd = null;
+  //             });
+  //           },
+  //           onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
+  //             ad.dispose();
+  //             debugPrint('Ad failed to show: $error');
+  //           },
+  //         );
+  //         if (!mounted) return;
+  //         setState(() {
+  //           _rewardedAd = ad;
+  //           isRewardAdReady = true;
+  //         });
+  //       },
+  //       onAdFailedToLoad: (err) {
+  //         if (dem >= 5) return;
+  //         dem++;
+  //         _loadRewardedAd();
+  //         debugPrint('Failed to load a rewarded ad: ${err.message}');
+  //       },
+  //     ),
+  //   );
+  // }
 
   int dem = 0;
 
@@ -701,15 +700,28 @@ class _PlayGamePageState extends State<PlayGamePage>
                         ViewAdsFail(
                           onClose: () => cubit.wrongAnswer(),
                           onViewAds: () {
-                            if (_rewardedAd != null && isRewardAdReady) {
-                              _rewardedAd?.show(
-                                onUserEarnedReward: (_, __) =>
-                                    cubit.playAgainAds(),
-                              );
-                            } else {
-                              ShowMessageInternal.showMessage(
-                                  "Vui lòng thử lại sau");
-                            }
+                            SkyAds.instance.showRewardedAd(
+                              context: context,
+                              placement: AdsId.rewardPlayGame,
+                              forceShow: true,
+                              onAdDismissedFullScreenContent: () =>
+                                  cubit.playAgainAds(),
+                              onUserEarnedReward: (p0, p1) =>
+                                  cubit.playAgainAds(),
+                              onAdFailedToLoad: () {
+                                ShowMessageInternal.showMessage(
+                                    "Vui lòng thử lại sau");
+                              },
+                            );
+                            // if (_rewardedAd != null && isRewardAdReady) {
+                            //   _rewardedAd?.show(
+                            //     onUserEarnedReward: (_, __) =>
+                            //         cubit.playAgainAds(),
+                            //   );
+                            // } else {
+                            //   ShowMessageInternal.showMessage(
+                            //       "Vui lòng thử lại sau");
+                            // }
                           },
                         ),
                     ],

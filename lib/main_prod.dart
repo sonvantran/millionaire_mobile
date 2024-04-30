@@ -90,6 +90,10 @@ void main() async {
         AdsId.bannerRanking: dotenv.env[AdsId.bannerRanking] ?? "",
         AdsId.bannerStore: dotenv.env[AdsId.bannerStore] ?? "",
       },
+      rewardedAdId: {
+        AdsId.rewardPlayGame: dotenv.env[AdsId.rewardPlayGame] ?? "",
+        AdsId.rewardPlayAgain: dotenv.env[AdsId.rewardPlayAgain] ?? "",
+      },
       interstitialOffsetTime: const Duration(seconds: 30),
       appOpenOffsetTime: const Duration(seconds: 30),
     ),

@@ -50,4 +50,7 @@ abstract class AdsId {
   static const String bannerPlay = 'banner_play';
   static const String bannerPlayAgain = 'banner_play_again';
   static const String bannerStore = 'banner_store';
+
+  static const String rewardPlayGame = 'reward_play_game';
+  static const String rewardPlayAgain = 'reward_play_again';
 }
