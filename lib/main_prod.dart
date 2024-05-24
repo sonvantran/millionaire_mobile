@@ -136,6 +136,7 @@ Future<void> _initFirebaseRemoteConfig() async {
     'storeLabels': "",
     'badword': "",
     'storeNativeRandom': 5,
+    "rewardNotiPoint": "5.000.000",
   });
 
   await remoteConfig.fetchAndActivate();

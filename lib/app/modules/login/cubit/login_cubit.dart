@@ -80,8 +80,13 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   void setHasDataLocal() {
-    final question = QuestionBox.getQuestions();
-    emit(state.copyWith(hasDataLocal: question.isNotEmpty));
+    try {
+      final question = QuestionBox.getQuestions();
+      emit(state.copyWith(hasDataLocal: question.isNotEmpty));
+    } catch (e) {
+      if (e is StateError) return;
+      rethrow;
+    }
   }
 
   void reviewApp() async {

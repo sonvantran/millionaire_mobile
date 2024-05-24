@@ -1,9 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
 import '../../../core/services/ads_manager.dart';
@@ -71,7 +73,23 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     initConnectionListen();
+    initRewardNoti();
     super.initState();
+  }
+
+  void initRewardNoti() async {
+    final pre = await SharedPreferences.getInstance();
+    final isNotiCalled = pre.getBool("isNotiCalled") ?? false;
+    if (isNotiCalled) {
+      pre.setBool("isNotiCalled", false);
+      Future.delayed(const Duration(seconds: 2), () {
+        if (!mounted) return;
+        _showReward(context, onShow: () {
+          originCubit?.updatePoint(
+              FirebaseRemoteConfig.instance.getString("rewardNotiPoint"));
+        });
+      });
+    }
   }
 
   void initConnectionListen() {
@@ -630,6 +648,52 @@ Người chơi được cung cấp bốn lựa chọn trợ giúp: "50:50", đi�
                       ),
                     ],
                   ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showReward(BuildContext context, {VoidCallback? onShow}) async {
+    const content = '''
+🎮 Chúc mừng bạn đã nhận được phần thưởng:
+''';
+    String rewardNotiPoint =
+        FirebaseRemoteConfig.instance.getString("rewardNotiPoint");
+    onShow?.call();
+    await showDialog(
+      context: context,
+      builder: (BuildContext _) {
+        return PopupNotice(
+          isCountDown: false,
+          textButton: 'ĐÓNG',
+          title: "PHẦN THƯỞNG",
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  child: Text(
+                    content,
+                    style: TextStyles.regularWhiteS18,
+                    textAlign: TextAlign.justify,
+                  ),
+                ),
+                Text(
+                  "$rewardNotiPoint đ",
+                  style: TextStyles.regularWhiteS18,
+                  textAlign: TextAlign.center,
+                ),
+                Icon(
+                  Icons.monetization_on_rounded,
+                  color: AppColors.colorFFf7d35a,
+                  size: 72.r,
                 ),
               ],
             ),

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
@@ -319,7 +320,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
       String tempPath = tempDir.path;
       File qrImageFile = File('$tempPath/qrcode.png');
       await qrImageFile.writeAsBytes(pngBytes!);
-      await Share.shareXFiles(
+      Share.shareXFiles(
         [XFile(qrImageFile.path)],
         subject:
             'Tải ứng dụng trên cửa hàng: https://play.google.com/store/apps/dev?id=5241296680413671492',
@@ -329,7 +330,8 @@ class _PlayAgainViewState extends State<PlayAgainView>
       await AnalyticsManager.share('share', '1 item', 'contentType');
     } catch (e) {
       ShowMessageInternal.showMessage("Vui lòng thử lại!");
-      rethrow;
+      if (e is PlatformException) return;
+      // rethrow;
     }
   }
 

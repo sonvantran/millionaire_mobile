@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -8,9 +9,19 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../analytics/analytics_manager.dart';
 
+@pragma('vm:entry-point')
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
   // if (message == null) return;
   developer.log(message.notification.toString());
+  final pre = await SharedPreferences.getInstance();
+  pre.setBool("isNotiCalled", true);
+}
+
+@pragma('vm:entry-point')
+Future<void> handleBackgroundMessage2(NotificationResponse message) async {
+  // if (message == null) return;
+  final pre = await SharedPreferences.getInstance();
+  pre.setBool("isNotiCalled", true);
 }
 
 class MessagingService {
@@ -35,8 +46,8 @@ class MessagingService {
       provisional: false,
       sound: true,
     );
-    // final fCMToken = await _firebaseMessaging.getToken();
-    // log(fCMToken.toString());
+    final fCMToken = await _firebaseMessaging.getToken();
+    developer.log(fCMToken.toString());
     initPushNotification();
     initLocalNotification();
   }
@@ -147,7 +158,11 @@ class MessagingService {
       android: android,
       iOS: ios,
     );
-    await _localNoti.initialize(setting);
+    await _localNoti.initialize(
+      setting,
+      onDidReceiveBackgroundNotificationResponse: handleBackgroundMessage2,
+      onDidReceiveNotificationResponse: handleBackgroundMessage2,
+    );
 
     final platform = _localNoti.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
