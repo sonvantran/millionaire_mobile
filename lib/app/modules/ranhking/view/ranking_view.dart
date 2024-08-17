@@ -1,11 +1,12 @@
 import 'dart:math';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:millionaire_mobile/app/core/extension/integer_extension.dart';
+import 'package:millionaire_game/app/core/extension/integer_extension.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
 import 'package:sky_ads/native_ad_widget.dart';
 import 'package:sky_ads/sky_ads.dart';
@@ -25,6 +26,7 @@ import '../widget/date_button.dart';
 import '../widget/title_ranking.dart';
 import '../widget/user_ranking_item.dart';
 
+@RoutePage()
 class RankingView extends StatefulWidget {
   const RankingView({super.key, required this.user});
 

@@ -1,4 +1,4 @@
-import 'package:millionaire_mobile/app/core/extension/string_extention.dart';
+import 'package:millionaire_game/app/core/extension/string_extention.dart';
 
 class SoundManager {
   static String bgGame = 'bg';

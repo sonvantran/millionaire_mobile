@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:millionaire_mobile/app/core/extension/integer_extension.dart';
+import 'package:millionaire_game/app/core/extension/integer_extension.dart';
 
 import '../../../core/values/app_colors.dart';
 
@@ -54,7 +54,7 @@ class _BarChart extends StatelessWidget {
   BarTouchData get barTouchData => BarTouchData(
         enabled: false,
         touchTooltipData: BarTouchTooltipData(
-          tooltipBgColor: Colors.transparent,
+          // tooltipBgColor: Colors.transparent,
           tooltipPadding: EdgeInsets.zero,
           tooltipMargin: 8,
           getTooltipItem: (

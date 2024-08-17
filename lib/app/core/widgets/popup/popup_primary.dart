@@ -7,7 +7,7 @@ import '../../values/text_styles.dart';
 import '../button/primary_button.dart';
 
 class PopupPrimary extends StatelessWidget {
-  PopupPrimary({
+  const PopupPrimary({
     super.key,
     required this.title,
     required this.titleButton1,

@@ -12,7 +12,7 @@ part of 'login_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$LoginState {
@@ -26,7 +26,9 @@ mixin _$LoginState {
   String? get message => throw _privateConstructorUsedError;
   Error? get error => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of LoginState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $LoginStateCopyWith<LoginState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -59,6 +61,8 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of LoginState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -114,11 +118,11 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
 }
 
 /// @nodoc
-abstract class _$$_LoginStateCopyWith<$Res>
+abstract class _$$LoginStateImplCopyWith<$Res>
     implements $LoginStateCopyWith<$Res> {
-  factory _$$_LoginStateCopyWith(
-          _$_LoginState value, $Res Function(_$_LoginState) then) =
-      __$$_LoginStateCopyWithImpl<$Res>;
+  factory _$$LoginStateImplCopyWith(
+          _$LoginStateImpl value, $Res Function(_$LoginStateImpl) then) =
+      __$$LoginStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -134,13 +138,15 @@ abstract class _$$_LoginStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_LoginStateCopyWithImpl<$Res>
-    extends _$LoginStateCopyWithImpl<$Res, _$_LoginState>
-    implements _$$_LoginStateCopyWith<$Res> {
-  __$$_LoginStateCopyWithImpl(
-      _$_LoginState _value, $Res Function(_$_LoginState) _then)
+class __$$LoginStateImplCopyWithImpl<$Res>
+    extends _$LoginStateCopyWithImpl<$Res, _$LoginStateImpl>
+    implements _$$LoginStateImplCopyWith<$Res> {
+  __$$LoginStateImplCopyWithImpl(
+      _$LoginStateImpl _value, $Res Function(_$LoginStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of LoginState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -154,7 +160,7 @@ class __$$_LoginStateCopyWithImpl<$Res>
     Object? message = freezed,
     Object? error = freezed,
   }) {
-    return _then(_$_LoginState(
+    return _then(_$LoginStateImpl(
       isMute: null == isMute
           ? _value.isMute
           : isMute // ignore: cast_nullable_to_non_nullable
@@ -197,8 +203,8 @@ class __$$_LoginStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_LoginState extends _LoginState {
-  const _$_LoginState(
+class _$LoginStateImpl extends _LoginState {
+  const _$LoginStateImpl(
       {this.isMute = false,
       this.isMuteCheckAgain = false,
       this.hasUser = true,
@@ -240,10 +246,10 @@ class _$_LoginState extends _LoginState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_LoginState &&
+            other is _$LoginStateImpl &&
             (identical(other.isMute, isMute) || other.isMute == isMute) &&
             (identical(other.isMuteCheckAgain, isMuteCheckAgain) ||
                 other.isMuteCheckAgain == isMuteCheckAgain) &&
@@ -263,11 +269,13 @@ class _$_LoginState extends _LoginState {
   int get hashCode => Object.hash(runtimeType, isMute, isMuteCheckAgain,
       hasUser, hasDataLocal, validateName, user, chooseMC, message, error);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of LoginState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$_LoginStateCopyWith<_$_LoginState> get copyWith =>
-      __$$_LoginStateCopyWithImpl<_$_LoginState>(this, _$identity);
+  _$$LoginStateImplCopyWith<_$LoginStateImpl> get copyWith =>
+      __$$LoginStateImplCopyWithImpl<_$LoginStateImpl>(this, _$identity);
 }
 
 abstract class _LoginState extends LoginState {
@@ -280,7 +288,7 @@ abstract class _LoginState extends LoginState {
       final User? user,
       final int chooseMC,
       final String? message,
-      final Error? error}) = _$_LoginState;
+      final Error? error}) = _$LoginStateImpl;
   const _LoginState._() : super._();
 
   @override
@@ -301,8 +309,11 @@ abstract class _LoginState extends LoginState {
   String? get message;
   @override
   Error? get error;
+
+  /// Create a copy of LoginState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
-  _$$_LoginStateCopyWith<_$_LoginState> get copyWith =>
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$LoginStateImplCopyWith<_$LoginStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

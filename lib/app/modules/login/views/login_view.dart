@@ -33,6 +33,7 @@ import '../widgets/setting.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
 import 'package:sky_ads/sky_ads.dart';
 
+@RoutePage()
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -96,9 +97,9 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     if (!mounted) return;
     Connectivity().onConnectivityChanged.listen((result) {
       if (!mounted) return;
-      if (result != ConnectivityResult.mobile &&
-          result != ConnectivityResult.wifi &&
-          result != ConnectivityResult.ethernet) {
+      if (!result.contains(ConnectivityResult.mobile) &&
+          !result.contains(ConnectivityResult.wifi) &&
+          !result.contains(ConnectivityResult.ethernet)) {
         if (!context.mounted) return;
         setState(() => isAppConnection = false);
         SkyAds.instance.isAdDisable = true;
@@ -117,9 +118,9 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   Future<void> _checkInternetConnection() async {
     var result = await Connectivity().checkConnectivity();
     if (!mounted) return;
-    if (result != ConnectivityResult.mobile &&
-        result != ConnectivityResult.wifi &&
-        result != ConnectivityResult.ethernet) {
+    if (!result.contains(ConnectivityResult.mobile) &&
+        !result.contains(ConnectivityResult.wifi) &&
+        !result.contains(ConnectivityResult.ethernet)) {
       if (!context.mounted) return;
       setState(() => isAppConnection = false);
       // context.pushRoute(const NoInternetPageRoute());
@@ -314,7 +315,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                                 ShowMessageInternal.showMessage(
                                     "Hệ thống tạm thời không tính điểm");
                               }
-                              context.pushRoute(PlayGameViewRoute(
+                              context.pushRoute(PlayGameRoute(
                                 isMute: state.isMute,
                                 mc: state.chooseMC,
                                 user: state.user,
@@ -335,7 +336,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                                 }
                                 AnalyticsManager.sendAnalyticsEvent(
                                     'The_user_want_to_purchase');
-                                context.pushRoute(StoreViewRoute(
+                                context.pushRoute(StoreRoute(
                                     cubit: cubit, user: state.user!));
                               },
                             ),
@@ -355,7 +356,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                             AnalyticsManager.sendAnalyticsEvent(
                                 'The_user_want_to_watch_ranking_view');
                             if (state.hasUser && state.user != null) {
-                              await context.pushRoute(RankingViewRoute(
+                              await context.pushRoute(RankingRoute(
                                 user: state.user!,
                               ));
                             } else {
@@ -426,7 +427,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     canPlay = false;
     final checkQuestion = await checkHasQuestion();
     canPlay = true;
-    if (!mounted) return;
+    if (!context.mounted) return;
     if (!checkQuestion) {
       cubit.callQuestionAgain();
       ShowMessageInternal.showMessage("Vui lòng chờ tải bộ câu hỏi!");
@@ -438,7 +439,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       if (state.user == null) {
         ShowMessageInternal.showMessage("Hệ thống tạm thời không tính điểm");
       }
-      await context.pushRoute(PlayGameViewRoute(
+      await context.pushRoute(PlayGameRoute(
         isMute: state.isMute,
         mc: state.chooseMC,
         user: state.user,
@@ -451,7 +452,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       if (state.user == null) {
         ShowMessageInternal.showMessage("Hệ thống tạm thời không tính điểm");
       }
-      await context.pushRoute(PlayGameViewRoute(
+      await context.pushRoute(PlayGameRoute(
         mc: state.chooseMC,
         isMute: state.isMute,
         user: state.user,

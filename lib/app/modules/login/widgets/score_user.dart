@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:millionaire_mobile/app/core/extension/integer_extension.dart';
+import 'package:millionaire_game/app/core/extension/integer_extension.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 

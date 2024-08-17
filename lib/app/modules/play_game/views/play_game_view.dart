@@ -37,6 +37,7 @@ import '../widget/question.dart';
 import '../widget/time_count.dart';
 import '../widget/view_ads_fail.dart';
 
+@RoutePage()
 class PlayGameView extends StatefulWidget {
   const PlayGameView(
       {super.key,
@@ -180,7 +181,7 @@ class _PlayGamePageState extends State<PlayGamePage>
 
   void popView(BuildContext context, int caseResult, String point, User? user) {
     if (!context.mounted) return;
-    context.router.replace(PlayAgainViewRoute(
+    context.router.replace(PlayAgainRoute(
       caseResult: caseResult,
       point: point,
       isMute: widget.isMute,
@@ -283,7 +284,7 @@ class _PlayGamePageState extends State<PlayGamePage>
               }
             } else if (state.isWin) {
               final point = getQuestionByLevel(state.level, state.chooseMC);
-              await context.router.replace(PlayAgainViewRoute(
+              await context.router.replace(PlayAgainRoute(
                 caseResult: 2,
                 point: point,
                 isMute: widget.isMute,
@@ -904,7 +905,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 forceShow: true,
                 onAdDisplayed: () {
                   if (!context.mounted || !mounted) return;
-                  context.router.replace(PlayAgainViewRoute(
+                  context.router.replace(PlayAgainRoute(
                     caseResult: 1,
                     point: point,
                     isMute: widget.isMute,
@@ -915,7 +916,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 },
                 onAdFailedToLoad: () {
                   if (!context.mounted || !mounted) return;
-                  context.router.replace(PlayAgainViewRoute(
+                  context.router.replace(PlayAgainRoute(
                     caseResult: 1,
                     point: point,
                     isMute: widget.isMute,
@@ -927,7 +928,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 onStartLoading: (canShowAd) {
                   if (!canShowAd) {
                     if (!context.mounted || !mounted) return;
-                    context.router.replace(PlayAgainViewRoute(
+                    context.router.replace(PlayAgainRoute(
                       caseResult: 1,
                       point: point,
                       isMute: widget.isMute,

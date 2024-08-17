@@ -120,6 +120,7 @@ class MessagingService {
         ),
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.wallClockTime,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         payload: jsonEncode(message),
       );
     } catch (e) {

@@ -12,8 +12,6 @@ abstract class Routes {
   static const ranking = _Paths.ranking;
 
   static const store = _Paths.store;
-
-  static const noInternet = _Paths.noInternet;
 }
 
 abstract class _Paths {
@@ -23,5 +21,4 @@ abstract class _Paths {
   static const roleApp = 'role_app';
   static const ranking = 'ranking';
   static const store = 'store';
-  static const noInternet = 'no_internet';
 }

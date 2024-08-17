@@ -1,13 +1,10 @@
-import 'dart:math';
-
+import 'package:auto_route/auto_route.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
-import 'package:sky_ads/native_ad_widget.dart';
-import 'package:sky_ads/sky_ads.dart';
 
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
@@ -24,6 +21,7 @@ import '../cubit/store_state.dart';
 import '../repository/store_repository.dart';
 import '../widgets/category.dart';
 
+@RoutePage()
 class StoreView extends StatefulWidget {
   const StoreView({super.key, required this.user, required this.cubit});
 
@@ -132,18 +130,6 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
                                       items: store[index],
                                       user: state.user ?? widget.user,
                                     ),
-                                    if (index % 2 == 0)
-                                      SkyNativeAdWidget(
-                                        placement: AdsId.nativeCategory,
-                                        size: Random().nextInt(FirebaseRemoteConfig
-                                                        .instance
-                                                        .getInt(
-                                                            'storeNativeRandom')) ==
-                                                    1 &&
-                                                index != 0
-                                            ? NativeAdSize.medium
-                                            : NativeAdSize.small,
-                                      )
                                   ],
                                 ),
                               )

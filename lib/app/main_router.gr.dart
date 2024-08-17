@@ -1,191 +1,37 @@
-// **************************************************************************
-// AutoRouteGenerator
-// **************************************************************************
-
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
-// AutoRouteGenerator
+// AutoRouterGenerator
 // **************************************************************************
-//
+
 // ignore_for_file: type=lint
+// coverage:ignore-file
 
 part of 'main_router.dart';
 
-class _$MainRouter extends RootStackRouter {
-  _$MainRouter([GlobalKey<NavigatorState>? navigatorKey]) : super(navigatorKey);
-
-  @override
-  final Map<String, PageFactory> pagesMap = {
-    LoginViewRoute.name: (routeData) {
-      return MaterialPageX<dynamic>(
-        routeData: routeData,
-        child: const LoginView(),
-      );
-    },
-    PlayGameViewRoute.name: (routeData) {
-      final args = routeData.argsAs<PlayGameViewRouteArgs>();
-      return MaterialPageX<dynamic>(
-        routeData: routeData,
-        child: PlayGameView(
-          key: args.key,
-          mc: args.mc,
-          isMute: args.isMute,
-          questionModelHive: args.questionModelHive,
-          cubit: args.cubit,
-          user: args.user,
-        ),
-      );
-    },
-    PlayAgainViewRoute.name: (routeData) {
-      final args = routeData.argsAs<PlayAgainViewRouteArgs>();
-      return MaterialPageX<dynamic>(
-        routeData: routeData,
-        child: PlayAgainView(
-          key: args.key,
-          caseResult: args.caseResult,
-          point: args.point,
-          mc: args.mc,
-          isMute: args.isMute,
-          cubit: args.cubit,
-          user: args.user,
-        ),
-      );
-    },
-    RankingViewRoute.name: (routeData) {
-      final args = routeData.argsAs<RankingViewRouteArgs>();
-      return MaterialPageX<dynamic>(
-        routeData: routeData,
-        child: RankingView(
-          key: args.key,
-          user: args.user,
-        ),
-      );
-    },
-    StoreViewRoute.name: (routeData) {
-      final args = routeData.argsAs<StoreViewRouteArgs>();
-      return MaterialPageX<dynamic>(
-        routeData: routeData,
-        child: StoreView(
-          key: args.key,
-          user: args.user,
-          cubit: args.cubit,
-        ),
-      );
-    },
-    NoInternetPageRoute.name: (routeData) {
-      return MaterialPageX<dynamic>(
-        routeData: routeData,
-        child: const NoInternetPage(),
-      );
-    },
-  };
-
-  @override
-  List<RouteConfig> get routes => [
-        RouteConfig(
-          '/#redirect',
-          path: '/',
-          redirectTo: 'login',
-          fullMatch: true,
-        ),
-        RouteConfig(
-          LoginViewRoute.name,
-          path: 'login',
-        ),
-        RouteConfig(
-          PlayGameViewRoute.name,
-          path: 'play_game',
-        ),
-        RouteConfig(
-          PlayAgainViewRoute.name,
-          path: 'play_again',
-        ),
-        RouteConfig(
-          RankingViewRoute.name,
-          path: 'ranking',
-        ),
-        RouteConfig(
-          StoreViewRoute.name,
-          path: 'ranking',
-        ),
-        RouteConfig(
-          NoInternetPageRoute.name,
-          path: 'no_internet',
-        ),
-      ];
-}
-
 /// generated route for
 /// [LoginView]
-class LoginViewRoute extends PageRouteInfo<void> {
-  const LoginViewRoute()
+class LoginRoute extends PageRouteInfo<void> {
+  const LoginRoute({List<PageRouteInfo>? children})
       : super(
-          LoginViewRoute.name,
-          path: 'login',
+          LoginRoute.name,
+          initialChildren: children,
         );
 
-  static const String name = 'LoginViewRoute';
-}
+  static const String name = 'LoginRoute';
 
-/// generated route for
-/// [PlayGameView]
-class PlayGameViewRoute extends PageRouteInfo<PlayGameViewRouteArgs> {
-  PlayGameViewRoute({
-    Key? key,
-    required int mc,
-    required bool isMute,
-    QuestionModelHive? questionModelHive,
-    required LoginCubit cubit,
-    required User? user,
-  }) : super(
-          PlayGameViewRoute.name,
-          path: 'play_game',
-          args: PlayGameViewRouteArgs(
-            key: key,
-            mc: mc,
-            isMute: isMute,
-            questionModelHive: questionModelHive,
-            cubit: cubit,
-            user: user,
-          ),
-        );
-
-  static const String name = 'PlayGameViewRoute';
-}
-
-class PlayGameViewRouteArgs {
-  const PlayGameViewRouteArgs({
-    this.key,
-    required this.mc,
-    required this.isMute,
-    this.questionModelHive,
-    required this.cubit,
-    required this.user,
-  });
-
-  final Key? key;
-
-  final int mc;
-
-  final bool isMute;
-
-  final QuestionModelHive? questionModelHive;
-
-  final LoginCubit cubit;
-
-  final User? user;
-
-  @override
-  String toString() {
-    return 'PlayGameViewRouteArgs{key: $key, mc: $mc, isMute: $isMute, questionModelHive: $questionModelHive, cubit: $cubit, user: $user}';
-  }
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const LoginView();
+    },
+  );
 }
 
 /// generated route for
 /// [PlayAgainView]
-class PlayAgainViewRoute extends PageRouteInfo<PlayAgainViewRouteArgs> {
-  PlayAgainViewRoute({
+class PlayAgainRoute extends PageRouteInfo<PlayAgainRouteArgs> {
+  PlayAgainRoute({
     Key? key,
     required int caseResult,
     required String point,
@@ -193,10 +39,10 @@ class PlayAgainViewRoute extends PageRouteInfo<PlayAgainViewRouteArgs> {
     required bool isMute,
     required LoginCubit cubit,
     required User? user,
+    List<PageRouteInfo>? children,
   }) : super(
-          PlayAgainViewRoute.name,
-          path: 'play_again',
-          args: PlayAgainViewRouteArgs(
+          PlayAgainRoute.name,
+          args: PlayAgainRouteArgs(
             key: key,
             caseResult: caseResult,
             point: point,
@@ -205,13 +51,30 @@ class PlayAgainViewRoute extends PageRouteInfo<PlayAgainViewRouteArgs> {
             cubit: cubit,
             user: user,
           ),
+          initialChildren: children,
         );
 
-  static const String name = 'PlayAgainViewRoute';
+  static const String name = 'PlayAgainRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<PlayAgainRouteArgs>();
+      return PlayAgainView(
+        key: args.key,
+        caseResult: args.caseResult,
+        point: args.point,
+        mc: args.mc,
+        isMute: args.isMute,
+        cubit: args.cubit,
+        user: args.user,
+      );
+    },
+  );
 }
 
-class PlayAgainViewRouteArgs {
-  const PlayAgainViewRouteArgs({
+class PlayAgainRouteArgs {
+  const PlayAgainRouteArgs({
     this.key,
     required this.caseResult,
     required this.point,
@@ -237,30 +100,112 @@ class PlayAgainViewRouteArgs {
 
   @override
   String toString() {
-    return 'PlayAgainViewRouteArgs{key: $key, caseResult: $caseResult, point: $point, mc: $mc, isMute: $isMute, cubit: $cubit, user: $user}';
+    return 'PlayAgainRouteArgs{key: $key, caseResult: $caseResult, point: $point, mc: $mc, isMute: $isMute, cubit: $cubit, user: $user}';
+  }
+}
+
+/// generated route for
+/// [PlayGameView]
+class PlayGameRoute extends PageRouteInfo<PlayGameRouteArgs> {
+  PlayGameRoute({
+    Key? key,
+    required int mc,
+    required bool isMute,
+    QuestionModelHive? questionModelHive,
+    required LoginCubit cubit,
+    required User? user,
+    List<PageRouteInfo>? children,
+  }) : super(
+          PlayGameRoute.name,
+          args: PlayGameRouteArgs(
+            key: key,
+            mc: mc,
+            isMute: isMute,
+            questionModelHive: questionModelHive,
+            cubit: cubit,
+            user: user,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'PlayGameRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<PlayGameRouteArgs>();
+      return PlayGameView(
+        key: args.key,
+        mc: args.mc,
+        isMute: args.isMute,
+        questionModelHive: args.questionModelHive,
+        cubit: args.cubit,
+        user: args.user,
+      );
+    },
+  );
+}
+
+class PlayGameRouteArgs {
+  const PlayGameRouteArgs({
+    this.key,
+    required this.mc,
+    required this.isMute,
+    this.questionModelHive,
+    required this.cubit,
+    required this.user,
+  });
+
+  final Key? key;
+
+  final int mc;
+
+  final bool isMute;
+
+  final QuestionModelHive? questionModelHive;
+
+  final LoginCubit cubit;
+
+  final User? user;
+
+  @override
+  String toString() {
+    return 'PlayGameRouteArgs{key: $key, mc: $mc, isMute: $isMute, questionModelHive: $questionModelHive, cubit: $cubit, user: $user}';
   }
 }
 
 /// generated route for
 /// [RankingView]
-class RankingViewRoute extends PageRouteInfo<RankingViewRouteArgs> {
-  RankingViewRoute({
+class RankingRoute extends PageRouteInfo<RankingRouteArgs> {
+  RankingRoute({
     Key? key,
     required User user,
+    List<PageRouteInfo>? children,
   }) : super(
-          RankingViewRoute.name,
-          path: 'ranking',
-          args: RankingViewRouteArgs(
+          RankingRoute.name,
+          args: RankingRouteArgs(
             key: key,
             user: user,
           ),
+          initialChildren: children,
         );
 
-  static const String name = 'RankingViewRoute';
+  static const String name = 'RankingRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<RankingRouteArgs>();
+      return RankingView(
+        key: args.key,
+        user: args.user,
+      );
+    },
+  );
 }
 
-class RankingViewRouteArgs {
-  const RankingViewRouteArgs({
+class RankingRouteArgs {
+  const RankingRouteArgs({
     this.key,
     required this.user,
   });
@@ -271,32 +216,45 @@ class RankingViewRouteArgs {
 
   @override
   String toString() {
-    return 'RankingViewRouteArgs{key: $key, user: $user}';
+    return 'RankingRouteArgs{key: $key, user: $user}';
   }
 }
 
 /// generated route for
 /// [StoreView]
-class StoreViewRoute extends PageRouteInfo<StoreViewRouteArgs> {
-  StoreViewRoute({
+class StoreRoute extends PageRouteInfo<StoreRouteArgs> {
+  StoreRoute({
     Key? key,
     required User user,
     required LoginCubit cubit,
+    List<PageRouteInfo>? children,
   }) : super(
-          StoreViewRoute.name,
-          path: 'ranking',
-          args: StoreViewRouteArgs(
+          StoreRoute.name,
+          args: StoreRouteArgs(
             key: key,
             user: user,
             cubit: cubit,
           ),
+          initialChildren: children,
         );
 
-  static const String name = 'StoreViewRoute';
+  static const String name = 'StoreRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<StoreRouteArgs>();
+      return StoreView(
+        key: args.key,
+        user: args.user,
+        cubit: args.cubit,
+      );
+    },
+  );
 }
 
-class StoreViewRouteArgs {
-  const StoreViewRouteArgs({
+class StoreRouteArgs {
+  const StoreRouteArgs({
     this.key,
     required this.user,
     required this.cubit,
@@ -310,18 +268,6 @@ class StoreViewRouteArgs {
 
   @override
   String toString() {
-    return 'StoreViewRouteArgs{key: $key, user: $user, cubit: $cubit}';
+    return 'StoreRouteArgs{key: $key, user: $user, cubit: $cubit}';
   }
-}
-
-/// generated route for
-/// [NoInternetPage]
-class NoInternetPageRoute extends PageRouteInfo<void> {
-  const NoInternetPageRoute()
-      : super(
-          NoInternetPageRoute.name,
-          path: 'no_internet',
-        );
-
-  static const String name = 'NoInternetPageRoute';
 }

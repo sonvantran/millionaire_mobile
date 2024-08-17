@@ -1,7 +1,6 @@
-import 'package:millionaire_mobile/app/network/exceptions/bad_request_exception.dart';
-
 import '../../../core/services/firestore_manager.dart';
 import '../../../data/model/user.dart';
+import '../../../network/exceptions/bad_request_exception.dart';
 
 class LoginApi {
   final fs = FirestoreManager();
