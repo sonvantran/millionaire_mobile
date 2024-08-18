@@ -567,14 +567,12 @@ class PlayGameCubit extends Cubit<PlayGameState> {
               startCounter:
                   FirebaseRemoteConfig.instance.getInt("countDownAds")),
         );
-        Timer.periodic(const Duration(seconds: 1), (timer) {
+        final timer = Timer.periodic(const Duration(seconds: 1), (timer) {
           try {
             if (state.startCounter != null && state.startCounter! > 0) {
-              if (state.startCounter == 1) {
-                wrongAnswer();
-              }
               emit(state.copyWith(startCounter: state.startCounter! - 1));
             } else {
+              wrongAnswer();
               timer.cancel();
             }
           } catch (e) {
@@ -583,6 +581,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
             rethrow;
           }
         });
+        emit(state.copyWith(timer: timer));
         return;
       }
       if (isCallOnce) return;

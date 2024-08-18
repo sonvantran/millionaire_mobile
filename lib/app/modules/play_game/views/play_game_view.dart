@@ -119,7 +119,6 @@ class _PlayGamePageState extends State<PlayGamePage>
     super.initState();
   }
 
-
   int dem = 0;
 
   @override
@@ -667,6 +666,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                               context: context,
                               placement: AdsId.rewardPlayGame,
                               forceShow: true,
+                              onStartLoading: (_) => cubit.cancelCountDown(),
                               onAdDismissedFullScreenContent: () =>
                                   cubit.playAgainAds(),
                               onUserEarnedReward: (p0, p1) =>
