@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
@@ -47,6 +48,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
         isHideD: false,
         isShowGameResult: false,
         timeCounter: 60,
+        startCounter: null,
       ));
       cancelCountDown();
     } catch (e) {
@@ -559,7 +561,28 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       clearDataLocal();
       if (!firsrWrong && !SkyAds.instance.isAdDisable) {
         firsrWrong = true;
-        emit(state.copyWith(isShowWrongAds: true));
+        emit(
+          state.copyWith(
+              isShowWrongAds: true,
+              startCounter:
+                  FirebaseRemoteConfig.instance.getInt("countDownAds")),
+        );
+        Timer.periodic(const Duration(seconds: 1), (timer) {
+          try {
+            if (state.startCounter != null && state.startCounter! > 0) {
+              if (state.startCounter == 1) {
+                wrongAnswer();
+              }
+              emit(state.copyWith(startCounter: state.startCounter! - 1));
+            } else {
+              timer.cancel();
+            }
+          } catch (e) {
+            timer.cancel();
+            if (e is StateError) return;
+            rethrow;
+          }
+        });
         return;
       }
       if (isCallOnce) return;

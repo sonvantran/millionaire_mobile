@@ -113,50 +113,12 @@ class _PlayGamePageState extends State<PlayGamePage>
     with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
-  // RewardedAd? _rewardedAd;
-  // bool isRewardAdReady = false;
-
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    // _loadRewardedAd();
     super.initState();
   }
 
-  // void _loadRewardedAd() {
-  //   RewardedAd.load(
-  //     adUnitId: AdsManager.rewardedAdUnitId2,
-  //     request: const AdRequest(),
-  //     rewardedAdLoadCallback: RewardedAdLoadCallback(
-  //       onAdLoaded: (ad) {
-  //         ad.fullScreenContentCallback = FullScreenContentCallback(
-  //           onAdDismissedFullScreenContent: (ad) {
-  //             context.read<PlayGameCubit>().playAgainAds();
-  //             setState(() {
-  //               ad.dispose();
-  //               _rewardedAd = null;
-  //             });
-  //           },
-  //           onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
-  //             ad.dispose();
-  //             debugPrint('Ad failed to show: $error');
-  //           },
-  //         );
-  //         if (!mounted) return;
-  //         setState(() {
-  //           _rewardedAd = ad;
-  //           isRewardAdReady = true;
-  //         });
-  //       },
-  //       onAdFailedToLoad: (err) {
-  //         if (dem >= 5) return;
-  //         dem++;
-  //         _loadRewardedAd();
-  //         debugPrint('Failed to load a rewarded ad: ${err.message}');
-  //       },
-  //     ),
-  //   );
-  // }
 
   int dem = 0;
 
@@ -401,7 +363,7 @@ class _PlayGamePageState extends State<PlayGamePage>
             state.isAccessAnswer;
         return PopScope(
           canPop: false,
-          onPopInvoked: (didPop) {
+          onPopInvokedWithResult: (didPop, _) {
             if (didPop || state.isShowWrongAds) {
               return;
             }
@@ -446,7 +408,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                                 },
                                 isCheck: false,
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 4),
+                                    const EdgeInsets.symmetric(vertical: 5),
                                 child: const Icon(
                                   Icons.assignment_return_outlined,
                                   size: 32,
@@ -714,16 +676,8 @@ class _PlayGamePageState extends State<PlayGamePage>
                                     "Vui lòng thử lại sau");
                               },
                             );
-                            // if (_rewardedAd != null && isRewardAdReady) {
-                            //   _rewardedAd?.show(
-                            //     onUserEarnedReward: (_, __) =>
-                            //         cubit.playAgainAds(),
-                            //   );
-                            // } else {
-                            //   ShowMessageInternal.showMessage(
-                            //       "Vui lòng thử lại sau");
-                            // }
                           },
+                          countDown: state.startCounter ?? 0,
                         ),
                     ],
                   ));

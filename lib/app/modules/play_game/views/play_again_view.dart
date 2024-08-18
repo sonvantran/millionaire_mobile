@@ -202,24 +202,6 @@ class _PlayAgainViewState extends State<PlayAgainView>
                                         "Vui lòng thử lại sau");
                                   },
                                 );
-                                // if (_rewardedAd != null && isRewardAdReady) {
-                                //   _rewardedAd?.show(
-                                //     onUserEarnedReward: (_, __) {
-                                //       widget.cubit.updatePoint(score <= 20000000
-                                //           ? widget.point
-                                //           : "20,000,000");
-                                //       ShowMessageInternal.showMessage(
-                                //           "Bạn đã thành công");
-                                //       Future.delayed(
-                                //         const Duration(seconds: 1),
-                                //         () => context.router.pop(),
-                                //       );
-                                //     },
-                                //   );
-                                // } else {
-                                //   ShowMessageInternal.showMessage(
-                                //       "Vui lòng thử lại sau");
-                                // }
                               },
                               text:
                                   "Xem Video Để ${score <= 20000000 ? 'X2 Điểm' : "+20.000.000 đ"}",

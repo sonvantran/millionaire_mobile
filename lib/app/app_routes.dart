@@ -15,10 +15,10 @@ abstract class Routes {
 }
 
 abstract class _Paths {
-  static const playAgain = 'play_again';
-  static const playGame = 'play_game';
-  static const login = 'login';
-  static const roleApp = 'role_app';
-  static const ranking = 'ranking';
-  static const store = 'store';
+  static const playAgain = '/play_again';
+  static const playGame = '/play_game';
+  static const login = '/login';
+  static const roleApp = '/role_app';
+  static const ranking = '/ranking';
+  static const store = '/store';
 }
