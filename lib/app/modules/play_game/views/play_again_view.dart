@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -29,6 +28,7 @@ import '../../../main_router.dart';
 import '../../login/cubit/login_cubit.dart';
 import '../../login/widgets/rating_dialog.dart';
 
+@RoutePage()
 class PlayAgainView extends StatefulWidget {
   const PlayAgainView(
       {super.key,
@@ -131,7 +131,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
               CustomAppBar(
                 leading: CustomAppbarItem(
                   icon: Icons.arrow_back_outlined,
-                  onPressed: () => context.router.pop(),
+                  onPressed: () => context.router.back(),
                 ),
                 title: "Ai là triệu phú",
                 top: 24.h,
@@ -194,7 +194,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
                                         "Bạn đã thành công");
                                     Future.delayed(
                                       const Duration(seconds: 1),
-                                      () => context.router.pop(),
+                                      () => context.router.back(),
                                     );
                                   },
                                   onAdFailedToLoad: () {
@@ -202,24 +202,6 @@ class _PlayAgainViewState extends State<PlayAgainView>
                                         "Vui lòng thử lại sau");
                                   },
                                 );
-                                // if (_rewardedAd != null && isRewardAdReady) {
-                                //   _rewardedAd?.show(
-                                //     onUserEarnedReward: (_, __) {
-                                //       widget.cubit.updatePoint(score <= 20000000
-                                //           ? widget.point
-                                //           : "20,000,000");
-                                //       ShowMessageInternal.showMessage(
-                                //           "Bạn đã thành công");
-                                //       Future.delayed(
-                                //         const Duration(seconds: 1),
-                                //         () => context.router.pop(),
-                                //       );
-                                //     },
-                                //   );
-                                // } else {
-                                //   ShowMessageInternal.showMessage(
-                                //       "Vui lòng thử lại sau");
-                                // }
                               },
                               text:
                                   "Xem Video Để ${score <= 20000000 ? 'X2 Điểm' : "+20.000.000 đ"}",
@@ -227,7 +209,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
                             SizedBox(height: 20.h),
                             SecondButton(
                               width: MediaQuery.of(context).size.width * 0.55,
-                              onTap: () => context.router.pop(),
+                              onTap: () => context.router.back(),
                               text: 'Menu',
                             ),
                             SizedBox(height: 20.h),
@@ -242,7 +224,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
                               onTap: () {
                                 AnalyticsManager.sendAnalyticsEvent(
                                     'The_user_want_to_play_game_again');
-                                context.router.replace(PlayGameViewRoute(
+                                context.router.replace(PlayGameRoute(
                                     mc: widget.mc,
                                     isMute: widget.isMute,
                                     user: widget.user,

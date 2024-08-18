@@ -140,9 +140,9 @@ class RatingButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ButtonStyle(
-          backgroundColor: MaterialStatePropertyAll(
+          backgroundColor: WidgetStatePropertyAll(
               backgroundColor ?? AppColors.c000000_black),
-          shape: MaterialStatePropertyAll(
+          shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
               side: BorderSide(
@@ -151,7 +151,7 @@ class RatingButton extends StatelessWidget {
               ),
             ),
           ),
-          elevation: const MaterialStatePropertyAll(0)),
+          elevation: const WidgetStatePropertyAll(0)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

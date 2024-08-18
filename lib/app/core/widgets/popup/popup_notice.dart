@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:millionaire_mobile/app/core/extension/integer_extension.dart';
-import 'package:millionaire_mobile/app/modules/play_game/cubit/play_game_cubit.dart';
-import 'package:millionaire_mobile/app/modules/play_game/cubit/play_game_state.dart';
+import 'package:millionaire_game/app/core/extension/integer_extension.dart';
+import '../../../modules/play_game/cubit/play_game_cubit.dart';
+import '../../../modules/play_game/cubit/play_game_state.dart';
 import '../../../modules/play_game/widget/time_count.dart';
 import '../../values/text_styles.dart';
 import '../../values/app_colors.dart';
@@ -31,7 +31,7 @@ class PopupNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, _) {
         if (didPop) {
           onCall?.call();
         }

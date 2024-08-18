@@ -37,6 +37,7 @@ import '../widget/question.dart';
 import '../widget/time_count.dart';
 import '../widget/view_ads_fail.dart';
 
+@RoutePage()
 class PlayGameView extends StatefulWidget {
   const PlayGameView(
       {super.key,
@@ -112,50 +113,12 @@ class _PlayGamePageState extends State<PlayGamePage>
     with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
-  // RewardedAd? _rewardedAd;
-  // bool isRewardAdReady = false;
-
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    // _loadRewardedAd();
     super.initState();
   }
 
-  // void _loadRewardedAd() {
-  //   RewardedAd.load(
-  //     adUnitId: AdsManager.rewardedAdUnitId2,
-  //     request: const AdRequest(),
-  //     rewardedAdLoadCallback: RewardedAdLoadCallback(
-  //       onAdLoaded: (ad) {
-  //         ad.fullScreenContentCallback = FullScreenContentCallback(
-  //           onAdDismissedFullScreenContent: (ad) {
-  //             context.read<PlayGameCubit>().playAgainAds();
-  //             setState(() {
-  //               ad.dispose();
-  //               _rewardedAd = null;
-  //             });
-  //           },
-  //           onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
-  //             ad.dispose();
-  //             debugPrint('Ad failed to show: $error');
-  //           },
-  //         );
-  //         if (!mounted) return;
-  //         setState(() {
-  //           _rewardedAd = ad;
-  //           isRewardAdReady = true;
-  //         });
-  //       },
-  //       onAdFailedToLoad: (err) {
-  //         if (dem >= 5) return;
-  //         dem++;
-  //         _loadRewardedAd();
-  //         debugPrint('Failed to load a rewarded ad: ${err.message}');
-  //       },
-  //     ),
-  //   );
-  // }
 
   int dem = 0;
 
@@ -180,7 +143,7 @@ class _PlayGamePageState extends State<PlayGamePage>
 
   void popView(BuildContext context, int caseResult, String point, User? user) {
     if (!context.mounted) return;
-    context.router.replace(PlayAgainViewRoute(
+    context.router.replace(PlayAgainRoute(
       caseResult: caseResult,
       point: point,
       isMute: widget.isMute,
@@ -283,7 +246,7 @@ class _PlayGamePageState extends State<PlayGamePage>
               }
             } else if (state.isWin) {
               final point = getQuestionByLevel(state.level, state.chooseMC);
-              await context.router.replace(PlayAgainViewRoute(
+              await context.router.replace(PlayAgainRoute(
                 caseResult: 2,
                 point: point,
                 isMute: widget.isMute,
@@ -400,7 +363,7 @@ class _PlayGamePageState extends State<PlayGamePage>
             state.isAccessAnswer;
         return PopScope(
           canPop: false,
-          onPopInvoked: (didPop) {
+          onPopInvokedWithResult: (didPop, _) {
             if (didPop || state.isShowWrongAds) {
               return;
             }
@@ -445,7 +408,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                                 },
                                 isCheck: false,
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 4),
+                                    const EdgeInsets.symmetric(vertical: 5),
                                 child: const Icon(
                                   Icons.assignment_return_outlined,
                                   size: 32,
@@ -713,16 +676,8 @@ class _PlayGamePageState extends State<PlayGamePage>
                                     "Vui lòng thử lại sau");
                               },
                             );
-                            // if (_rewardedAd != null && isRewardAdReady) {
-                            //   _rewardedAd?.show(
-                            //     onUserEarnedReward: (_, __) =>
-                            //         cubit.playAgainAds(),
-                            //   );
-                            // } else {
-                            //   ShowMessageInternal.showMessage(
-                            //       "Vui lòng thử lại sau");
-                            // }
                           },
+                          countDown: state.startCounter ?? 0,
                         ),
                     ],
                   ));
@@ -904,7 +859,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 forceShow: true,
                 onAdDisplayed: () {
                   if (!context.mounted || !mounted) return;
-                  context.router.replace(PlayAgainViewRoute(
+                  context.router.replace(PlayAgainRoute(
                     caseResult: 1,
                     point: point,
                     isMute: widget.isMute,
@@ -915,7 +870,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 },
                 onAdFailedToLoad: () {
                   if (!context.mounted || !mounted) return;
-                  context.router.replace(PlayAgainViewRoute(
+                  context.router.replace(PlayAgainRoute(
                     caseResult: 1,
                     point: point,
                     isMute: widget.isMute,
@@ -927,7 +882,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 onStartLoading: (canShowAd) {
                   if (!canShowAd) {
                     if (!context.mounted || !mounted) return;
-                    context.router.replace(PlayAgainViewRoute(
+                    context.router.replace(PlayAgainRoute(
                       caseResult: 1,
                       point: point,
                       isMute: widget.isMute,

@@ -29,6 +29,10 @@
             <action android:name="android.intent.action.SEND" />
             <data android:mimeType="*/*" />
         </intent>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
     </queries>
 
     <application
@@ -85,7 +89,7 @@
             android:value="2" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-9696384850738948~7284306726"/>
+            android:value="@string/admob_id"/>
         <meta-data 
             android:name="google_analytics_automatic_screen_reporting_enabled" 
             android:value="false" />

@@ -12,7 +12,7 @@ part of 'ranking_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$RankingState {
@@ -22,7 +22,9 @@ mixin _$RankingState {
   String? get message => throw _privateConstructorUsedError;
   Error? get error => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of RankingState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $RankingStateCopyWith<RankingState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -51,6 +53,8 @@ class _$RankingStateCopyWithImpl<$Res, $Val extends RankingState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of RankingState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -86,11 +90,11 @@ class _$RankingStateCopyWithImpl<$Res, $Val extends RankingState>
 }
 
 /// @nodoc
-abstract class _$$_RankingStateCopyWith<$Res>
+abstract class _$$RankingStateImplCopyWith<$Res>
     implements $RankingStateCopyWith<$Res> {
-  factory _$$_RankingStateCopyWith(
-          _$_RankingState value, $Res Function(_$_RankingState) then) =
-      __$$_RankingStateCopyWithImpl<$Res>;
+  factory _$$RankingStateImplCopyWith(
+          _$RankingStateImpl value, $Res Function(_$RankingStateImpl) then) =
+      __$$RankingStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -102,13 +106,15 @@ abstract class _$$_RankingStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_RankingStateCopyWithImpl<$Res>
-    extends _$RankingStateCopyWithImpl<$Res, _$_RankingState>
-    implements _$$_RankingStateCopyWith<$Res> {
-  __$$_RankingStateCopyWithImpl(
-      _$_RankingState _value, $Res Function(_$_RankingState) _then)
+class __$$RankingStateImplCopyWithImpl<$Res>
+    extends _$RankingStateCopyWithImpl<$Res, _$RankingStateImpl>
+    implements _$$RankingStateImplCopyWith<$Res> {
+  __$$RankingStateImplCopyWithImpl(
+      _$RankingStateImpl _value, $Res Function(_$RankingStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of RankingState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -118,7 +124,7 @@ class __$$_RankingStateCopyWithImpl<$Res>
     Object? message = freezed,
     Object? error = freezed,
   }) {
-    return _then(_$_RankingState(
+    return _then(_$RankingStateImpl(
       filter: null == filter
           ? _value.filter
           : filter // ignore: cast_nullable_to_non_nullable
@@ -145,8 +151,8 @@ class __$$_RankingStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_RankingState extends _RankingState {
-  const _$_RankingState(
+class _$RankingStateImpl extends _RankingState {
+  const _$RankingStateImpl(
       {this.filter = false,
       final List<User>? usersday,
       final List<User>? allUser,
@@ -190,10 +196,10 @@ class _$_RankingState extends _RankingState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_RankingState &&
+            other is _$RankingStateImpl &&
             (identical(other.filter, filter) || other.filter == filter) &&
             const DeepCollectionEquality().equals(other._usersday, _usersday) &&
             const DeepCollectionEquality().equals(other._allUser, _allUser) &&
@@ -210,11 +216,13 @@ class _$_RankingState extends _RankingState {
       message,
       error);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of RankingState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$_RankingStateCopyWith<_$_RankingState> get copyWith =>
-      __$$_RankingStateCopyWithImpl<_$_RankingState>(this, _$identity);
+  _$$RankingStateImplCopyWith<_$RankingStateImpl> get copyWith =>
+      __$$RankingStateImplCopyWithImpl<_$RankingStateImpl>(this, _$identity);
 }
 
 abstract class _RankingState extends RankingState {
@@ -223,7 +231,7 @@ abstract class _RankingState extends RankingState {
       final List<User>? usersday,
       final List<User>? allUser,
       final String? message,
-      final Error? error}) = _$_RankingState;
+      final Error? error}) = _$RankingStateImpl;
   const _RankingState._() : super._();
 
   @override
@@ -236,8 +244,11 @@ abstract class _RankingState extends RankingState {
   String? get message;
   @override
   Error? get error;
+
+  /// Create a copy of RankingState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
-  _$$_RankingStateCopyWith<_$_RankingState> get copyWith =>
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$RankingStateImplCopyWith<_$RankingStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

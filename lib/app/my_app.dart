@@ -33,9 +33,10 @@ class _MyAppState extends State<MyApp> {
     if (isFirst) {
       pre.setBool("isFirst", false);
     } else {
+      if (!context.mounted || !mounted) return;
       final remoteConfig = FirebaseRemoteConfig.instance;
       final isFirstAOA = remoteConfig.getBool("isFirstAOA");
-      if (isFirstAOA && context.mounted) {
+      if (isFirstAOA) {
         SkyAds.instance.showAppOpenAd(
           context: context,
           placement: AdsId.adsOpenApp,

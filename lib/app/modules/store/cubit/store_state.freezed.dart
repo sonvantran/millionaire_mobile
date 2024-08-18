@@ -12,7 +12,7 @@ part of 'store_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$StoreState {
@@ -21,7 +21,9 @@ mixin _$StoreState {
   String? get message => throw _privateConstructorUsedError;
   Error? get error => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of StoreState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $StoreStateCopyWith<StoreState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -45,6 +47,8 @@ class _$StoreStateCopyWithImpl<$Res, $Val extends StoreState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of StoreState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -75,24 +79,26 @@ class _$StoreStateCopyWithImpl<$Res, $Val extends StoreState>
 }
 
 /// @nodoc
-abstract class _$$_StoreStateCopyWith<$Res>
+abstract class _$$StoreStateImplCopyWith<$Res>
     implements $StoreStateCopyWith<$Res> {
-  factory _$$_StoreStateCopyWith(
-          _$_StoreState value, $Res Function(_$_StoreState) then) =
-      __$$_StoreStateCopyWithImpl<$Res>;
+  factory _$$StoreStateImplCopyWith(
+          _$StoreStateImpl value, $Res Function(_$StoreStateImpl) then) =
+      __$$StoreStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({User? user, Store? store, String? message, Error? error});
 }
 
 /// @nodoc
-class __$$_StoreStateCopyWithImpl<$Res>
-    extends _$StoreStateCopyWithImpl<$Res, _$_StoreState>
-    implements _$$_StoreStateCopyWith<$Res> {
-  __$$_StoreStateCopyWithImpl(
-      _$_StoreState _value, $Res Function(_$_StoreState) _then)
+class __$$StoreStateImplCopyWithImpl<$Res>
+    extends _$StoreStateCopyWithImpl<$Res, _$StoreStateImpl>
+    implements _$$StoreStateImplCopyWith<$Res> {
+  __$$StoreStateImplCopyWithImpl(
+      _$StoreStateImpl _value, $Res Function(_$StoreStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of StoreState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -101,7 +107,7 @@ class __$$_StoreStateCopyWithImpl<$Res>
     Object? message = freezed,
     Object? error = freezed,
   }) {
-    return _then(_$_StoreState(
+    return _then(_$StoreStateImpl(
       user: freezed == user
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
@@ -124,8 +130,8 @@ class __$$_StoreStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_StoreState extends _StoreState {
-  const _$_StoreState({this.user, this.store, this.message, this.error})
+class _$StoreStateImpl extends _StoreState {
+  const _$StoreStateImpl({this.user, this.store, this.message, this.error})
       : super._();
 
   @override
@@ -143,10 +149,10 @@ class _$_StoreState extends _StoreState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_StoreState &&
+            other is _$StoreStateImpl &&
             (identical(other.user, user) || other.user == user) &&
             (identical(other.store, store) || other.store == store) &&
             (identical(other.message, message) || other.message == message) &&
@@ -156,11 +162,13 @@ class _$_StoreState extends _StoreState {
   @override
   int get hashCode => Object.hash(runtimeType, user, store, message, error);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of StoreState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$_StoreStateCopyWith<_$_StoreState> get copyWith =>
-      __$$_StoreStateCopyWithImpl<_$_StoreState>(this, _$identity);
+  _$$StoreStateImplCopyWith<_$StoreStateImpl> get copyWith =>
+      __$$StoreStateImplCopyWithImpl<_$StoreStateImpl>(this, _$identity);
 }
 
 abstract class _StoreState extends StoreState {
@@ -168,7 +176,7 @@ abstract class _StoreState extends StoreState {
       {final User? user,
       final Store? store,
       final String? message,
-      final Error? error}) = _$_StoreState;
+      final Error? error}) = _$StoreStateImpl;
   const _StoreState._() : super._();
 
   @override
@@ -179,8 +187,11 @@ abstract class _StoreState extends StoreState {
   String? get message;
   @override
   Error? get error;
+
+  /// Create a copy of StoreState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
-  _$$_StoreStateCopyWith<_$_StoreState> get copyWith =>
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$StoreStateImplCopyWith<_$StoreStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

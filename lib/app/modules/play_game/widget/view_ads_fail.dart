@@ -5,10 +5,12 @@ import '../../../core/values/app_colors.dart';
 import '../../../core/values/text_styles.dart';
 
 class ViewAdsFail extends StatelessWidget {
-  const ViewAdsFail({super.key, this.onClose, this.onViewAds});
+  const ViewAdsFail(
+      {super.key, this.onClose, this.onViewAds, required this.countDown});
 
   final VoidCallback? onClose;
   final VoidCallback? onViewAds;
+  final int countDown;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,12 @@ class ViewAdsFail extends StatelessWidget {
                   color: AppColors.colorFFFFFFFF,
                 ),
               ),
+            ),
+            Text(
+              "Còn lại $countDown's...",
+              style: TextStyles.boldWhiteS28,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             Column(
               mainAxisSize: MainAxisSize.min,

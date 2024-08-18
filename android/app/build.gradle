@@ -1,7 +1,11 @@
-import java.util.regex.Matcher
-import java.util.regex.Pattern
+plugins {
+    id "com.android.application"
+    id "com.google.gms.google-services"
+    id "kotlin-android"
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id "dev.flutter.flutter-gradle-plugin"
+}
 
-def localProperties = loadPropertiesFile('local.properties')
 def keystoreProperties = loadPropertiesFile('key.properties')
 
 def loadPropertiesFile(String fileName) {
@@ -16,39 +20,19 @@ def loadPropertiesFile(String fileName) {
     return properties
 }
 
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
-}
-
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
-
-apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'kotlin-android'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-
-
 android {
-    compileSdkVersion 34
-    ndkVersion flutter.ndkVersion
+    namespace = "com.congthiep.millionaire"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        coreLibraryDesugaringEnabled true
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = JavaVersion.VERSION_1_8
     }
 
     sourceSets {
@@ -57,13 +41,13 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.congthiep.millionaire"
+        applicationId = "com.congthiep.millionaire"
         // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 21
-        targetSdkVersion 33
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        minSdk = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
         multiDexEnabled true 
         ndk {
             abiFilters 'armeabi-v7a','arm64-v8a','x86_64',"armeabi", "x86",  "mips", "mips64"
@@ -71,7 +55,7 @@ android {
     }
 
     lintOptions {
-        checkReleaseBuilds false
+        checkReleaseBuilds = false
     }
 
     signingConfigs {
@@ -83,14 +67,17 @@ android {
         }
     }
 
-
     buildTypes {
         release {
             signingConfig signingConfigs.release
             minifyEnabled true
+            resValue("string", "admob_id", "ca-app-pub-9696384850738948~7284306726")
             ndk {
                 abiFilters 'armeabi-v7a','arm64-v8a','x86_64',"armeabi", "x86",  "mips", "mips64"
             }
+        }
+        debug {
+            resValue("string", "admob_id", "ca-app-pub-9696384850738948~7284306726")
         }
     }
     flavorDimensions "app"
@@ -103,6 +90,8 @@ android {
         }
     }
 }
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 def getCurrentFlavor() {
     Gradle gradle = getGradle()
     String  tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
@@ -133,7 +122,6 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation "androidx.multidex:multidex:2.0.1"

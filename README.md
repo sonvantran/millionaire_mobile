@@ -1,4 +1,4 @@
-# millionaire_mobile
+# millionaire_game
 
 A new Flutter project.
 

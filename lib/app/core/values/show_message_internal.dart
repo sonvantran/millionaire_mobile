@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:millionaire_mobile/app/core/values/text_styles.dart';
+import 'text_styles.dart';
 
 import 'app_colors.dart';
 
