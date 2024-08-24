@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:millionaire_game/app/core/extension/integer_extension.dart';
 import '../../../modules/play_game/cubit/play_game_cubit.dart';
 import '../../../modules/play_game/cubit/play_game_state.dart';
@@ -133,7 +134,6 @@ class ConsultantItem extends StatelessWidget {
             height: check ? 40 : null,
             padding: check ? const EdgeInsets.all(8) : null,
             decoration: BoxDecoration(
-                // shape: check ? BoxShape.circle : BoxShape.rectangle,
                 color: AppColors.colorFF375193,
                 image: check
                     ? DecorationImage(
@@ -144,8 +144,8 @@ class ConsultantItem extends StatelessWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(8))),
             child: check
                 ? null
-                : Image.asset(
-                    'assets/images/$asset.png',
+                : SvgPicture.asset(
+                    'assets/icons/$asset.svg',
                     fit: BoxFit.fitWidth,
                   ),
           ),
@@ -197,25 +197,22 @@ class RoleItem extends StatelessWidget {
                     style: TextStyles.mediumWhiteS16,
                   ))
               : Container(
-                  width: 40,
+                  width: 40.w,
                   padding: const EdgeInsets.all(8),
                   decoration: const BoxDecoration(
                       color: AppColors.colorFF375193,
                       borderRadius: BorderRadius.all(Radius.circular(8))),
                   child: isAsset == true
                       ? SizedBox(
-                          width: 32,
-                          child: Image.asset(
-                            'assets/images/ic_team_person.png',
-                            color: AppColors.colorFFFFFFFF,
-                          ))
+                          width: 32.w,
+                          height: 24.h,
+                          child: SvgPicture.asset(
+                              'assets/icons/ic_team_person.svg'))
                       : isAsset == false
                           ? SizedBox(
-                              width: 32,
-                              child: Image.asset(
-                                'assets/images/dh.png',
-                                color: AppColors.colorFFFFFFFF,
-                              ))
+                              width: 32.w,
+                              height: 24.h,
+                              child: SvgPicture.asset('assets/icons/dh.svg'))
                           : Icon(
                               iconData,
                               color: AppColors.colorFFFFFFFF,

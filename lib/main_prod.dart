@@ -58,7 +58,7 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
   await Future.delayed(const Duration(milliseconds: 200));
   await Firebase.initializeApp();
-  await MessagingService().initNotification();
+  MessagingService().initNotification();
   await Hive.initFlutter((await getApplicationDocumentsDirectory()).path);
 
   Hive.registerAdapter(QuestionModelHiveAdapter());

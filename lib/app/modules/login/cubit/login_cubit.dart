@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:android_id/android_id.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,8 +27,8 @@ class LoginCubit extends Cubit<LoginState> {
 
   final LoginRepository _loginRepository;
   bool isBG = false;
-  AudioPlayer player = AudioPlayer();
-  AudioPlayer player2 = AudioPlayer();
+  final AudioPlayer player = AudioPlayer();
+  final AudioPlayer player2 = AudioPlayer();
 
   void setIsMute(bool isMute) {
     emit(state.copyWith(isMute: isMute));
@@ -135,11 +135,6 @@ class LoginCubit extends Cubit<LoginState> {
 
   void login() async {
     try {
-      player.playerStateStream.listen((e) {
-        if (e.processingState == ProcessingState.completed) {
-          player.seek(const Duration(seconds: 0));
-        }
-      });
       playBG();
       setHasDataLocal();
       initQuestion();
@@ -294,10 +289,10 @@ class LoginCubit extends Cubit<LoginState> {
 
   Future<void> stopAudio() async {
     try {
-      if (player.playing) {
+      if (player.state == PlayerState.playing) {
         await player.stop();
       }
-      if (player2.playing) {
+      if (player2.state == PlayerState.playing) {
         await player2.stop();
       }
     } catch (e) {
@@ -312,16 +307,11 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       if (!state.isMute) {
         await stopAudio();
-        await player.setAsset(soundPath(SoundManager.bgGame));
-        await player.play();
+        final source = AssetSource(soundPath(SoundManager.bgGame));
+        await player.setReleaseMode(ReleaseMode.loop);
+        await player.play(source);
         isBG = true;
       }
-    } on PlayerException catch (e) {
-      AnalyticsManager.sendAnalyticsEvent(
-          "exception $e ${e.message}".replaceAll(' ', "_"));
-    } on PlayerInterruptedException catch (e) {
-      AnalyticsManager.sendAnalyticsEvent(
-          "exception $e ${e.message}".replaceAll(' ', "_"));
     } catch (e) {
       if (e is StateError) {
         stopAudio();
@@ -336,16 +326,12 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       if (!state.isMute) {
         await stopAudio();
-        await player.setAsset(soundPath(SoundManager.bg[Random().nextInt(3)]));
-        await player.play();
+        final source =
+            AssetSource(soundPath(SoundManager.bg[Random().nextInt(3)]));
+        await player.setReleaseMode(ReleaseMode.loop);
+        await player.play(source);
         isBG = false;
       }
-    } on PlayerException catch (e) {
-      AnalyticsManager.sendAnalyticsEvent(
-          "exception $e ${e.message}".replaceAll(' ', "_"));
-    } on PlayerInterruptedException catch (e) {
-      AnalyticsManager.sendAnalyticsEvent(
-          "exception $e ${e.message}".replaceAll(' ', "_"));
     } catch (e) {
       if (e is StateError) {
         stopAudio();
@@ -364,15 +350,9 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       if (!state.isMute) {
         final assetSource = soundPath(name);
-        await player2.setAsset(assetSource);
-        await player2.play();
+        final source = AssetSource(assetSource);
+        await player2.play(source);
       }
-    } on PlayerException catch (e) {
-      AnalyticsManager.sendAnalyticsEvent(
-          "exception $e ${e.message}".replaceAll(' ', "_"));
-    } on PlayerInterruptedException catch (e) {
-      AnalyticsManager.sendAnalyticsEvent(
-          "exception $e ${e.message}".replaceAll(' ', "_"));
     } catch (e) {
       if (e is StateError) {
         stopAudio();
@@ -388,7 +368,7 @@ class LoginCubit extends Cubit<LoginState> {
     setHasDataLocal();
   }
 
-  String soundPath(String name) => 'assets/audios/$name.mp3';
+  String soundPath(String name) => 'audios/$name.mp3';
 
   void dispose() {
     player.stop();

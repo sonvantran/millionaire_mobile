@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer' as developer;
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -12,7 +11,6 @@ import '../analytics/analytics_manager.dart';
 @pragma('vm:entry-point')
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
   // if (message == null) return;
-  developer.log(message.notification.toString());
   final pre = await SharedPreferences.getInstance();
   pre.setBool("isNotiCalled", true);
 }
@@ -36,8 +34,8 @@ class MessagingService {
 
   final _localNoti = FlutterLocalNotificationsPlugin();
 
-  Future<void> initNotification() async {
-    await _firebaseMessaging.requestPermission(
+  void initNotification() async {
+    _firebaseMessaging.requestPermission(
       alert: true,
       announcement: true,
       badge: true,
@@ -46,8 +44,8 @@ class MessagingService {
       provisional: false,
       sound: true,
     );
-    final fCMToken = await _firebaseMessaging.getToken();
-    developer.log(fCMToken.toString());
+    // final fCMToken = await _firebaseMessaging.getToken();
+    // developer.log(fCMToken.toString());
     initPushNotification();
     initLocalNotification();
   }

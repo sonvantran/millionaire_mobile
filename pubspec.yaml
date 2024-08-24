@@ -1,7 +1,7 @@
 name: millionaire_game
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.1.5+48
+version: 1.1.5+50
 # flutter pub run build_runner build --delete-conflicting-outputs
 # dart run flutter_native_splash:create
 # flutter build appbundle --flavor prod lib/main_prod.dart --release./gradlew build
@@ -53,11 +53,12 @@ dependencies:
   firebase_crashlytics: "3.4.9"
   firebase_storage: "11.6.0"
   connectivity_plus: "6.0.5"
-  just_audio: "0.9.37"
+  # just_audio: "0.9.37"
   flutter_dotenv: "5.1.0"
   fluttertoast: "8.2.8"
   share_plus: "10.0.2"
   timezone: "0.9.4"
+  audioplayers: "5.2.1"
 
 dev_dependencies:
   flutter_test:

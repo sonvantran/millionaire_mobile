@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sky_ads/sky_ads.dart';
 import 'package:volume_controller/volume_controller.dart';
@@ -29,7 +29,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   final int mc;
   final bool isMute;
   final User? user;
-  AudioPlayer player = AudioPlayer();
+  final AudioPlayer player = AudioPlayer();
 
   void reset() {
     try {
@@ -458,10 +458,10 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       setIsAccessAnswer(false);
       final assetSource =
           soundPath(state.isMute ? SoundManager.muteSound : name);
-      // final source = AssetSource(assetSource);
-      final duration = await player.setAsset(assetSource);
-      // await player.setSource(source);
-      // final duration = await player.getDuration();
+      final source = AssetSource(assetSource);
+      // final duration = await player.setAsset(assetSource);
+      await player.setSource(source);
+      final duration = await player.getDuration();
       setIsAccessAnswer(true);
       return duration;
     } catch (e) {
@@ -469,24 +469,22 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     }
   }
 
+  void skipAudio() {
+    playAudio(SoundManager.dhSound);
+  }
+
   Future<void> playAudio(String name) async {
     try {
       setIsAccessAnswer(false);
       final systemSound = await VolumeController().getVolume();
       final assetSource = soundPath(
-          state.isMute || systemSound <= 0.1 ? SoundManager.muteSound : name);
-      // final source = AssetSource(assetSource);
-      await player.setAsset(assetSource);
-      await player.play();
-      await player.playerStateStream.firstWhere(
-          (state) => state.processingState == ProcessingState.completed);
+          state.isMute || systemSound <= 0.06 ? SoundManager.muteSound : name);
+      final source = AssetSource(assetSource);
+      await player.play(source);
+      await player.onPlayerComplete.first;
+      // await player.playerStateStream.firstWhere(
+      //     (state) => state.processingState == ProcessingState.completed);
       setIsAccessAnswer(true);
-    } on PlayerException catch (e) {
-      AnalyticsManager.sendAnalyticsEvent(
-          "exception $e ${e.message}".replaceAll(' ', "_"));
-    } on PlayerInterruptedException catch (e) {
-      AnalyticsManager.sendAnalyticsEvent(
-          "exception $e ${e.message}".replaceAll(' ', "_"));
     } catch (e) {
       if (e is StateError) {
         stopAudio();
@@ -770,7 +768,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     });
   }
 
-  String soundPath(String name) => 'assets/audios/$name.mp3';
+  String soundPath(String name) => 'audios/$name.mp3';
 
   void dispose() {
     player.stop();

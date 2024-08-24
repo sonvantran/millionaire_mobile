@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -54,9 +54,6 @@ class _PlayAgainViewState extends State<PlayAgainView>
     with RouteAwareAnalytics {
   final _key = GlobalKey();
 
-  // RewardedAd? _rewardedAd;
-  // bool isRewardAdReady = false;
-
   @override
   TrackingScreenViewType get route => TrackingScreenViewType.playAgain;
 
@@ -77,13 +74,8 @@ class _PlayAgainViewState extends State<PlayAgainView>
 
   @override
   void dispose() {
-    // _bannerAd?.dispose();
-    // _rewardedAd?.dispose();
-    // isBannerAdReady = false;
-    // isRewardAdReady = false;
-    if (player.playing) {
-      player.stop();
-    }
+    player.stop();
+
     player.dispose();
     super.dispose();
   }
@@ -97,14 +89,13 @@ class _PlayAgainViewState extends State<PlayAgainView>
   }
 
   final AudioPlayer player = AudioPlayer();
-  String soundPath(String name) => 'assets/audios/$name.mp3';
+  String soundPath(String name) => 'audios/$name.mp3';
   void chiatay() async {
     try {
       final assetSource = soundPath(widget.isMute
           ? SoundManager.muteSound
           : SoundManager.chiatay(widget.mc)[Random().nextInt(2)]);
-      await player.setAsset(assetSource);
-      await player.play();
+      await player.play(AssetSource(assetSource));
       widget.cubit.playBG();
     } catch (e) {
       rethrow;

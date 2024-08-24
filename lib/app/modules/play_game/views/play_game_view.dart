@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
 import 'package:sky_ads/sky_ads.dart';
 import 'package:volume_controller/volume_controller.dart';
@@ -488,11 +489,6 @@ class _PlayGamePageState extends State<PlayGamePage>
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Expanded(child: SizedBox.shrink()),
-                              TimeCount(
-                                text: state.timeCounter.toString(),
-                                isLoading: state.isLoading,
-                              ),
                               Expanded(
                                 child: InkWell(
                                   onTap: () {
@@ -510,6 +506,24 @@ class _PlayGamePageState extends State<PlayGamePage>
                                         color: AppColors.colorFFFFFFFF,
                                       ))
                                     ],
+                                  ),
+                                ),
+                              ),
+                              TimeCount(
+                                text: state.timeCounter.toString(),
+                                isLoading: state.isLoading,
+                              ),
+                              Expanded(
+                                child: Tooltip(
+                                  message: "Bỏ qua",
+                                  child: InkWell(
+                                    onTap: () => cubit.skipAudio(),
+                                    child: SizedBox(
+                                      width: 32.w,
+                                      height: 32.h,
+                                      child: SvgPicture.asset(
+                                          "assets/icons/ic_skip.svg"),
+                                    ),
                                   ),
                                 ),
                               )
@@ -632,12 +646,12 @@ class _PlayGamePageState extends State<PlayGamePage>
                                 onTap: () => cubit.consultant(),
                                 padding: const EdgeInsets.all(4),
                                 child: SizedBox(
-                                    width: 32,
-                                    child: Image.asset(
+                                    width: 32.w,
+                                    height: 32.h,
+                                    child: SvgPicture.asset(
                                       state.chooseMC == 0
-                                          ? 'assets/images/ic_team_person.png'
-                                          : 'assets/images/dh.png',
-                                      color: AppColors.colorFFFFFFFF,
+                                          ? 'assets/icons/ic_team_person.svg'
+                                          : 'assets/icons/dh.svg',
                                     )),
                               ),
                               HelpItem(
