@@ -59,7 +59,6 @@ class _PlayAgainViewState extends State<PlayAgainView>
 
   @override
   void initState() {
-    // _loadRewardedAd();
     chiatay();
     if (mounted) {
       Future.delayed(const Duration(seconds: 1), () {
@@ -74,8 +73,6 @@ class _PlayAgainViewState extends State<PlayAgainView>
 
   @override
   void dispose() {
-    player.stop();
-
     player.dispose();
     super.dispose();
   }
@@ -98,6 +95,10 @@ class _PlayAgainViewState extends State<PlayAgainView>
       await player.play(AssetSource(assetSource));
       widget.cubit.playBG();
     } catch (e) {
+      if (e is Exception &&
+          e.toString() == 'Exception: AudioPlayer has been disposed') {
+        return;
+      }
       rethrow;
     }
   }
@@ -183,10 +184,7 @@ class _PlayAgainViewState extends State<PlayAgainView>
                                         : "20,000,000");
                                     ShowMessageInternal.showMessage(
                                         "Bạn đã thành công");
-                                    Future.delayed(
-                                      const Duration(seconds: 1),
-                                      () => context.router.back(),
-                                    );
+                                    context.router.back();
                                   },
                                   onAdFailedToLoad: () {
                                     ShowMessageInternal.showMessage(

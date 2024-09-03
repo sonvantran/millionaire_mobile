@@ -145,6 +145,7 @@ class ConsultantItem extends StatelessWidget {
             child: check
                 ? null
                 : SvgPicture.asset(
+                    height: 40.h,
                     'assets/icons/$asset.svg',
                     fit: BoxFit.fitWidth,
                   ),

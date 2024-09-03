@@ -35,6 +35,7 @@ class MyHttpOverrides extends HttpOverrides {
           (X509Certificate cert, String host, int port) => true;
   }
 }
+
 void main() async {
   Bloc.observer = AppBlocObserver();
 
@@ -146,6 +147,12 @@ Future<void> _initFirebaseRemoteConfig() async {
 Future<void> _initFirebaseCrashlytic() async {
   // Pass all uncaught "fatal" errors from the framework to Crashlytics
   FlutterError.onError = (errorDetails) {
+    if (errorDetails.library == "image resource service" &&
+        errorDetails.exception
+            .toString()
+            .startsWith("HttpException: Invalid statusCode: 404, uri")) {
+      return;
+    }
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
   // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics

@@ -135,6 +135,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   void login() async {
     try {
+      await player.audioCache.clearAll();
       playBG();
       setHasDataLocal();
       initQuestion();
@@ -299,6 +300,10 @@ class LoginCubit extends Cubit<LoginState> {
       if (e is StateError) {
         return;
       }
+      if (e is Exception &&
+          e.toString() == 'Exception: AudioPlayer has been disposed') {
+        return;
+      }
       rethrow;
     }
   }
@@ -315,6 +320,10 @@ class LoginCubit extends Cubit<LoginState> {
     } catch (e) {
       if (e is StateError) {
         stopAudio();
+        return;
+      }
+      if (e is Exception &&
+          e.toString() == 'Exception: AudioPlayer has been disposed') {
         return;
       }
       if (e is PlatformException) return;
@@ -335,6 +344,10 @@ class LoginCubit extends Cubit<LoginState> {
     } catch (e) {
       if (e is StateError) {
         stopAudio();
+        return;
+      }
+      if (e is Exception &&
+          e.toString() == 'Exception: AudioPlayer has been disposed') {
         return;
       }
       if (e is PlatformException) return;
@@ -370,11 +383,11 @@ class LoginCubit extends Cubit<LoginState> {
 
   String soundPath(String name) => 'audios/$name.mp3';
 
-  void dispose() {
-    player.stop();
+  @override
+  Future<void> close() {
     player.dispose();
-    player2.stop();
     player2.dispose();
+    return super.close();
   }
 }
 

@@ -30,6 +30,12 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   final bool isMute;
   final User? user;
   final AudioPlayer player = AudioPlayer();
+  @override
+  Future<void> close() {
+    player.dispose();
+    state.timer?.cancel();
+    return super.close();
+  }
 
   void reset() {
     try {
@@ -242,6 +248,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       // countDown();
       trogiup(right);
     } catch (e) {
+      if (e is StateError) return;
       rethrow;
     }
   }
@@ -446,9 +453,15 @@ class PlayGameCubit extends Cubit<PlayGameState> {
 
   void stopAudio() {
     try {
-      player.stop();
+      if (player.state == PlayerState.playing) {
+        player.stop();
+      }
     } catch (e) {
       if (e is StateError) return;
+      if (e is Exception &&
+          e.toString() == 'Exception: AudioPlayer has been disposed') {
+        return;
+      }
       rethrow;
     }
   }
@@ -465,6 +478,10 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       setIsAccessAnswer(true);
       return duration;
     } catch (e) {
+      if (e is Exception &&
+          e.toString() == 'Exception: AudioPlayer has been disposed') {
+        return const Duration();
+      }
       rethrow;
     }
   }
@@ -488,6 +505,10 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     } catch (e) {
       if (e is StateError) {
         stopAudio();
+        return;
+      }
+      if (e is Exception &&
+          e.toString() == 'Exception: AudioPlayer has been disposed') {
         return;
       }
       if (e is PlatformException) return;
@@ -769,13 +790,6 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   }
 
   String soundPath(String name) => 'audios/$name.mp3';
-
-  void dispose() {
-    player.stop();
-    player.dispose();
-
-    state.timer?.cancel();
-  }
 
   String getQuestionByLevel(int level) {
     final list = List.from(QuestionLevel.questionPoints(mc));

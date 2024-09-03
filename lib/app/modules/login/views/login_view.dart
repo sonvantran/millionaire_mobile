@@ -164,7 +164,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   void dispose() {
     _nameController.dispose();
     WidgetsBinding.instance.removeObserver(this);
-    originCubit?.dispose();
     super.dispose();
   }
 

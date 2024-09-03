@@ -135,11 +135,8 @@ class _PlayGamePageState extends State<PlayGamePage>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    disposeCubit?.dispose();
     super.dispose();
   }
-
-  PlayGameCubit? disposeCubit;
 
   void popView(BuildContext context, int caseResult, String point, User? user) {
     if (!context.mounted) return;
@@ -169,6 +166,7 @@ class _PlayGamePageState extends State<PlayGamePage>
           listener: (context, state) {
             if (state.isShowInstruction) {
               _showRole(context, () {
+                if (!context.mounted) return;
                 context.read<PlayGameCubit>().setShowInstruction(false);
               });
             } else {
@@ -351,7 +349,6 @@ class _PlayGamePageState extends State<PlayGamePage>
       child:
           BlocBuilder<PlayGameCubit, PlayGameState>(builder: (context, state) {
         final cubit = context.read<PlayGameCubit>();
-        disposeCubit ??= cubit;
         final checkExpireAnswer = !state.isChooseA &&
             !state.isChooseB &&
             !state.isChooseC &&
