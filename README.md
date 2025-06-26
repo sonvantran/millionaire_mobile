@@ -1,16 +1,37 @@
-# millionaire_game
+# 🎮 Ai Là Triệu Phú – Who Wants to Be a Millionaire
 
-A new Flutter project.
+Trò chơi mô phỏng theo gameshow truyền hình nổi tiếng **"Ai Là Triệu Phú"**, với lối chơi thân thuộc, hiện đại và cực kỳ hấp dẫn!  
+Bạn sẽ trả lời 15 câu hỏi để trở thành TRIỆU PHÚ!
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## ✨ Tính năng nổi bật
 
-A few resources to get you started if this is your first Flutter project:
+- 🎤 **Nhiều giọng đọc**: Tùy chọn nhiều giọng MC khác nhau – sống động như truyền hình thật.
+- 🕹️ **Dễ chơi – dễ trúng thưởng**: Giao diện tối giản, chạm chọn đáp án trong 1 giây.
+- 🏆 **Bảng xếp hạng toàn cầu**: So tài cùng hàng ngàn người chơi khác.
+- 🛒 **Chợ avatar**: Mua và sử dụng các avatar cực chất để thể hiện cá tính.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🖼️ Hình ảnh minh họa
+
+| Giao diện chính | Màn hình câu hỏi | Chợ avatar | Bảng xếp hạng |
+|------------------|------------------|-------------|----------------|
+| ![Main Menu](preview1.jpg) | ![Question Screen](preview4.jpg) | ![Shop](preview3.jpg) | ![Leaderboard](preview2.jpg) |
+
+---
+
+## 📺 Video giới thiệu
+
+👉 [Xem video giới thiệu trên YouTube](https://youtu.be/i-FNr40sJqY?si=VRJ70stlvGxLQi41)
+
+---
+
+## 🚀 Cài đặt & chạy thử (Flutter/Dart)
+
+```bash
+git clone https://github.com/thiepcong/millionaire_mobile.git
+cd millionaire_mobile
+flutter pub get
+flutter run
