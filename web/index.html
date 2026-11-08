@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Ai Là Triệu Phú">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="manifest" href="manifest.json">
+  <title>Ai Là Triệu Phú</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #111;
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #phone {
+      height: min(100vh, 880px);
+      aspect-ratio: 9 / 16;
+      max-width: 100vw;
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <div id="phone"></div>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

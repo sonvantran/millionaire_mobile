@@ -12,7 +12,7 @@ final appTheme = ThemeData(
     surface: AppColors.cFFFFFF_surface,
   ),
   dividerColor: AppColors.cE4E4E4_divider,
-  dialogTheme: const DialogTheme(
+  dialogTheme: const DialogThemeData(
     shape: BeveledRectangleBorder(),
   ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(

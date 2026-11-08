@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,6 +29,17 @@ import 'app/core/config/app_bloc_observer.dart';
 import 'main_prod.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
+/// Chạy một bước khởi tạo. Trên web: lỗi chỉ ghi log để app vẫn lên được.
+/// Trên điện thoại: giữ nguyên hành vi cũ (ném lỗi lại).
+Future<void> _run(String name, Future<void> Function() action) async {
+  try {
+    await action();
+  } catch (e, s) {
+    log('Khởi tạo "$name" lỗi: $e', stackTrace: s);
+    if (!kIsWeb) rethrow;
+  }
+}
+
 void main() async {
   Bloc.observer = AppBlocObserver();
 
@@ -48,11 +60,32 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones();
-  HttpOverrides.global = MyHttpOverrides();
+  if (!kIsWeb) HttpOverrides.global = MyHttpOverrides();
   await Future.delayed(const Duration(milliseconds: 200));
-  await Firebase.initializeApp();
-  MessagingService().initNotification();
-  await Hive.initFlutter((await getApplicationDocumentsDirectory()).path);
+
+  await _run('firebase', () async {
+    if (kIsWeb) {
+      // Cấu hình giả để Firebase khởi tạo được trên web (chưa có firebase_options)
+      await Firebase.initializeApp(
+        options: const FirebaseOptions(
+          apiKey: 'web-dev-placeholder',
+          appId: '1:000000000000:web:0000000000000000',
+          messagingSenderId: '000000000000',
+          projectId: 'web-dev-placeholder',
+        ),
+      );
+    } else {
+      await Firebase.initializeApp();
+    }
+  });
+
+  if (!kIsWeb) MessagingService().initNotification();
+
+  if (kIsWeb) {
+    await Hive.initFlutter();
+  } else {
+    await Hive.initFlutter((await getApplicationDocumentsDirectory()).path);
+  }
 
   Hive.registerAdapter(QuestionModelHiveAdapter());
   Hive.registerAdapter(QuestionAdapter());
@@ -60,48 +93,62 @@ void main() async {
   Hive.registerAdapter(ItemModelAdapter());
   await QuestionBox.openBox();
   await StoreBox.openBox();
-  await InitHelper().initialize();
 
-  SkyAds.instance.initialize(
-    AdConstant(
-      interstitialId: {
-        AdsId.inter: dotenv.env[AdsId.inter] ?? "",
-      },
-      nativeId: {
-        AdsId.nativeRanking: dotenv.env[AdsId.nativeRanking] ?? "",
-        AdsId.nativeStoreBottom: dotenv.env[AdsId.nativeStoreBottom] ?? "",
-        AdsId.nativeCategory: dotenv.env[AdsId.nativeCategory] ?? "",
-      },
-      inlineId: {},
-      appOpenId: {
-        AdsId.adsOpenApp: dotenv.env[AdsId.adsOpenApp] ?? "",
-      },
-      bannerAnchorId: {
-        AdsId.bannerHome: dotenv.env[AdsId.bannerHome] ?? "",
-        AdsId.bannerPlay: dotenv.env[AdsId.bannerPlay] ?? "",
-        AdsId.bannerPlayAgain: dotenv.env[AdsId.bannerPlayAgain] ?? "",
-        AdsId.bannerRanking: dotenv.env[AdsId.bannerRanking] ?? "",
-        AdsId.bannerStore: dotenv.env[AdsId.bannerStore] ?? "",
-      },
-      rewardedAdId: {
-        AdsId.rewardPlayGame: dotenv.env[AdsId.rewardPlayGame] ?? "",
-        AdsId.rewardPlayAgain: dotenv.env[AdsId.rewardPlayAgain] ?? "",
-      },
-      interstitialOffsetTime: const Duration(seconds: 30),
-      appOpenOffsetTime: const Duration(seconds: 30),
-    ),
-  );
+  if (!kIsWeb) {
+    await InitHelper().initialize();
+  }
 
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-  await SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.manual,
-    overlays: [],
-  );
+  if (!kIsWeb) {
+    SkyAds.instance.initialize(
+      AdConstant(
+        interstitialId: {
+          AdsId.inter: dotenv.env[AdsId.inter] ?? "",
+        },
+        nativeId: {
+          AdsId.nativeRanking: dotenv.env[AdsId.nativeRanking] ?? "",
+          AdsId.nativeStoreBottom: dotenv.env[AdsId.nativeStoreBottom] ?? "",
+          AdsId.nativeCategory: dotenv.env[AdsId.nativeCategory] ?? "",
+        },
+        inlineId: {},
+        appOpenId: {
+          AdsId.adsOpenApp: dotenv.env[AdsId.adsOpenApp] ?? "",
+        },
+        bannerAnchorId: {
+          AdsId.bannerHome: dotenv.env[AdsId.bannerHome] ?? "",
+          AdsId.bannerPlay: dotenv.env[AdsId.bannerPlay] ?? "",
+          AdsId.bannerPlayAgain: dotenv.env[AdsId.bannerPlayAgain] ?? "",
+          AdsId.bannerRanking: dotenv.env[AdsId.bannerRanking] ?? "",
+          AdsId.bannerStore: dotenv.env[AdsId.bannerStore] ?? "",
+        },
+        rewardedAdId: {
+          AdsId.rewardPlayGame: dotenv.env[AdsId.rewardPlayGame] ?? "",
+          AdsId.rewardPlayAgain: dotenv.env[AdsId.rewardPlayAgain] ?? "",
+        },
+        interstitialOffsetTime: const Duration(seconds: 30),
+        appOpenOffsetTime: const Duration(seconds: 30),
+      ),
+    );
+  }
+
+  if (!kIsWeb) {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    await SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: [],
+    );
+  }
+
+  if (!kIsWeb) {
+    try {
+      await _initFirebaseCrashlytic();
+    } catch (e) {
+      log(e.toString());
+    }
+  }
   try {
-    await _initFirebaseCrashlytic();
     await _initFirebaseRemoteConfig();
   } catch (e) {
     log(e.toString());
@@ -133,7 +180,10 @@ Future<void> _initFirebaseRemoteConfig() async {
     "countDownAds": 10,
   });
 
-  await remoteConfig.fetchAndActivate();
+  // Web dùng Firebase giả nên không fetch được, chỉ dùng giá trị mặc định ở trên
+  if (!kIsWeb) {
+    await remoteConfig.fetchAndActivate();
+  }
 }
 
 Future<void> _initFirebaseCrashlytic() async {

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:android_id/android_id.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
@@ -36,12 +37,12 @@ class LoginCubit extends Cubit<LoginState> {
 
   void initQuestion() async {
     try {
+      if (kIsWeb) return;
       Directory documentsDirectory = await getApplicationDocumentsDirectory();
       String path = join(documentsDirectory.path, 'question.db');
       if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound ||
           await File(path).length() == 0) {
-        Reference ref = FirebaseStorage.instance.ref("Question.sqlite");
-        await ref.writeToFile(File(path));
+        await QuestionHandle.copyBundledQuestions(path);
         emit(state.copyWith(message: "Tải xong câu hỏi"));
       }
     } catch (e) {
@@ -51,10 +52,10 @@ class LoginCubit extends Cubit<LoginState> {
 
   void callQuestionAgain() async {
     try {
+      if (kIsWeb) return;
       Directory documentsDirectory = await getApplicationDocumentsDirectory();
       String path = join(documentsDirectory.path, 'question.db');
-      Reference ref = FirebaseStorage.instance.ref("Question.sqlite");
-      await ref.writeToFile(File(path));
+      await QuestionHandle.copyBundledQuestions(path);
       emit(state.copyWith(message: "Tải xong câu hỏi"));
     } catch (e) {
       rethrow;
@@ -150,6 +151,10 @@ class LoginCubit extends Cubit<LoginState> {
           chooseMC: mccc ?? 0,
           validateName: validateName,
         ));
+        return;
+      }
+      if (kIsWeb) {
+        emit(state.copyWith(hasUser: false)); // hiện màn hình nhập tên
         return;
       }
       final deviceId = await getId();
@@ -283,7 +288,8 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-  Future<String?> getId() {
+  Future<String?> getId() async {
+    if (kIsWeb) return 'web-dev-device';
     const androidId = AndroidId();
     return androidId.getId();
   }

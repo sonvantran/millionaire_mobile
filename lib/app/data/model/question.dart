@@ -14,12 +14,15 @@ class Question {
   int level;
   @HiveField(5)
   String? point;
+  @HiveField(6)
+  int? id;
   Question({
     this.question,
     this.answers,
     this.rightAnswer,
     required this.level,
     this.point,
+    this.id,
   });
 
   factory Question.fromJson(Map<String, dynamic> map) {

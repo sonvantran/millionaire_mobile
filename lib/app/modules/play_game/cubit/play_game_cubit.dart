@@ -20,6 +20,8 @@ import '../../../data/local_saver/sound_manager.dart';
 import '../../../data/model/questions_model_hive.dart';
 import '../repository/play_game_repository.dart';
 import 'play_game_state.dart';
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
+import '../../../core/services/question_handle.dart';
 
 class PlayGameCubit extends Cubit<PlayGameState> {
   PlayGameCubit(this._playGameRepository, this.mc, this.isMute, this.user)
@@ -30,6 +32,15 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   final bool isMute;
   final User? user;
   final AudioPlayer player = AudioPlayer();
+  // Web không có VolumeController và chưa khởi tạo SkyAds
+  bool get _adDisabled => kIsWeb || SkyAds.instance.isAdDisable;
+    // Đặt false để tắt hẳn quảng cáo sau khi trả lời sai
+  static const bool _showWrongAds = false;
+
+  Future<double> _systemVolume() async {
+    if (kIsWeb) return 1.0;
+    return VolumeController().getVolume();
+  }
   @override
   Future<void> close() {
     player.dispose();
@@ -179,7 +190,16 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     }
   }
 
+  void _markCurrentAsked() {
+    try {
+      if (state.level < 1 || state.level > state.questions.length) return;
+      final q = state.questions[state.level - 1];
+      if (q.id != null) QuestionHandle().markAsked(q.level, q.id!);
+    } catch (_) {}
+  }
+
   void countDown() {
+    _markCurrentAsked();
     try {
       final timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         try {
@@ -340,7 +360,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
         image: state.user?.image,
       );
       emit(state.copyWith(user: x));
-      if (SkyAds.instance.isAdDisable) {
+      if (_adDisabled) {   // trước đây: SkyAds.instance.isAdDisable
         emit(state.copyWith(saveDone: true));
         return;
       }
@@ -472,11 +492,10 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       final assetSource =
           soundPath(state.isMute ? SoundManager.muteSound : name);
       final source = AssetSource(assetSource);
-      // final duration = await player.setAsset(assetSource);
       await player.setSource(source);
       final duration = await player.getDuration();
       setIsAccessAnswer(true);
-      return duration;
+      return duration ?? const Duration(seconds: 3);
     } catch (e) {
       if (e is Exception &&
           e.toString() == 'Exception: AudioPlayer has been disposed') {
@@ -493,14 +512,44 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   Future<void> playAudio(String name) async {
     try {
       setIsAccessAnswer(false);
-      final systemSound = await VolumeController().getVolume();
+      final systemSound = await _systemVolume();
       final assetSource = soundPath(
           state.isMute || systemSound <= 0.06 ? SoundManager.muteSound : name);
       final source = AssetSource(assetSource);
+
+      if (!kIsWeb) {
+        await player.play(source);
+        await player.onPlayerComplete.first;
+        setIsAccessAnswer(true);
+        return;
+      }
+
+      // ----- Web -----
+      final sw = Stopwatch()..start();
+      final done = player.onPlayerComplete.first; // đăng ký TRƯỚC khi phát
       await player.play(source);
-      await player.onPlayerComplete.first;
-      // await player.playerStateStream.firstWhere(
-      //     (state) => state.processingState == ProcessingState.completed);
+
+      Duration? total;
+      for (var i = 0; i < 20 && total == null; i++) {
+        total = await player.getDuration();
+        if (total == null) {
+          await Future.delayed(const Duration(milliseconds: 100));
+        }
+      }
+
+      await done.timeout(
+        (total ?? const Duration(seconds: 20)) + const Duration(seconds: 3),
+        onTimeout: () {},
+      );
+      final rawMs = sw.elapsedMilliseconds;
+
+      // Nếu sự kiện "phát xong" báo sớm hơn độ dài clip thì chờ nốt phần còn lại
+      if (total != null) {
+        final remain = total - sw.elapsed;
+        if (remain > Duration.zero) await Future.delayed(remain);
+      }
+      debugPrint('audio [$name] dài=${total?.inMilliseconds}ms, '
+          'sự kiện xong sau=${rawMs}ms, chờ tổng=${sw.elapsedMilliseconds}ms');
       setIsAccessAnswer(true);
     } catch (e) {
       if (e is StateError) {
@@ -509,6 +558,12 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       }
       if (e is Exception &&
           e.toString() == 'Exception: AudioPlayer has been disposed') {
+        return;
+      }
+      if (kIsWeb) {
+        debugPrint('playAudio lỗi [$name]: $e');
+        await Future.delayed(const Duration(seconds: 3));
+        setIsAccessAnswer(true);
         return;
       }
       if (e is PlatformException) return;
@@ -578,7 +633,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   Future<void> wrongAnswer() async {
     try {
       clearDataLocal();
-      if (!firsrWrong && !SkyAds.instance.isAdDisable) {
+      if (_showWrongAds && !firsrWrong && !_adDisabled) {   // trước đây: !SkyAds.instance.isAdDisable
         firsrWrong = true;
         emit(
           state.copyWith(
@@ -704,7 +759,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
     try {
       final pref = await SharedPreferences.getInstance();
       final isFirstPlay = pref.getBool("isFirstPlay") ?? true;
-      final systemSound = await VolumeController().getVolume();
+      final systemSound = await _systemVolume();
       if (!isFirstPlay || state.isMute || systemSound <= 0.1) {
         init2(questionModelHive);
         return;
@@ -769,6 +824,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
       }
       questions.add(Question(
         level: i.level,
+        id: i.id,
         answers: answers,
         question: i.question,
         rightAnswer: dem,

@@ -22,13 +22,14 @@ class QuestionAdapter extends TypeAdapter<Question> {
       rightAnswer: fields[3] as int?,
       level: fields[4] as int,
       point: fields[5] as String?,
+      id: fields[6] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Question obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(1)
       ..write(obj.question)
       ..writeByte(2)
@@ -38,7 +39,9 @@ class QuestionAdapter extends TypeAdapter<Question> {
       ..writeByte(4)
       ..write(obj.level)
       ..writeByte(5)
-      ..write(obj.point);
+      ..write(obj.point)
+      ..writeByte(6)                    // <-- (3) thêm 2 dòng này
+      ..write(obj.id);
   }
 
   @override

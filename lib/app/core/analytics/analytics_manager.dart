@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 
 class AnalyticsManager {
   static final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
@@ -9,14 +10,16 @@ class AnalyticsManager {
       FirebaseAnalyticsObserver(analytics: analytics);
 
   static Future<void> trackingViewScreen(TrackingScreenViewType screen) {
-    return analytics.setCurrentScreen(
-        screenName: screen.screenName, screenClassOverride: screen.screenClass);
+    return analytics.logScreenView(
+      screenName: screen.screenName,
+      screenClass: screen.screenClass,
+    );
   }
 
   static Future<void> sendAnalyticsEvent(String name) async {
     await analytics.logEvent(
       name: name,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'string': 'string',
         'int': 42,
         'long': 12345678910,
@@ -54,7 +57,7 @@ class AnalyticsManager {
 
   static Future<void> logAdImpression() async {
     await analytics.logAdImpression(
-      adPlatform: Platform.isAndroid ? 'android' : 'ios',
+      adPlatform: kIsWeb ? 'web' : (Platform.isAndroid ? 'android' : 'ios'),
       adSource: 'google admob',
     );
   }
