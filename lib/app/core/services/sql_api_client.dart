@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../data/model/item_model.dart';
 import '../../data/model/user.dart';
 import '../../network/exceptions/bad_request_exception.dart';
 
@@ -52,25 +53,39 @@ class SqlApiClient {
 
   // ------------------------------------------------------------ Xếp hạng
 
+  User _userFromMap(Map<String, dynamic> m) => User(
+        name: m['name'] as String,
+        point: (m['score'] as num).toInt(),
+        deviceId: m['deviceId'] as String?,
+        playDate: m['playDate'] != null
+            ? Timestamp.fromDate(DateTime.parse(m['playDate'] as String))
+            : null,
+        image: m['image'] as String?,
+        boughtItem:
+            (m['boughtItem'] as List?)?.map((e) => e.toString()).toList(),
+      );
+
   Future<List<User>> getRanking({required bool all}) => _guard(() async {
         final res = await _dio.get('/api/ranking',
             queryParameters: {'type': all ? 'all' : 'day', 'limit': 60});
-        final list = (res.data as List).map((e) => Map<String, dynamic>.from(e as Map));
-        return list
-            .map((m) => User(
-                  name: m['name'] as String,
-                  point: (m['score'] as num).toInt(),
-                  deviceId: m['deviceId'] as String?,
-                  playDate: m['playDate'] != null
-                      ? Timestamp.fromDate(DateTime.parse(m['playDate'] as String))
-                      : null,
-                  image: m['image'] as String?,
-                  boughtItem: (m['boughtItem'] as List?)
-                      ?.map((e) => e.toString())
-                      .toList(),
-                ))
+        return (res.data as List)
+            .map((e) => _userFromMap(Map<String, dynamic>.from(e as Map)))
             .toList();
       });
+
+  /// Lấy 1 người chơi theo tên. Chưa có trong SQL thì trả về null.
+  Future<User?> getPlayer(String name) async {
+    try {
+      return await _guard(() async {
+        final res = await _dio
+            .get('/api/players/one', queryParameters: {'name': name});
+        return _userFromMap(Map<String, dynamic>.from(res.data as Map));
+      });
+    } on BadRequestException catch (e) {
+      if (e.httpCode == 404) return null;
+      rethrow;
+    }
+  }
 
   /// Lưu/cập nhật người chơi (theo tên). Thay cho FirestoreManager.updateUser.
   Future<User> updatePlayer(User user) async {
@@ -97,5 +112,30 @@ class SqlApiClient {
 
   Future<void> deletePlayer(String name) => _guard(() async {
         await _dio.delete('/api/players', queryParameters: {'name': name});
+      });
+
+  // ------------------------------------------------------------ Cửa hàng
+
+  /// Tên các nhóm của cửa hàng (cùng thứ tự với danh sách trả về từ getStore).
+  List<String> storeLabels = [];
+
+  Future<List<List<ItemModel>>> getStore() => _guard(() async {
+        final res = await _dio.get('/api/store');
+        final labels = <String>[];
+        final store = <List<ItemModel>>[];
+        for (final c in (res.data as List)) {
+          final cat = Map<String, dynamic>.from(c as Map);
+          labels.add(cat['category'] as String);
+          store.add((cat['items'] as List).map((i) {
+            final m = Map<String, dynamic>.from(i as Map);
+            return ItemModel(
+              name: m['name'] as String,
+              price: (m['price'] as num).toInt().toString(),
+              image: m['image'] as String,
+            );
+          }).toList());
+        }
+        storeLabels = labels;
+        return store;
       });
 }

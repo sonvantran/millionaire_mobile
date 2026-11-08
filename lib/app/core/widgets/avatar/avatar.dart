@@ -29,17 +29,19 @@ class Avatar extends StatelessWidget {
       child: user.image != null
           ? ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(100.r)),
-              child: CachedNetworkImage(
-                colorBlendMode: BlendMode.darken,
+              child: Image.network(
+                user.image!,
                 width: radius ?? 40.w,
                 height: radius ?? 40.h,
                 fit: BoxFit.cover,
-                imageUrl: user.image!,
-                placeholder: (context, url) => SpinKitFadingCircle(
-                  color: AppColors.colorFF57B9FB,
-                  size: 25.r,
-                ),
-                errorWidget: (context, url, error) {
+                loadingBuilder: (context, child, progress) => progress == null
+                    ? child
+                    : SpinKitFadingCircle(
+                        color: AppColors.colorFF57B9FB,
+                        size: 25.r,
+                      ),
+                errorBuilder: (context, error, stack) {
+                  debugPrint('AVATAR ERR url=${user.image} error=$error');
                   return const Icon(Icons.error);
                 },
               ),
@@ -56,8 +58,9 @@ class Avatar extends StatelessWidget {
 
   String runeSubstring(String input, int start, int end) {
     if (input.isEmpty) return '';
-    return String.fromCharCodes(input.runes.toList().sublist(start, end))
-        .toUpperCase();
+    return String.fromCharCodes(
+      input.runes.toList().sublist(start, end),
+    ).toUpperCase();
   }
 
   Color generateRandomDarkColor() {

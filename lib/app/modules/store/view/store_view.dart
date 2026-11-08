@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sky_ads/banner_anchor_ad_widget.dart';
+import '../../../core/services/sql_api_client.dart';
 
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/analytics/route_aware_analytics.dart';
@@ -67,21 +68,7 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
       ],
       child: BlocBuilder<StoreCubit, StoreState>(builder: (context, state) {
         final store = state.store?.store;
-        List<String> labels =
-            FirebaseRemoteConfig.instance.getString('storeLabels').split(',');
-        if (labels.isEmpty) {
-          labels = [
-            "Trending",
-            "12 Con giáp",
-            "Thiên nhiên",
-            "Tầng lớp trung lưu",
-            "Đẳng Cấp Thượng Lưu",
-            "Thượng Lưu Đích Thực",
-            "Thượng Đẳng Tài Phiệt",
-            "Thế Hệ Triệu Phú",
-            "Tỷ phú",
-          ];
-        }
+        final labels = SqlApiClient.instance.storeLabels;
         return Scaffold(
           body: Container(
             width: double.infinity,
@@ -109,7 +96,7 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
                   child: ScoreUser(text: state.user?.point ?? 0),
                 ),
                 const SizedBox(height: 8),
-                store == null || labels.isEmpty
+                store == null
                     ? Expanded(
                         child: Center(
                           child: SpinKitCircle(

@@ -62,9 +62,7 @@ class _ItemPopupState extends State<ItemPopup> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.r),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
       shadowColor: AppColors.colorFF000000,
       backgroundColor: AppColors.colorFF375193,
       child: Padding(
@@ -95,16 +93,26 @@ class _ItemPopupState extends State<ItemPopup> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                    child: CachedNetworkImage(
+                    child: Image.network(
+                      widget.model.image,
                       fit: BoxFit.cover,
                       height: MediaQuery.of(context).size.height * 0.4,
-                      imageUrl: widget.model.image,
-                      placeholder: (context, url) => SpinKitFadingCircle(
-                        color: AppColors.colorFF57B9FB,
-                        size: 32.sp,
-                      ),
-                      errorWidget: (context, url, error) {
-                        widget.onError?.call();
+                      loadingBuilder: (context, child, progress) =>
+                          progress == null
+                          ? child
+                          : SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.4,
+                              child: Center(
+                                child: SpinKitFadingCircle(
+                                  color: AppColors.colorFF57B9FB,
+                                  size: 32.sp,
+                                ),
+                              ),
+                            ),
+                      errorBuilder: (context, error, stack) {
+                        debugPrint(
+                          'POPUP IMG ERR url=${widget.model.image} error=$error',
+                        );
                         return const Icon(Icons.error);
                       },
                     ),
@@ -123,8 +131,9 @@ class _ItemPopupState extends State<ItemPopup> {
                             ),
                             decoration: BoxDecoration(
                               color: AppColors.colorFF000000.withOpacity(0.5),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.r)),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10.r),
+                              ),
                               border: Border.all(
                                 color: AppColors.colorFFd1b037,
                                 width: 4.r,
@@ -140,7 +149,7 @@ class _ItemPopupState extends State<ItemPopup> {
                           ),
                         ),
                       ),
-                    )
+                    ),
                 ],
               ),
               SizedBox(height: 16.h),
@@ -158,9 +167,10 @@ class _ItemPopupState extends State<ItemPopup> {
                           ? "Đã mua".toUpperCase()
                           : "Không đủ \$".toUpperCase(),
                       style: TextStyles.boldBlackS20.copyWith(
-                          color: !widget.canBuy
-                              ? AppColors.colorFF940000.withOpacity(0.5)
-                              : AppColors.colorFF72F672.withOpacity(0.5)),
+                        color: !widget.canBuy
+                            ? AppColors.colorFF940000.withOpacity(0.5)
+                            : AppColors.colorFF72F672.withOpacity(0.5),
+                      ),
                     )
                   : InkWell(
                       onTap: widget.model.isBuy || !widget.canBuy
@@ -175,18 +185,17 @@ class _ItemPopupState extends State<ItemPopup> {
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           border: Border.all(
-                              color: AppColors.colorFF77dbe5, width: 2),
+                            color: AppColors.colorFF77dbe5,
+                            width: 2,
+                          ),
                           borderRadius: BorderRadius.all(Radius.circular(30.r)),
                           color: AppColors.colorFF03456e,
                         ),
                         width: 200.w,
                         height: 50.h,
-                        child: Text(
-                          "Mua",
-                          style: TextStyles.mediumMWhiteS18,
-                        ),
+                        child: Text("Mua", style: TextStyles.mediumMWhiteS18),
                       ),
-                    )
+                    ),
             ],
           ),
         ),

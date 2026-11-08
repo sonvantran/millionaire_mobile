@@ -17,18 +17,7 @@ class StoreCubit extends Cubit<StoreState> {
   void init(User user) async {
     try {
       emit(state.copyWith(user: user));
-      final li = StoreBox.getStore();
-      SharedPreferences pre = await SharedPreferences.getInstance();
-      final x = pre.getInt("isLastCallStore") ?? 0;
-      if (li.isEmpty ||
-          li[0].store.isEmpty ||
-          (DateTime.now().millisecondsSinceEpoch) - x >
-              1000 * 60 * 60 * 24 * 5) {
-        getStore();
-        return;
-      }
-      final changedStore = await resolve(li[0].store);
-      emit(state.copyWith(store: Store(store: changedStore)));
+      getStore();
     } catch (e) {
       if (e is StateError) return;
       rethrow;
@@ -37,36 +26,15 @@ class StoreCubit extends Cubit<StoreState> {
 
   void getStore() async {
     try {
-      final re = await _repo.getStore();
-      List<List<ItemModel>> li = [];
-      for (final i in re) {
-        if (i.doc.data() != null) {
-          List<ItemModel> j = ItemModel.fromMap(i.doc.data()!);
-          li.add(j);
-        }
-      }
-    List<List<ItemModel>> li2 = List.from(li);
-      try {
-        final conGiap = li.removeAt(5);
-        final trend = li.removeAt(5);
-        final thienNhien = li.removeAt(5);
-        li.insert(0, thienNhien);
-        li.insert(0, conGiap);
-        li.insert(0, trend);
-      } catch (e) {
-        AnalyticsManager.sendAnalyticsEvent(
-            e.toString().replaceAll(RegExp(r'[^a-zA-Z]'), '_'));
-        li = li2;
-      }
-      SharedPreferences pre = await SharedPreferences.getInstance();
-      await pre.setInt(
-          "isLastCallStore", DateTime.now().millisecondsSinceEpoch);
-      await StoreBox.deleteAll();
+      var li = await _repo.getStoreItems();
       li = await resolve(li);
       emit(state.copyWith(store: Store(store: handle(li))));
-      StoreBox.setStore(Store(store: li));
     } catch (e) {
       if (e is StateError) return;
+      if (e is BadRequestException) {
+        emit(state.copyWith(message: e.message));
+        return;
+      }
       rethrow;
     }
   }

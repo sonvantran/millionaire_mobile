@@ -7,6 +7,7 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAn
 
 var app = builder.Build();
 app.UseCors();
+app.UseStaticFiles(); // phục vụ ảnh cửa hàng trong thư mục wwwroot/store
 
 // Có lỗi (ví dụ chưa kết nối được SQL Server) thì trả JSON có nội dung lỗi để dễ xem
 app.Use(async (ctx, next) =>
@@ -100,18 +101,22 @@ app.MapGet("/api/ranking", async (string? type, int? limit) =>
     await using var r = await cmd.ExecuteReaderAsync();
 
     var list = new List<PlayerDto>();
-    while (await r.ReadAsync())
-    {
-        string[]? bought = r.IsDBNull(4) ? null : JsonSerializer.Deserialize<string[]>(r.GetString(4));
-        list.Add(new PlayerDto(
-            r.GetString(0),
-            r.GetInt64(1),
-            r.IsDBNull(2) ? null : r.GetString(2),
-            r.IsDBNull(3) ? null : r.GetString(3),
-            bought,
-            r.GetDateTime(5)));
-    }
+    while (await r.ReadAsync()) list.Add(ReadPlayer(r));
     return Results.Ok(list);
+});
+
+// Lấy 1 người chơi theo tên (để đổi sang người chơi khác / quay lại người cũ)
+app.MapGet("/api/players/one", async (string name) =>
+{
+    await using var conn = new SqlConnection(connStr);
+    await conn.OpenAsync();
+    await using var cmd = new SqlCommand(
+        "SELECT PlayerName, Score, Image, DeviceId, BoughtItems, PlayDate FROM dbo.Players WHERE PlayerName = @name", conn);
+    cmd.Parameters.AddWithValue("@name", name.Trim());
+    await using var r = await cmd.ExecuteReaderAsync();
+    return await r.ReadAsync()
+        ? Results.Ok(ReadPlayer(r))
+        : Results.NotFound(new { message = "Chưa có người chơi này" });
 });
 
 // Thêm mới hoặc cập nhật người chơi (theo tên). Score là tổng điểm hiện tại do game gửi lên.
@@ -151,7 +156,47 @@ app.MapDelete("/api/players", async (string name) =>
     return Results.Ok(new { deleted = n });
 });
 
+// ---------------------------------------------------------------- CỬA HÀNG
+
+// Danh sách món theo nhóm. ImageFile là tên file trong wwwroot/store (hoặc link http đầy đủ).
+app.MapGet("/api/store", async (HttpRequest req) =>
+{
+    var imgBase = $"{req.Scheme}://{req.Host}/store/files/";
+    await using var conn = new SqlConnection(connStr);
+    await conn.OpenAsync();
+    await using var cmd = new SqlCommand(
+        @"SELECT Category, Name, Price, ImageFile FROM dbo.StoreItems
+          ORDER BY CategoryOrder, Category, SortOrder, Price", conn);
+    await using var r = await cmd.ExecuteReaderAsync();
+
+    var result = new List<StoreCategoryDto>();
+    while (await r.ReadAsync())
+    {
+        var category = r.GetString(0);
+        var file = r.GetString(3);
+        var image = file.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+            ? file
+            : imgBase + Uri.EscapeDataString(file);
+        if (result.Count == 0 || result[^1].Category != category)
+            result.Add(new StoreCategoryDto(category, new List<StoreItemDto>()));
+        result[^1].Items.Add(new StoreItemDto(r.GetString(1), r.GetInt64(2), image));
+    }
+    return Results.Ok(result);
+});
+
 app.Run();
+
+static PlayerDto ReadPlayer(SqlDataReader r)
+{
+    string[]? bought = r.IsDBNull(4) ? null : JsonSerializer.Deserialize<string[]>(r.GetString(4));
+    return new PlayerDto(
+        r.GetString(0),
+        r.GetInt64(1),
+        r.IsDBNull(2) ? null : r.GetString(2),
+        r.IsDBNull(3) ? null : r.GetString(3),
+        bought,
+        r.GetDateTime(5));
+}
 
 static async Task<QuestionDto?> PickRandom(SqlConnection conn, int level)
 {
@@ -171,3 +216,5 @@ static async Task<QuestionDto?> PickRandom(SqlConnection conn, int level)
 record QuestionDto(int Id, int Level, string Question, string CaseA, string CaseB, string CaseC, string CaseD, int TrueCase);
 record PlayerDto(string Name, long Score, string? Image, string? DeviceId, string[]? BoughtItem, DateTime PlayDate);
 record PlayerUpsert(string? Name, long Score, string? Image, string? DeviceId, string[]? BoughtItem);
+record StoreItemDto(string Name, long Price, string Image);
+record StoreCategoryDto(string Category, List<StoreItemDto> Items);

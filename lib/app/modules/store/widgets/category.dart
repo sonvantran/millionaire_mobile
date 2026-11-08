@@ -11,11 +11,12 @@ import '../cubit/store_cubit.dart';
 import 'item_popup.dart';
 
 class Category extends StatefulWidget {
-  const Category(
-      {super.key,
-      required this.label,
-      required this.items,
-      required this.user});
+  const Category({
+    super.key,
+    required this.label,
+    required this.items,
+    required this.user,
+  });
   final String label;
   final List<ItemModel> items;
   final User user;
@@ -38,13 +39,8 @@ class _CategoryState extends State<Category> {
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
             margin: EdgeInsets.only(bottom: 4.h),
-            decoration: const BoxDecoration(
-              color: AppColors.colorFF0B2D42,
-            ),
-            child: Text(
-              widget.label,
-              style: TextStyles.boldWhiteS24,
-            ),
+            decoration: const BoxDecoration(color: AppColors.colorFF0B2D42),
+            child: Text(widget.label, style: TextStyles.boldWhiteS24),
           ),
           SizedBox(
             height: 160.h,
@@ -83,23 +79,37 @@ class _CategoryState extends State<Category> {
                             Stack(
                               children: [
                                 ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(8.r)),
-                                  child: CachedNetworkImage(
-                                    color: AppColors.colorFF344054
-                                        .withOpacity(0.5),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8.r),
+                                  ),
+                                  child: Image.network(
+                                    item.image,
+                                    color: AppColors.colorFF344054.withOpacity(
+                                      0.5,
+                                    ),
                                     colorBlendMode: BlendMode.darken,
                                     width: 100.w,
                                     height: 100.h,
                                     fit: BoxFit.cover,
-                                    imageUrl: item.image,
-                                    placeholder: (context, url) =>
-                                        SpinKitFadingCircle(
-                                      color: AppColors.colorFF57B9FB,
-                                      size: 32.sp,
-                                    ),
-                                    errorWidget: (context, url, error) {
-                                      context.read<StoreCubit>().call();
+                                    loadingBuilder:
+                                        (context, child, progress) =>
+                                            progress == null
+                                            ? child
+                                            : SizedBox(
+                                                width: 100.w,
+                                                height: 100.h,
+                                                child: Center(
+                                                  child: SpinKitFadingCircle(
+                                                    color:
+                                                        AppColors.colorFF57B9FB,
+                                                    size: 32.sp,
+                                                  ),
+                                                ),
+                                              ),
+                                    errorBuilder: (context, error, stack) {
+                                      debugPrint(
+                                        'IMG ERR url=${item.image} error=$error',
+                                      );
                                       return const Icon(Icons.error);
                                     },
                                   ),
@@ -114,13 +124,13 @@ class _CategoryState extends State<Category> {
                                             child: Text(
                                               text,
                                               style: TextStyles.score.copyWith(
-                                                  fontSize:
-                                                      (25 - text.length).sp),
+                                                fontSize: (25 - text.length).sp,
+                                              ),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
                                         ),
-                                      )
+                                      ),
                               ],
                             ),
                             Text(
@@ -138,7 +148,7 @@ class _CategoryState extends State<Category> {
                 );
               },
             ),
-          )
+          ),
         ],
       ),
     );
@@ -171,7 +181,9 @@ String formatCurrency(String twfAmount) {
   String formattedAmount = amount.toStringAsFixed(0);
 
   formattedAmount = formattedAmount.replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.');
+    RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+    (Match m) => '${m[1]}.',
+  );
 
   return formattedAmount;
 }

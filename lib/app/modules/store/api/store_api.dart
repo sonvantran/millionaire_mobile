@@ -3,10 +3,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/services/firestore_manager.dart';
 import '../../../data/model/user.dart';
 import '../../../network/exceptions/bad_request_exception.dart';
+import '../../../core/services/sql_api_client.dart';
+import '../../../data/model/item_model.dart';
 
 class StoreApi {
   final FirestoreManager fs = FirestoreManager();
 
+  Future<List<List<ItemModel>>> getStoreItems() =>
+      SqlApiClient.instance.getStore();
+  
   Future<List<DocumentChange<Map<String, dynamic>>>> getStore() async {
     try {
       return fs.getStore();

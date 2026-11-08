@@ -22,6 +22,7 @@ import '../../../core/services/question_box.dart';
 import '../../../data/local_saver/sound_manager.dart';
 import '../repository/login_repository.dart';
 import 'login_state.dart';
+import '../../../core/services/sql_api_client.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit(this._loginRepository) : super(const LoginState());
@@ -115,7 +116,7 @@ class LoginCubit extends Cubit<LoginState> {
   void feedBack() async {
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
-      path: "thiepcong12@gmail.com",
+      path: "sonvantran030601@gmail.com",
       query: encodeQueryParameters(<String, String>{
         'subject': 'Phản hồi từ Game Ai Là Triệu Phú',
       }),
@@ -219,18 +220,50 @@ class LoginCubit extends Cubit<LoginState> {
       if (username.isEmpty) return;
       emit(state.copyWith(message: null));
       final userState = state.user;
-
       final deviceId = await getId();
-      final x = User(
-        name: username,
-        point: userState?.point ?? 0,
-        deviceId: deviceId,
-        playDate: userState?.playDate ?? Timestamp.now(),
-        image: userState?.image,
-      );
-      emit(state.copyWith(hasUser: true, user: x));
       final pre = await SharedPreferences.getInstance();
-      await pre.setString("userName", username);
+
+      User x;
+      final sameAsCurrent = userState != null &&
+          userState.name.trim().toLowerCase() == username.trim().toLowerCase();
+      if (!kIsWeb || sameAsCurrent) {
+        // cùng người chơi: giữ nguyên điểm và avatar
+        x = User(
+          name: username,
+          point: userState?.point ?? 0,
+          deviceId: deviceId,
+          playDate: userState?.playDate ?? Timestamp.now(),
+          image: userState?.image,
+        );
+      } else {
+        // tên khác = người chơi khác: lấy từ SQL, chưa có thì bắt đầu từ 0
+        User? saved;
+        try {
+          saved = await SqlApiClient.instance.getPlayer(username);
+        } on BadRequestException catch (e) {
+          emit(state.copyWith(message: e.message));
+          return;
+        }
+        x = User(
+          name: saved?.name ?? username,
+          point: saved?.point ?? 0,
+          deviceId: deviceId,
+          playDate: Timestamp.now(),
+          image: saved?.image,
+          boughtItem: saved?.boughtItem,
+        );
+        await pre.setInt("point", x.point);
+        await pre.setStringList("boughtItem", x.boughtItem ?? <String>[]);
+        if (x.image != null) {
+          await pre.setString("imageUser", x.image!);
+        } else {
+          await pre.remove("imageUser");
+        }
+        await pre.remove("lastPoint");
+        await pre.remove("lastName");
+      }
+      emit(state.copyWith(hasUser: true, user: x));
+      await pre.setString("userName", x.name);
     } catch (e) {
       if (e is BadRequestException) {
         emit(state.copyWith(hasUser: false, message: e.message));
