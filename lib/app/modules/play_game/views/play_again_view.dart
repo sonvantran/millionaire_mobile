@@ -60,14 +60,6 @@ class _PlayAgainViewState extends State<PlayAgainView>
   @override
   void initState() {
     chiatay();
-    if (mounted) {
-      Future.delayed(const Duration(seconds: 1), () {
-        final x = Random().nextInt(3);
-        if (!mounted || x != 1) return;
-
-        _showdialogRating(context, widget.cubit);
-      });
-    }
     super.initState();
   }
 
@@ -163,39 +155,6 @@ class _PlayAgainViewState extends State<PlayAgainView>
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 20),
-                            AdsButton(
-                              icon: SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.1,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.1,
-                                  child: Image.asset(
-                                    "assets/images/reward_icon.png",
-                                    color: AppColors.colorFF402744,
-                                  )),
-                              onTap: () {
-                                SkyAds.instance.showRewardedAd(
-                                  context: context,
-                                  placement: AdsId.rewardPlayAgain,
-                                  forceShow: true,
-                                  onUserEarnedReward: (p0, p1) {
-                                    widget.cubit.updatePoint(score <= 20000000
-                                        ? widget.point
-                                        : "20,000,000");
-                                    ShowMessageInternal.showMessage(
-                                        "Bạn đã thành công");
-                                    context.router.back();
-                                  },
-                                  onAdFailedToLoad: () {
-                                    ShowMessageInternal.showMessage(
-                                        "Vui lòng thử lại sau");
-                                  },
-                                );
-                              },
-                              text:
-                                  "Xem Video Để ${score <= 20000000 ? 'X2 Điểm' : "+20.000.000 đ"}",
-                            ),
-                            SizedBox(height: 20.h),
                             SecondButton(
                               width: MediaQuery.of(context).size.width * 0.55,
                               onTap: () => context.router.back(),
@@ -227,9 +186,6 @@ class _PlayAgainViewState extends State<PlayAgainView>
                     ],
                   ),
                 ),
-              ),
-              const SkyBannerAnchorAdWidget(
-                placement: AdsId.bannerPlayAgain,
               ),
             ],
           ),
@@ -304,19 +260,5 @@ class _PlayAgainViewState extends State<PlayAgainView>
       if (e is PlatformException) return;
       // rethrow;
     }
-  }
-
-  void _showdialogRating(BuildContext context, LoginCubit cubit) async {
-    final pre = await SharedPreferences.getInstance();
-    final isRating = pre.getBool("isRating") ?? false;
-    if (isRating || !context.mounted) return;
-    await showDialog(
-      context: context,
-      builder: (BuildContext _) {
-        return RatingPopup(
-          onPressed: () => cubit.reviewApp(),
-        );
-      },
-    );
   }
 }

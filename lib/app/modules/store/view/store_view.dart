@@ -141,7 +141,6 @@ class _StoreViewState extends State<StoreView> with RouteAwareAnalytics {
                                 ),
                               ),
                       ),
-                const SkyBannerAnchorAdWidget(placement: AdsId.bannerStore),
               ],
             ),
           ),

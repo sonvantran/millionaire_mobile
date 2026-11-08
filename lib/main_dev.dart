@@ -98,37 +98,6 @@ void main() async {
     await InitHelper().initialize();
   }
 
-  if (!kIsWeb) {
-    SkyAds.instance.initialize(
-      AdConstant(
-        interstitialId: {
-          AdsId.inter: dotenv.env[AdsId.inter] ?? "",
-        },
-        nativeId: {
-          AdsId.nativeRanking: dotenv.env[AdsId.nativeRanking] ?? "",
-          AdsId.nativeStoreBottom: dotenv.env[AdsId.nativeStoreBottom] ?? "",
-          AdsId.nativeCategory: dotenv.env[AdsId.nativeCategory] ?? "",
-        },
-        inlineId: {},
-        appOpenId: {
-          AdsId.adsOpenApp: dotenv.env[AdsId.adsOpenApp] ?? "",
-        },
-        bannerAnchorId: {
-          AdsId.bannerHome: dotenv.env[AdsId.bannerHome] ?? "",
-          AdsId.bannerPlay: dotenv.env[AdsId.bannerPlay] ?? "",
-          AdsId.bannerPlayAgain: dotenv.env[AdsId.bannerPlayAgain] ?? "",
-          AdsId.bannerRanking: dotenv.env[AdsId.bannerRanking] ?? "",
-          AdsId.bannerStore: dotenv.env[AdsId.bannerStore] ?? "",
-        },
-        rewardedAdId: {
-          AdsId.rewardPlayGame: dotenv.env[AdsId.rewardPlayGame] ?? "",
-          AdsId.rewardPlayAgain: dotenv.env[AdsId.rewardPlayAgain] ?? "",
-        },
-        interstitialOffsetTime: const Duration(seconds: 30),
-        appOpenOffsetTime: const Duration(seconds: 30),
-      ),
-    );
-  }
 
   if (!kIsWeb) {
     await SystemChrome.setPreferredOrientations([

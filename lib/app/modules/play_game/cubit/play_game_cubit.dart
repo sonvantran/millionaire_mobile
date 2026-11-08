@@ -6,7 +6,6 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sky_ads/sky_ads.dart';
 import 'package:volume_controller/volume_controller.dart';
 import '../../../core/analytics/analytics_manager.dart';
 import '../../../core/extension/integer_extension.dart';
@@ -33,7 +32,7 @@ class PlayGameCubit extends Cubit<PlayGameState> {
   final User? user;
   final AudioPlayer player = AudioPlayer();
   // Web không có VolumeController và chưa khởi tạo SkyAds
-  bool get _adDisabled => kIsWeb || SkyAds.instance.isAdDisable;
+  bool get _adDisabled => true;
     // Đặt false để tắt hẳn quảng cáo sau khi trả lời sai
   static const bool _showWrongAds = false;
 
@@ -360,12 +359,8 @@ class PlayGameCubit extends Cubit<PlayGameState> {
         image: state.user?.image,
       );
       emit(state.copyWith(user: x));
-      if (_adDisabled) {   // trước đây: SkyAds.instance.isAdDisable
-        emit(state.copyWith(saveDone: true));
-        return;
-      }
       await _playGameRepository.updateUser(user: x);
-      AnalyticsManager.postScore(score, state.level);
+      if (!kIsWeb) AnalyticsManager.postScore(score, state.level);
       emit(state.copyWith(saveDone: true));
     } catch (e) {
       if (e is StateError) return;

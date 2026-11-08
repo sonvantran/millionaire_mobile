@@ -1,6 +1,7 @@
 import '../../../core/services/firestore_manager.dart';
 import '../../../data/model/user.dart';
 import '../../../network/exceptions/bad_request_exception.dart';
+import '../../../core/services/sql_api_client.dart';
 
 class LoginApi {
   final fs = FirestoreManager();
@@ -35,12 +36,8 @@ class LoginApi {
         httpCode: 404, status: "status", message: "lỗi update");
   }
 
-  Future<String> deleteUser({
-    required String deviceId,
-  }) async {
-    final user1 = await fs.deleteUser(deviceId);
-    if (user1 != null) return user1;
-    throw BadRequestException(
-        httpCode: 404, status: "status", message: "lỗi delete");
+  Future<String> deleteUser({required String deviceId}) async {
+    await SqlApiClient.instance.deletePlayer(deviceId);
+    return "Xoá thành công";
   }
 }

@@ -24,27 +24,8 @@ class _MyAppState extends State<MyApp> {
     //     SystemUiOverlayStyle(statusBarColor: Colors.transparent
     //         //color set to purple or set your own color
     //         ));
-    init();
   }
 
-  void init() async {
-    final pre = await SharedPreferences.getInstance();
-    bool isFirst = pre.getBool("isFirst") ?? true;
-    if (isFirst) {
-      pre.setBool("isFirst", false);
-    } else {
-      if (!context.mounted || !mounted) return;
-      final remoteConfig = FirebaseRemoteConfig.instance;
-      final isFirstAOA = remoteConfig.getBool("isFirstAOA");
-      if (isFirstAOA) {
-        SkyAds.instance.showAppOpenAd(
-          context: context,
-          placement: AdsId.adsOpenApp,
-          forceShow: true,
-        );
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

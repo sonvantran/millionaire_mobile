@@ -1,0 +1,12 @@
+# Kết quả build của .NET (nguyên nhân chính làm repo phình to)
+bin/
+obj/
+
+# Visual Studio / VS Code
+.vs/
+*.user
+*.suo
+
+# Gói và file tạm
+*.nupkg
+*.log

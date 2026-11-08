@@ -10,6 +10,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../../data/model/question.dart';
 import 'database_helper.dart';
+import 'sql_api_client.dart';
 
 class QuestionHandle {
   static Map<String, dynamic>? _webData;
@@ -30,6 +31,12 @@ class QuestionHandle {
 
   /// Gọi khi câu hỏi thật sự đã hiện ra cho người chơi
   Future<void> markAsked(int level, int id) async {
+    if (kIsWeb) {
+      try {
+        await SqlApiClient.instance.markAsked(id);
+      } catch (_) {}
+      return;
+    }
     final asked = await _getAsked(level);
     if (asked.add(id)) await _saveAsked(level, asked);
   }
@@ -42,6 +49,21 @@ class QuestionHandle {
     }
   }
 
+  Future<Question> _getQuestionFromApi(int level) async {
+    final m = await SqlApiClient.instance.getRandomQuestion(level);
+    return Question(
+      level: level,
+      id: (m['id'] as num).toInt(),
+      question: m['question'] as String,
+      answers: [
+        m['caseA'] as String,
+        m['caseB'] as String,
+        m['caseC'] as String,
+        m['caseD'] as String,
+      ],
+      rightAnswer: (m['trueCase'] as num).toInt(),
+    );
+  }
   // ---------- Web (JSON) ----------
   Future<Question> _getQuestionFromJson(int level) async {
     _webData ??= jsonDecode(
@@ -63,7 +85,7 @@ class QuestionHandle {
 
   // ---------- Mobile (SQLite) ----------
   Future<Question> getQuestionItemFromDatabase(int level) async {
-    if (kIsWeb) return _getQuestionFromJson(level);
+    if (kIsWeb) return _getQuestionFromApi(level);
     try {
       final dbHelper = DatabaseHelper();
       final database = await dbHelper.db;

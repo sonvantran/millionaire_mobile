@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../data/model/user.dart';
 import '../repository/ranking_repository.dart';
 import 'ranking_state.dart';
+import '../../../network/exceptions/bad_request_exception.dart';
 
 class RankingCubit extends Cubit<RankingState> {
   RankingCubit(this._rankingRepository) : super(const RankingState());
@@ -41,6 +42,10 @@ class RankingCubit extends Cubit<RankingState> {
         emit(state.copyWith(message: "Hệ thống đang gặp lỗi"));
         return;
       }
+      if (e is BadRequestException) {
+        emit(state.copyWith(message: e.message));
+        return;
+      }
       rethrow;
     }
   }
@@ -51,7 +56,9 @@ class RankingCubit extends Cubit<RankingState> {
   }
 
   void init(User user) async {
-    await updateLast(user);
+    try {
+      await updateLast(user);
+    } catch (_) {}
     getUsers(false);
   }
 

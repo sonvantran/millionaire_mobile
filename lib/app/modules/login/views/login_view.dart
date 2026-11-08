@@ -102,13 +102,11 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           !result.contains(ConnectivityResult.ethernet)) {
         if (!context.mounted) return;
         setState(() => isAppConnection = false);
-        SkyAds.instance.isAdDisable = true;
         ShowMessageInternal.showMessage("Không có Internet!");
         // context.pushRoute(const NoInternetPageRoute());
       } else {
         if (!context.mounted) return;
         setState(() => isAppConnection = true);
-        SkyAds.instance.isAdDisable = false;
         context.read<LoginCubit>().login();
       }
     });
@@ -124,11 +122,9 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       if (!context.mounted) return;
       setState(() => isAppConnection = false);
       // context.pushRoute(const NoInternetPageRoute());
-      SkyAds.instance.isAdDisable = true;
       ShowMessageInternal.showMessage("Không có Internet!");
     } else {
       if (!context.mounted) return;
-      SkyAds.instance.isAdDisable = false;
       setState(() => isAppConnection = true);
     }
   }
@@ -144,11 +140,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       if (isAppHiden) {
         if (!isAppConnection) return;
         if (!mounted || !context.mounted) return;
-        SkyAds.instance.showAppOpenAd(
-          placement: AdsId.adsOpenApp,
-          forceShow: true,
-          context: context,
-        );
       }
       isAppHiden = false;
     } else if (state == AppLifecycleState.hidden) {
@@ -392,14 +383,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ButtonItem(
-                              onTap: () {
-                                _showdialogRating(context, cubit);
-                              },
-                              color: AppColors.colorFFAF4848,
-                              iconData: Icons.star,
-                            ),
-                            const SizedBox(width: 24),
-                            ButtonItem(
                               onTap: () => cubit.feedBack(),
                               color: AppColors.colorFF424242,
                               iconData: Icons.rate_review_outlined,
@@ -410,7 +393,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                     ),
                   ),
                 ),
-                const SkyBannerAnchorAdWidget(placement: AdsId.bannerHome),
               ],
             ),
           ),
@@ -535,16 +517,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     );
   }
 
-  Future<void> _showdialogRating(BuildContext context, LoginCubit cubit) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext _) {
-        return RatingPopup(
-          onPressed: () => cubit.reviewApp(),
-        );
-      },
-    );
-  }
 
   void _showRole(BuildContext context) async {
     const String text = '''

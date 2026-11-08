@@ -199,18 +199,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 level = 10;
               }
               final point = getQuestionByLevel(level, state.chooseMC);
-              SkyAds.instance.showInterstitialAd(
-                context: context,
-                placement: AdsId.inter,
-                forceShow: true,
-                onAdDisplayed: () => popView(context, 0, point, state.user),
-                onAdFailedToLoad: () => popView(context, 0, point, state.user),
-                onStartLoading: (canShowAd) {
-                  if (!canShowAd) {
-                    popView(context, 0, point, state.user);
-                  }
-                },
-              );
+              popView(context, 0, point, state.user);
             } else if (state.isFalse) {
               int level = 0;
               if (state.level >= 0 && state.level <= 5) {
@@ -221,27 +210,7 @@ class _PlayGamePageState extends State<PlayGamePage>
                 level = 10;
               }
               final point = getQuestionByLevel(level, state.chooseMC);
-              final remoteConfig = FirebaseRemoteConfig.instance;
-              int randomValue =
-                  Random().nextInt(remoteConfig.getInt('rateShowInter'));
-
-              if (randomValue == 2) {
-                SkyAds.instance.showInterstitialAd(
-                  placement: AdsId.inter,
-                  context: context,
-                  forceShow: true,
-                  onAdDisplayed: () => popView(context, 1, point, state.user),
-                  onAdFailedToLoad: () =>
-                      popView(context, 1, point, state.user),
-                  onStartLoading: (canShowAd) {
-                    if (!canShowAd) {
-                      popView(context, 1, point, state.user);
-                    }
-                  },
-                );
-              } else {
-                popView(context, 1, point, state.user);
-              }
+              popView(context, 1, point, state.user);
             } else if (state.isWin) {
               final point = getQuestionByLevel(state.level, state.chooseMC);
               await context.router.replace(PlayAgainRoute(
@@ -669,33 +638,9 @@ class _PlayGamePageState extends State<PlayGamePage>
                           const SizedBox(height: 40),
                         ],
                       ),
-                      if (state.isShowWrongAds)
-                        ViewAdsFail(
-                          onClose: () => cubit.wrongAnswer(),
-                          onViewAds: () {
-                            SkyAds.instance.showRewardedAd(
-                              context: context,
-                              placement: AdsId.rewardPlayGame,
-                              forceShow: true,
-                              onStartLoading: (_) => cubit.cancelCountDown(),
-                              onAdDismissedFullScreenContent: () =>
-                                  cubit.playAgainAds(),
-                              onUserEarnedReward: (p0, p1) =>
-                                  cubit.playAgainAds(),
-                              onAdFailedToLoad: () {
-                                ShowMessageInternal.showMessage(
-                                    "Vui lòng thử lại sau");
-                              },
-                            );
-                          },
-                          countDown: state.startCounter ?? 0,
-                        ),
                     ],
                   ));
             }),
-            bottomSheet: const SkyBannerAnchorAdWidget(
-              placement: AdsId.bannerPlay,
-            ),
           ),
         );
       }),
@@ -864,46 +809,14 @@ class _PlayGamePageState extends State<PlayGamePage>
             onTap: () async {
               cubit.updatePoint(point);
               if (!context.mounted || !mounted) return;
-              SkyAds.instance.showInterstitialAd(
-                placement: AdsId.inter,
-                context: context,
-                forceShow: true,
-                onAdDisplayed: () {
-                  if (!context.mounted || !mounted) return;
-                  context.router.replace(PlayAgainRoute(
-                    caseResult: 1,
-                    point: point,
-                    isMute: widget.isMute,
-                    mc: widget.mc,
-                    user: cubit.state.user,
-                    cubit: widget.cubit,
-                  ));
-                },
-                onAdFailedToLoad: () {
-                  if (!context.mounted || !mounted) return;
-                  context.router.replace(PlayAgainRoute(
-                    caseResult: 1,
-                    point: point,
-                    isMute: widget.isMute,
-                    mc: widget.mc,
-                    user: cubit.state.user,
-                    cubit: widget.cubit,
-                  ));
-                },
-                onStartLoading: (canShowAd) {
-                  if (!canShowAd) {
-                    if (!context.mounted || !mounted) return;
-                    context.router.replace(PlayAgainRoute(
-                      caseResult: 1,
-                      point: point,
-                      isMute: widget.isMute,
-                      mc: widget.mc,
-                      user: cubit.state.user,
-                      cubit: widget.cubit,
-                    ));
-                  }
-                },
-              );
+              context.router.replace(PlayAgainRoute(
+                caseResult: 1,
+                point: point,
+                isMute: widget.isMute,
+                mc: widget.mc,
+                user: cubit.state.user,
+                cubit: widget.cubit,
+              ));
             },
             title: 'Bạn chắc chắn muốn thoát?',
             titleButton1: 'Tiếp tục',

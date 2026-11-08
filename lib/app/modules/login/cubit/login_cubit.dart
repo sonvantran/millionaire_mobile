@@ -245,9 +245,9 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       emit(state.copyWith(message: null));
 
-      final deviceId = await getId();
-      if (deviceId != null) {
-        String message = await _loginRepository.deleteUser(deviceId: deviceId);
+      final name = state.user?.name;
+      if (name != null && name.isNotEmpty) {
+        String message = await _loginRepository.deleteUser(deviceId: name);
         emit(state.copyWith(hasUser: false, user: null, message: message));
         final pre = await SharedPreferences.getInstance();
         await pre.remove("userName");
